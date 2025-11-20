@@ -1,1 +1,380 @@
-local R={[1]="\080\108\097\121\101\114\115",[2]="\082\117\110\083\101\114\118\105\099\101",[3]="\085\115\101\114\073\110\112\117\116\083\101\114\118\105\099\101",[4]="\076\111\099\097\108\080\108\097\121\101\114",[5]="\067\104\097\114\097\099\116\101\114",[6]="\072\117\109\097\110\111\105\100",[7]="\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116",[8]="\082\101\118\101\114\115\101\083\104\105\102\116\076\111\099\107\071\085\073",[9]="\083\099\114\101\101\110\071\117\105",[10]="\070\114\097\109\101",[11]="\085\073\067\111\114\110\101\114",[12]="\085\073\071\114\097\100\105\101\110\116",[13]="\084\101\120\116\076\097\098\101\108",[14]="\084\101\120\116\066\117\116\116\111\110",[15]="\073\109\097\103\101\066\117\116\116\111\110"}local function a(b)return R[b]end;local c=game:GetService(a(1))local d=game:GetService(a(2))local e=game:GetService(a(3))local f=c[a(4)]local g=f[a(5)]or f.CharacterAdded:Wait()local h=g:WaitForChild(a(6))local i=g:WaitForChild(a(7))local j=false;local k=nil;if f[a(8)]:FindFirstChild(a(9))then f[a(8)]:FindFirstChild(a(9)):Destroy()end;local l=Instance.new(a(9))l.Name=a(8)l.ResetOnSpawn=false;l.Parent=f[a(8)]local m=Instance.new(a(10))m.Name="\077\097\105\110\070\114\097\109\101"m.Size=UDim2.new(0,280,0,140)m.Position=UDim2.new(0.5,-140,0.5,-70)m.BackgroundColor3=Color3.fromRGB(15,15,15)m.BackgroundTransparency=0.1;m.BorderSizePixel=0;m.Active=true;m.Draggable=true;m.Parent=l;local n=Instance.new(a(11))n.CornerRadius=UDim.new(0,12)n.Parent=m;local o=Instance.new(a(12))o.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(20,20,20)),ColorSequenceKeypoint.new(1,Color3.fromRGB(10,10,10))}o.Rotation=45;o.Parent=m;local p=Instance.new(a(10))p.Size=UDim2.new(1,4,1,4)p.Position=UDim2.new(0,-2,0,-2)p.BackgroundColor3=Color3.fromRGB(255,100,0)p.BorderSizePixel=0;p.ZIndex=0;p.Parent=m;local q=Instance.new(a(11))q.CornerRadius=UDim.new(0,14)q.Parent=p;local r=Instance.new(a(10))r.Size=UDim2.new(1,0,0,35)r.BackgroundColor3=Color3.fromRGB(255,100,0)r.BorderSizePixel=0;r.Parent=m;local s=Instance.new(a(11))s.CornerRadius=UDim.new(0,12)s.Parent=r;local t=Instance.new(a(10))t.Size=UDim2.new(1,0,0,12)t.Position=UDim2.new(0,0,1,-12)t.BackgroundColor3=Color3.fromRGB(255,100,0)t.BorderSizePixel=0;t.Parent=r;local u=Instance.new(a(13))u.Size=UDim2.new(1,-80,1,0)u.Position=UDim2.new(0,15,0,0)u.BackgroundTransparency=1;u.Text="\128\141\032\032\088\032\045\032\086\051\078\048\077"u.TextColor3=Color3.fromRGB(0,0,0)u.TextSize=15;u.Font=Enum.Font.GothamBold;u.TextXAlignment=Enum.TextXAlignment.Left;u.Parent=r;local v=Instance.new(a(14))v.Size=UDim2.new(0,28,0,28)v.Position=UDim2.new(1,-63,0,3.5)v.BackgroundColor3=Color3.fromRGB(40,40,40)v.BorderSizePixel=0;v.Text="—"v.TextColor3=Color3.fromRGB(255,255,255)v.TextSize=16;v.Font=Enum.Font.GothamBold;v.Parent=r;local w=Instance.new(a(11))w.CornerRadius=UDim.new(0,7)w.Parent=v;local x=Instance.new(a(14))x.Size=UDim2.new(0,28,0,28)x.Position=UDim2.new(1,-33,0,3.5)x.BackgroundColor3=Color3.fromRGB(139,0,0)x.BorderSizePixel=0;x.Text="X"x.TextColor3=Color3.fromRGB(255,255,255)x.TextSize=14;x.Font=Enum.Font.GothamBold;x.Parent=r;local y=Instance.new(a(11))y.CornerRadius=UDim.new(0,7)y.Parent=x;local z=Instance.new(a(15))z.Name="\077\105\110\105\109\105\122\101\073\099\111\110"z.Size=UDim2.new(0,50,0,50)z.Position=UDim2.new(0,10,0,10)z.BackgroundTransparency=1;z.BorderSizePixel=0;z.Active=true;z.Draggable=true;z.Visible=false;z.Image="\114\098\120\097\115\115\101\116\105\100\058\047\047\049\049\048\050\050\053\057\049\050\051\057\056\055\055\050"z.ScaleType=Enum.ScaleType.Fit;z.Parent=l;local A=Instance.new(a(11))A.CornerRadius=UDim.new(0,10)A.Parent=z;local B=Instance.new(a(10))B.Size=UDim2.new(1,-20,1,-50)B.Position=UDim2.new(0,10,0,42)B.BackgroundTransparency=1;B.Parent=m;local C=Instance.new(a(13))C.Size=UDim2.new(1,0,0,18)C.Position=UDim2.new(0,0,0,5)C.BackgroundTransparency=1;C.Text="\128\142\032\083\116\097\116\117\115\058\032\082\101\097\100\121"C.TextColor3=Color3.fromRGB(200,200,200)C.TextSize=11;C.Font=Enum.Font.Gotham;C.TextXAlignment=Enum.TextXAlignment.Left;C.Parent=B;local D=Instance.new(a(14))D.Size=UDim2.new(1,0,0,50)D.Position=UDim2.new(0,0,0,30)D.BackgroundColor3=Color3.fromRGB(30,30,30)D.BorderSizePixel=0;D.Text="\128\148\032\070\082\069\069\083\084\089\076\069"D.TextColor3=Color3.fromRGB(255,255,255)D.TextSize=14;D.Font=Enum.Font.GothamBold;D.Parent=B;local E=Instance.new(a(11))E.CornerRadius=UDim.new(0,10)E.Parent=D;local F=Instance.new(a(12))F.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(40,40,40)),ColorSequenceKeypoint.new(1,Color3.fromRGB(20,20,20))}F.Rotation=90;F.Parent=D;local G=Instance.new(a(10))G.Size=UDim2.new(0,10,0,10)G.Position=UDim2.new(0,12,0.5,-5)G.BackgroundColor3=Color3.fromRGB(100,100,100)G.BorderSizePixel=0;G.Parent=D;local H=Instance.new(a(11))H.CornerRadius=UDim.new(1,0)H.Parent=G;v.MouseButton1Click:Connect(function()m.Visible=false;z.Visible=true end)v.MouseEnter:Connect(function()v.BackgroundColor3=Color3.fromRGB(60,60,60)end)v.MouseLeave:Connect(function()v.BackgroundColor3=Color3.fromRGB(40,40,40)end)x.MouseButton1Click:Connect(function()l:Destroy()end)x.MouseEnter:Connect(function()x.BackgroundColor3=Color3.fromRGB(180,0,0)end)x.MouseLeave:Connect(function()x.BackgroundColor3=Color3.fromRGB(139,0,0)end)z.MouseButton1Click:Connect(function()m.Visible=true;z.Visible=false end)z.MouseEnter:Connect(function()z.Size=UDim2.new(0,55,0,55)z.ImageTransparency=0.3 end)z.MouseLeave:Connect(function()z.Size=UDim2.new(0,50,0,50)z.ImageTransparency=0 end)local I=h.AutoRotate;local function J()if not i then return end;h.AutoRotate=false;i.CFrame=CFrame.lookAt(i.Position,i.Position-i.CFrame.LookVector)end;local function K()if not i then return end;h.AutoRotate=I end;local function L()if not i or not j then return end;local M=workspace.CurrentCamera;local N=M.CFrame;local O=N.LookVector;local P=-O;i.CFrame=CFrame.lookAt(i.Position,i.Position+Vector3.new(P.X,0,P.Z))end;D.MouseButton1Click:Connect(function()j=not j;if j then D.Text="\128\158\032\070\082\069\069\083\084\089\076\069\032\065\075\084\073\070"D.BackgroundColor3=Color3.fromRGB(200,50,50)F.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,80,80)),ColorSequenceKeypoint.new(1,Color3.fromRGB(150,30,30))}G.BackgroundColor3=Color3.fromRGB(0,255,100)C.Text="\128\142\032\083\116\097\116\117\115\058\032\065\099\116\105\118\101\032\040\082\101\118\101\114\115\101\032\077\111\100\101\041"C.TextColor3=Color3.fromRGB(0,255,100)J()k=d.Heartbeat:Connect(function()L()end)print("\128\158\032\070\114\101\101\115\116\121\108\101\058\032\065\075\084\073\070")else D.Text="\128\148\032\070\082\069\069\083\084\089\076\069"D.BackgroundColor3=Color3.fromRGB(30,30,30)F.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(40,40,40)),ColorSequenceKeypoint.new(1,Color3.fromRGB(20,20,20))}G.BackgroundColor3=Color3.fromRGB(100,100,100)C.Text="\128\142\032\083\116\097\116\117\115\058\032\082\101\097\100\121"C.TextColor3=Color3.fromRGB(200,200,200)K()if k then k:Disconnect()k=nil end;print("\128\159\032\070\114\101\101\115\116\121\108\101\058\032\078\079\078\065\075\084\073\070")end end)D.MouseEnter:Connect(function()if not j then D.BackgroundColor3=Color3.fromRGB(50,50,50)end end)D.MouseLeave:Connect(function()if not j then D.BackgroundColor3=Color3.fromRGB(30,30,30)end end)e.InputBegan:Connect(function(Q,R)if R then return end;if Q.KeyCode==Enum.KeyCode.LeftShift or Q.KeyCode==Enum.KeyCode.RightShift then wait(0.1)if j then L()end end end)f.CharacterAdded:Connect(function(S)g=S;h=S:WaitForChild(a(6))i=S:WaitForChild(a(7))I=h.AutoRotate;j=false;D.Text="\128\148\032\070\082\069\069\083\084\089\076\069"D.BackgroundColor3=Color3.fromRGB(30,30,30)F.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(40,40,40)),ColorSequenceKeypoint.new(1,Color3.fromRGB(20,20,20))}G.BackgroundColor3=Color3.fromRGB(100,100,100)C.Text="\128\142\032\083\116\097\116\117\115\058\032\082\101\097\100\121"C.TextColor3=Color3.fromRGB(200,200,200)if k then k:Disconnect()k=nil end end)print("============================================")print("\128\141\032\088\032\045\032\086\051\078\048\077\032\124\032\070\114\101\101\115\116\121\108\101\032\076\079\065\068\069\068\033")print("============================================")print("\100\031\032\077\111\100\101\114\110\032\085\073\032\119\105\116\104\032\077\105\110\105\109\105\122\101")print("\100\031\032\068\114\097\103\103\097\098\108\101\032\070\114\097\109\101")print("\100\031\032\073\109\097\103\101\032\073\099\111\110\032\040\073\068\058\032\049\049\048\050\050\053\057\049\050\051\057\056\055\055\050\041")print("\100\031\032\082\101\118\101\114\115\101\032\083\104\105\102\116\032\076\111\099\107\032\083\121\115\116\101\109")print("============================================")
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local rootPart = character:WaitForChild("HumanoidRootPart")
+
+local isReverseMode = false
+local connection = nil
+
+-- Hapus GUI lama jika ada
+if player.PlayerGui:FindFirstChild("ReverseShiftLockGUI") then
+    player.PlayerGui:FindFirstChild("ReverseShiftLockGUI"):Destroy()
+end
+
+-- ==================== GUI MODERN CREATION ====================
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ReverseShiftLockGUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = player.PlayerGui
+
+-- Main Frame (Modern & Draggable)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 280, 0, 140)
+MainFrame.Position = UDim2.new(0.5, -140, 0.5, -70)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.BackgroundTransparency = 0.1
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 12)
+MainCorner.Parent = MainFrame
+
+-- Gradient Background
+local UIGradient = Instance.new("UIGradient")
+UIGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 10, 10))
+}
+UIGradient.Rotation = 45
+UIGradient.Parent = MainFrame
+
+-- Border Accent (Orange)
+local Border = Instance.new("Frame")
+Border.Size = UDim2.new(1, 4, 1, 4)
+Border.Position = UDim2.new(0, -2, 0, -2)
+Border.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+Border.BorderSizePixel = 0
+Border.ZIndex = 0
+Border.Parent = MainFrame
+
+local BorderCorner = Instance.new("UICorner")
+BorderCorner.CornerRadius = UDim.new(0, 14)
+BorderCorner.Parent = Border
+
+-- Title Bar
+local TitleBar = Instance.new("Frame")
+TitleBar.Size = UDim2.new(1, 0, 0, 35)
+TitleBar.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = MainFrame
+
+local TitleBarCorner = Instance.new("UICorner")
+TitleBarCorner.CornerRadius = UDim.new(0, 12)
+TitleBarCorner.Parent = TitleBar
+
+-- Cover bottom corners of title bar
+local TitleBarCover = Instance.new("Frame")
+TitleBarCover.Size = UDim2.new(1, 0, 0, 12)
+TitleBarCover.Position = UDim2.new(0, 0, 1, -12)
+TitleBarCover.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+TitleBarCover.BorderSizePixel = 0
+TitleBarCover.Parent = TitleBar
+
+-- Title Text
+local TitleText = Instance.new("TextLabel")
+TitleText.Size = UDim2.new(1, -80, 1, 0)
+TitleText.Position = UDim2.new(0, 15, 0, 0)
+TitleText.BackgroundTransparency = 1
+TitleText.Text = "👑  X - V3N0M"
+TitleText.TextColor3 = Color3.fromRGB(0, 0, 0)
+TitleText.TextSize = 15
+TitleText.Font = Enum.Font.GothamBold
+TitleText.TextXAlignment = Enum.TextXAlignment.Left
+TitleText.Parent = TitleBar
+
+-- Minimize Button
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Size = UDim2.new(0, 28, 0, 28)
+MinimizeButton.Position = UDim2.new(1, -63, 0, 3.5)
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+MinimizeButton.BorderSizePixel = 0
+MinimizeButton.Text = "—"
+MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeButton.TextSize = 16
+MinimizeButton.Font = Enum.Font.GothamBold
+MinimizeButton.Parent = TitleBar
+
+local MinimizeCorner = Instance.new("UICorner")
+MinimizeCorner.CornerRadius = UDim.new(0, 7)
+MinimizeCorner.Parent = MinimizeButton
+
+-- Close Button
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 28, 0, 28)
+CloseButton.Position = UDim2.new(1, -33, 0, 3.5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+CloseButton.BorderSizePixel = 0
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 14
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Parent = TitleBar
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 7)
+CloseCorner.Parent = CloseButton
+
+-- Minimize Icon (Gambar, bukan emoji/text)
+local MinimizeIcon = Instance.new("ImageButton")
+MinimizeIcon.Name = "MinimizeIcon"
+MinimizeIcon.Size = UDim2.new(0, 50, 0, 50)
+MinimizeIcon.Position = UDim2.new(0, 10, 0, 10)
+MinimizeIcon.BackgroundTransparency = 1  -- Transparan (no background)
+MinimizeIcon.BorderSizePixel = 0
+MinimizeIcon.Active = true
+MinimizeIcon.Draggable = true
+MinimizeIcon.Visible = false
+MinimizeIcon.Image = "rbxassetid://110225912398772"  -- ID GAMBAR ANDA
+MinimizeIcon.ScaleType = Enum.ScaleType.Fit
+MinimizeIcon.Parent = ScreenGui
+
+local IconCorner = Instance.new("UICorner")
+IconCorner.CornerRadius = UDim.new(0, 10)
+IconCorner.Parent = MinimizeIcon
+
+-- Content Container
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Size = UDim2.new(1, -20, 1, -50)
+ContentFrame.Position = UDim2.new(0, 10, 0, 42)
+ContentFrame.BackgroundTransparency = 1
+ContentFrame.Parent = MainFrame
+
+-- Status Label
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(1, 0, 0, 18)
+StatusLabel.Position = UDim2.new(0, 0, 0, 5)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Text = "📊 Status: Ready"
+StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+StatusLabel.TextSize = 11
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+StatusLabel.Parent = ContentFrame
+
+-- Main Button (Freestyle)
+local LockButton = Instance.new("TextButton")
+LockButton.Size = UDim2.new(1, 0, 0, 50)
+LockButton.Position = UDim2.new(0, 0, 0, 30)
+LockButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+LockButton.BorderSizePixel = 0
+LockButton.Text = "🔄 FREESTYLE"
+LockButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+LockButton.TextSize = 14
+LockButton.Font = Enum.Font.GothamBold
+LockButton.Parent = ContentFrame
+
+local ButtonCorner = Instance.new("UICorner")
+ButtonCorner.CornerRadius = UDim.new(0, 10)
+ButtonCorner.Parent = LockButton
+
+-- Button Gradient
+local ButtonGradient = Instance.new("UIGradient")
+ButtonGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 40)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 20))
+}
+ButtonGradient.Rotation = 90
+ButtonGradient.Parent = LockButton
+
+-- Status Indicator (bulat kecil)
+local StatusIndicator = Instance.new("Frame")
+StatusIndicator.Size = UDim2.new(0, 10, 0, 10)
+StatusIndicator.Position = UDim2.new(0, 12, 0.5, -5)
+StatusIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+StatusIndicator.BorderSizePixel = 0
+StatusIndicator.Parent = LockButton
+
+local IndicatorCorner = Instance.new("UICorner")
+IndicatorCorner.CornerRadius = UDim.new(1, 0)
+IndicatorCorner.Parent = StatusIndicator
+
+-- ==================== BUTTON HANDLERS ====================
+
+-- Minimize Handler
+MinimizeButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    MinimizeIcon.Visible = true
+end)
+
+MinimizeButton.MouseEnter:Connect(function()
+    MinimizeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+end)
+
+MinimizeButton.MouseLeave:Connect(function()
+    MinimizeButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+end)
+
+-- Close Handler
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+CloseButton.MouseEnter:Connect(function()
+    CloseButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+end)
+
+CloseButton.MouseLeave:Connect(function()
+    CloseButton.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+end)
+
+-- Minimize Icon Handler (buka lagi dengan gambar)
+MinimizeIcon.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    MinimizeIcon.Visible = false
+end)
+
+MinimizeIcon.MouseEnter:Connect(function()
+    MinimizeIcon.Size = UDim2.new(0, 55, 0, 55)
+    MinimizeIcon.ImageTransparency = 0.3  -- Efek glow saat hover
+end)
+
+MinimizeIcon.MouseLeave:Connect(function()
+    MinimizeIcon.Size = UDim2.new(0, 50, 0, 50)
+    MinimizeIcon.ImageTransparency = 0  -- Kembali normal
+end)
+
+-- ==================== FREESTYLE FUNCTIONS ====================
+
+-- Simpan orientasi asli
+local originalAutoRotate = humanoid.AutoRotate
+
+local function enableReverseShiftLock()
+    if not rootPart then return end
+    humanoid.AutoRotate = false
+    rootPart.CFrame = CFrame.lookAt(rootPart.Position, rootPart.Position - rootPart.CFrame.LookVector)
+end
+
+local function disableReverseShiftLock()
+    if not rootPart then return end
+    humanoid.AutoRotate = originalAutoRotate
+end
+
+local function maintainReverseOrientation()
+    if not rootPart or not isReverseMode then return end
+    
+    local camera = workspace.CurrentCamera
+    local cameraCFrame = camera.CFrame
+    local cameraLookVector = cameraCFrame.LookVector
+    local reverseLookVector = -cameraLookVector
+    
+    rootPart.CFrame = CFrame.lookAt(rootPart.Position, rootPart.Position + Vector3.new(reverseLookVector.X, 0, reverseLookVector.Z))
+end
+
+-- Toggle reverse shift lock
+LockButton.MouseButton1Click:Connect(function()
+    isReverseMode = not isReverseMode
+    
+    if isReverseMode then
+        -- AKTIFKAN
+        LockButton.Text = "🔒 FREESTYLE AKTIF"
+        LockButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        ButtonGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 80, 80)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 30, 30))
+        }
+        StatusIndicator.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+        StatusLabel.Text = "📊 Status: Active (Reverse Mode)"
+        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+        
+        enableReverseShiftLock()
+        
+        connection = RunService.Heartbeat:Connect(function()
+            maintainReverseOrientation()
+        end)
+        
+        print("🔒 Freestyle: AKTIF")
+        
+    else
+        -- NONAKTIFKAN
+        LockButton.Text = "🔄 FREESTYLE"
+        LockButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        ButtonGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 40)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 20))
+        }
+        StatusIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+        StatusLabel.Text = "📊 Status: Ready"
+        StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+        
+        disableReverseShiftLock()
+        
+        if connection then
+            connection:Disconnect()
+            connection = nil
+        end
+        
+        print("🔓 Freestyle: NONAKTIF")
+    end
+end)
+
+-- Hover effect
+LockButton.MouseEnter:Connect(function()
+    if not isReverseMode then
+        LockButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    end
+end)
+
+LockButton.MouseLeave:Connect(function()
+    if not isReverseMode then
+        LockButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    end
+end)
+
+-- ==================== INPUT HANDLER ====================
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
+        wait(0.1)
+        if isReverseMode then
+            maintainReverseOrientation()
+        end
+    end
+end)
+
+-- ==================== CHARACTER RESPAWN ====================
+
+player.CharacterAdded:Connect(function(newChar)
+    character = newChar
+    humanoid = newChar:WaitForChild("Humanoid")
+    rootPart = newChar:WaitForChild("HumanoidRootPart")
+    originalAutoRotate = humanoid.AutoRotate
+    
+    isReverseMode = false
+    LockButton.Text = "🔄 FREESTYLE"
+    LockButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    ButtonGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 40)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 20))
+    }
+    StatusIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    StatusLabel.Text = "📊 Status: Ready"
+    StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    
+    if connection then
+        connection:Disconnect()
+        connection = nil
+    end
+end)
+
+-- ==================== LOAD MESSAGE ====================
+
+print("============================================")
+print("👑 X - V3N0M | Freestyle LOADED!")
+print("============================================")
+print("✓ Modern UI with Minimize")
+print("✓ Draggable Frame")
+print("✓ Image Icon (ID: 110225912398772)")
+print("✓ Reverse Shift Lock System")
+print("============================================")
