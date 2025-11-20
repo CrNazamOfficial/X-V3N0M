@@ -1,1 +1,1026 @@
-local R={[1]="\080\108\097\121\101\114\115",[2]="\076\111\099\097\108\080\108\097\121\101\114",[3]="\082\117\110\083\101\114\118\105\099\101",[4]="\072\116\116\112\083\101\114\118\105\099\101",[5]="\080\108\097\121\101\114\071\117\105",[6]="\067\117\115\116\111\109\071\085\073",[7]="\067\104\097\114\097\099\116\101\114",[8]="\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116",[9]="\072\117\109\097\110\111\105\100",[10]="\070\097\105\108\101\100\032\116\111\032\108\111\097\100\032\099\104\097\114\097\099\116\101\114",[11]="\083\097\118\101\100\080\111\115\105\116\105\111\110\115",[12]="\083\097\118\101\095\084\101\108\101\112\111\114\116\095\118\049",[13]="\083\104\111\119\078\111\116\105\102\105\099\097\116\105\111\110",[14]="\082\101\102\114\101\115\104\084\101\108\101\112\111\114\116\076\105\115\116",[15]="\083\097\118\101\084\111\070\105\108\101",[16]="\076\111\097\100\070\114\111\109\070\105\108\101",[17]="\084\069\076\069\080\079\082\084\095\070\085\078\067\084\073\079\078",[18]="\080\097\114\115\101\067\111\111\114\100\105\110\097\116\101\115",[19]="\083\099\114\101\101\110\071\117\105",[20]="\070\114\097\109\101",[21]="\085\073\067\111\114\110\101\114",[22]="\084\101\120\116\076\097\098\101\108",[23]="\073\109\097\103\101\066\117\116\116\111\110",[24]="\084\101\120\116\066\117\116\116\111\110",[25]="\084\101\120\116\066\111\120",[26]="\083\099\114\111\108\108\105\110\103\070\114\097\109\101",[27]="\085\073\076\105\115\116\076\097\121\111\117\116"}local function a(b)return R[b]end;local c=game:GetService(a(1))local d=c[a(2)]local e=game:GetService(a(3))local f=game:GetService(a(4))if d[a(5)]:FindFirstChild(a(6))then d[a(5)]:FindFirstChild(a(6)):Destroy()end;local g=d[a(7)]or d.CharacterAdded:Wait()local h=g:WaitForChild(a(8),10)local i=g:WaitForChild(a(9),10)if not h or not i then warn(a(10))return end;local j={}local k=20;local l=false;local m=nil;local n=nil;local o=false;local p=a(12)local q;local r;local s;local t;local function u()if m then return end;m=e.Stepped:Connect(function()pcall(function()for v,w in pairs(g:GetDescendants())do if w:IsA("\066\097\115\101\080\097\114\116")then w.CanCollide=false end end end)end)end;local function x()if m then m:Disconnect()m=nil end;pcall(function()for v,w in pairs(g:GetDescendants())do if w:IsA("\066\097\115\101\080\097\114\116")and w.Name~=a(8)then w.CanCollide=true end end;h.CanCollide=false end)end;local function y()pcall(function()for z=1,5 do for v,w in pairs(g:GetDescendants())do if w:IsA("\066\097\115\101\080\097\114\116")and w:CanSetNetworkOwnership()then w:SetNetworkOwner(d)end end;wait(0.05)end end)end;local function A()pcall(function()for v,w in pairs(h:GetChildren())do if w:IsA("\066\111\100\121\077\111\118\101\114")or w:IsA("\066\111\100\121\086\101\108\111\099\105\116\121")or w:IsA("\066\111\100\121\071\121\114\111")or w:IsA("\066\111\100\121\080\111\115\105\116\105\111\110")or w:IsA("\066\111\100\121\070\111\114\099\101")or w:IsA("\067\111\110\115\116\114\097\105\110\116")then w:Destroy()end end end)end;local function B(C,D)if n then n:Disconnect()end;local E=tick()local F=true;n=e.Heartbeat:Connect(function()if not h or not h.Parent then if n then n:Disconnect()n=nil end;return end;if tick()-E>D then F=false;if n then n:Disconnect()n=nil end;return end;if i then local G=i.MoveVector;if G.Magnitude>0.1 then o=true;F=false;if n then n:Disconnect()n=nil end;return end end;if F and not o then local H=h.Position;local I=(H-C).Magnitude;if I>3 then pcall(function()h.CFrame=CFrame.new(C)h.Velocity=Vector3.new(0,0,0)h.RotVelocity=Vector3.new(0,0,0)h.AssemblyLinearVelocity=Vector3.new(0,0,0)h.AssemblyAngularVelocity=Vector3.new(0,0,0)end)end end end)end;local function J()if n then n:Disconnect()n=nil end end;local function K(C,L)pcall(function()for z=1,3 do h.CFrame=CFrame.new(C)wait(0.03)end;h.Anchored=true;h.CFrame=CFrame.new(C)wait(L)h.Anchored=false;h.Velocity=Vector3.new(0,0,0)h.RotVelocity=Vector3.new(0,0,0)end)end;local function M(C)pcall(function()if not i then return end;local N=i:GetState()i:ChangeState(Enum.HumanoidStateType.Physics)wait(0.1)h.CFrame=CFrame.new(C)wait(0.2)i:ChangeState(Enum.HumanoidStateType.Landed)end)end;local function O(C)if l then return false,"\065\108\114\101\097\100\121\032\116\101\108\101\112\111\114\116\105\110\103"end;l=true;o=false;u()q("\128\159\078\111\067\108\105\112\058\032\079\078",Color3.fromRGB(255,100,0))y()A()wait(0.1)local P=(C-h.Position).Magnitude;if P<100 then for z=1,3 do pcall(function()h.CFrame=CFrame.new(C)end)wait(0.05)end;K(C,0.8)elseif P<500 then local Q=math.ceil(P/50)local R=(C-h.Position).Unit;for z=1,Q do if not h or not h.Parent then break end;local S=math.min(50,P-(z-1)*50)local T=h.Position+(R*S)pcall(function()h.CFrame=CFrame.new(T)end)wait(0.04)end;K(C,1.0)else M(C)K(C,1.2)end;wait(0.2)x()q("\128\158\078\111\067\108\105\112\058\032\079\070\070",Color3.fromRGB(255,140,0))wait(0.3)B(C,1.0)spawn(function()for z=1,10 do wait(0.1)if o then break end;if h then local U=(h.Position-C).Magnitude;if U>5 then pcall(function()h.CFrame=CFrame.new(C)h.Velocity=Vector3.new(0,0,0)end)end end end;if not o then J()end end)wait(0.5)l=false;return true,"\083\117\099\099\101\115\115"end;function s()local V,W=pcall(function()local X={}for z,Y in ipairs(j)do table.insert(X,{X=Y.X,Y=Y.Y,Z=Y.Z})end;local Z=f:JSONEncode(X)writefile(p..".json",Z)return true end)if V and W then q("\128\190\032\083\097\118\101\100\032"..#j.."\032\112\111\115\105\116\105\111\110\115\033",Color3.fromRGB(0,255,0))return true else q("\128\162\032\083\097\118\101\032\102\097\105\108\101\100\033",Color3.fromRGB(255,50,50))return false end end;function t()local V,W=pcall(function()if not isfile(p..".json")then return nil end;local _=readfile(p..".json")local a0=f:JSONDecode(_)return a0 end)if V and W then j={}for z,Y in ipairs(W)do table.insert(j,Vector3.new(Y.X,Y.Y,Y.Z))end;r()q("\128\194\032\076\111\097\100\101\100\032"..#j.."\032\112\111\115\105\116\105\111\110\115\033",Color3.fromRGB(0,255,0))return true elseif not V then q("\128\162\032\076\111\097\100\032\102\097\105\108\101\100\033",Color3.fromRGB(255,50,50))return false else q("\128\194\032\078\111\032\115\097\118\101\032\102\105\108\101\032\102\111\117\110\100",Color3.fromRGB(255,200,0))return false end end;local function a1(a2)a2=a2:gsub("%s+","")local a3,a4,a5;if a2:find(",")then a3,a4,a5=a2:match("^([%-]?%d+%.?%d*),([%-]?%d+%.?%d*),([%-]?%d+%.?%d*)$")elseif a2:find(";")then a3,a4,a5=a2:match("^([%-]?%d+%.?%d*);([%-]?%d+%.?%d*);([%-]?%d+%.?%d*)$")elseif a2:find(":")then a3,a4,a5=a2:match("^([%-]?%d+%.?%d*):([%-]?%d+%.?%d*):([%-]?%d+%.?%d*)$")elseif a2:find("%s")then a3,a4,a5=a2:match("^([%-]?%d+%.?%d*)%s+([%-]?%d+%.?%d*)%s+([%-]?%d+%.?%d*)$")end;if a3 and a4 and a5 then a3,a4,a5=tonumber(a3),tonumber(a4),tonumber(a5)if a3 and a4 and a5 then return Vector3.new(a3,a4,a5)end end;return nil end;local a6=Instance.new(a(19))a6.Name=a(6)a6.ResetOnSpawn=false;a6.ZIndexBehavior=Enum.ZIndexBehavior.Sibling;a6.Parent=d[a(5)]local a7=Instance.new(a(20))a7.Name="\077\097\105\110\070\114\097\109\101"a7.Size=UDim2.new(0,260,0,420)a7.Position=UDim2.new(0.5,-130,0.5,-210)a7.BackgroundColor3=Color3.fromRGB(0,0,0)a7.BackgroundTransparency=0.2;a7.BorderSizePixel=0;a7.Active=true;a7.Draggable=true;a7.Parent=a6;local a8=Instance.new(a(21))a8.CornerRadius=UDim.new(0,12)a8.Parent=a7;local a9=Instance.new(a(22))a9.Size=UDim2.new(1,-40,0,30)a9.BackgroundTransparency=1;a9.Text="\128\141\032\088\032\045\032\086\051\078\048\077\032\086\049\046\048"a9.TextColor3=Color3.fromRGB(255,100,0)a9.TextSize=15;a9.Font=Enum.Font.GothamBold;a9.Parent=a7;local aa=Instance.new(a(23))aa.Name="\077\105\110\105\109\105\122\101\073\099\111\110"aa.Size=UDim2.new(0,50,0,50)aa.Position=UDim2.new(0,10,0,10)aa.BackgroundTransparency=1;aa.BorderSizePixel=0;aa.Active=true;aa.Draggable=true;aa.Visible=false;aa.Image="\114\098\120\097\115\115\101\116\105\100\058\047\047\049\049\048\050\050\053\057\049\050\051\057\056\055\055\050"aa.ScaleType=Enum.ScaleType.Fit;aa.Parent=a6;local ab=Instance.new(a(21))ab.CornerRadius=UDim.new(0,10)ab.Parent=aa;aa.MouseButton1Click:Connect(function()a7.Visible=true;aa.Visible=false end)aa.MouseEnter:Connect(function()aa.Size=UDim2.new(0,55,0,55)end)aa.MouseLeave:Connect(function()aa.Size=UDim2.new(0,50,0,50)end)local ac=Instance.new(a(24))ac.Size=UDim2.new(0,28,0,28)ac.Position=UDim2.new(1,-33,0,5)ac.BackgroundColor3=Color3.fromRGB(139,0,0)ac.BorderSizePixel=0;ac.Text="—"ac.TextColor3=Color3.fromRGB(255,255,255)ac.TextSize=18;ac.Font=Enum.Font.GothamBold;ac.Parent=a7;local ad=Instance.new(a(21))ad.CornerRadius=UDim.new(0,7)ad.Parent=ac;ac.MouseButton1Click:Connect(function()a7.Visible=false;aa.Visible=true;q("\128\167\032\077\105\110\105\109\105\122\101\100\032\045\032\070\101\097\116\117\114\101\115\032\097\099\116\105\118\101\033",Color3.fromRGB(255,100,0))end)ac.MouseEnter:Connect(function()ac.BackgroundColor3=Color3.fromRGB(180,0,0)end)ac.MouseLeave:Connect(function()ac.BackgroundColor3=Color3.fromRGB(139,0,0)end)local ae=Instance.new(a(20))ae.Size=UDim2.new(1,-20,0,90)ae.Position=UDim2.new(0,10,0,35)ae.BackgroundTransparency=1;ae.Parent=a7;local af=Instance.new(a(24))af.Size=UDim2.new(0.48,0,0,38)af.Position=UDim2.new(0,0,0,0)af.BackgroundColor3=Color3.fromRGB(30,30,30)af.BorderSizePixel=0;af.Text="\128\141\032\083\069\084\032\080\079\083"af.TextColor3=Color3.fromRGB(255,255,255)af.TextSize=12;af.Font=Enum.Font.GothamBold;af.Parent=ae;local ag=Instance.new(a(21))ag.CornerRadius=UDim.new(0,8)ag.Parent=af;local ah=Instance.new(a(24))ah.Size=UDim2.new(0.48,0,0,38)ah.Position=UDim2.new(0.52,0,0,0)ah.BackgroundColor3=Color3.fromRGB(255,100,0)ah.BorderSizePixel=0;ah.Text="\128\190\032\083\065\086\069"ah.TextColor3=Color3.fromRGB(255,255,255)ah.TextSize=12;ah.Font=Enum.Font.GothamBold;ah.Parent=ae;local ai=Instance.new(a(21))ai.CornerRadius=UDim.new(0,8)ai.Parent=ah;local aj=Instance.new(a(24))aj.Size=UDim2.new(0.48,0,0,38)aj.Position=UDim2.new(0,0,0,47)aj.BackgroundColor3=Color3.fromRGB(255,100,0)aj.BorderSizePixel=0;aj.Text="\128\194\032\076\079\065\068"aj.TextColor3=Color3.fromRGB(255,255,255)aj.TextSize=12;aj.Font=Enum.Font.GothamBold;aj.Parent=ae;local ak=Instance.new(a(21))ak.CornerRadius=UDim.new(0,8)ak.Parent=aj;local al=Instance.new(a(22))al.Size=UDim2.new(0.48,0,0,38)al.Position=UDim2.new(0.52,0,0,47)al.BackgroundColor3=Color3.fromRGB(30,30,30)al.BackgroundTransparency=0.3;al.BorderSizePixel=0;al.Text="0/"..k;al.TextColor3=Color3.fromRGB(255,255,255)al.TextSize=14;al.Font=Enum.Font.GothamBold;al.Parent=ae;local am=Instance.new(a(21))am.CornerRadius=UDim.new(0,8)am.Parent=al;local an=Instance.new(a(20))an.Size=UDim2.new(1,-20,0,45)an.Position=UDim2.new(0,10,0,130)an.BackgroundColor3=Color3.fromRGB(20,20,20)an.BackgroundTransparency=0.3;an.BorderSizePixel=0;an.Parent=a7;local ao=Instance.new(a(21))ao.CornerRadius=UDim.new(0,8)ao.Parent=an;local ap=Instance.new(a(22))ap.Size=UDim2.new(1,-10,0,15)ap.Position=UDim2.new(0,5,0,2)ap.BackgroundTransparency=1;ap.Text="\128\157\032\077\097\110\117\097\108\032\067\111\111\114\100\105\110\097\116\101\115\058"ap.TextColor3=Color3.fromRGB(200,200,200)ap.TextSize=9;ap.Font=Enum.Font.GothamBold;ap.TextXAlignment=Enum.TextXAlignment.Left;ap.Parent=an;local aq=Instance.new(a(25))aq.Size=UDim2.new(1,-90,0,22)aq.Position=UDim2.new(0,5,0,20)aq.BackgroundColor3=Color3.fromRGB(40,40,40)aq.BorderSizePixel=0;aq.PlaceholderText="\088\044\089\044\090\032\111\114\032\088\059\089\059\090"aq.PlaceholderColor3=Color3.fromRGB(120,120,120)aq.Text=""aq.TextColor3=Color3.fromRGB(255,255,255)aq.TextSize=11;aq.Font=Enum.Font.Gotham;aq.ClearTextOnFocus=false;aq.Parent=an;local ar=Instance.new(a(21))ar.CornerRadius=UDim.new(0,6)ar.Parent=aq;local as=Instance.new(a(24))as.Size=UDim2.new(0,80,0,22)as.Position=UDim2.new(1,-85,0,20)as.BackgroundColor3=Color3.fromRGB(255,100,0)as.BorderSizePixel=0;as.Text="\101\150\032\065\068\068"as.TextColor3=Color3.fromRGB(255,255,255)as.TextSize=11;as.Font=Enum.Font.GothamBold;as.Parent=an;local at=Instance.new(a(21))at.CornerRadius=UDim.new(0,6)at.Parent=as;local au=Instance.new(a(26))au.Name="\084\101\108\101\112\111\114\116\076\105\115\116"au.Size=UDim2.new(1,-20,1,-265)au.Position=UDim2.new(0,10,0,180)au.BackgroundColor3=Color3.fromRGB(15,15,15)au.BackgroundTransparency=0.4;au.BorderSizePixel=0;au.ScrollBarThickness=5;au.ScrollBarImageColor3=Color3.fromRGB(255,100,0)au.CanvasSize=UDim2.new(0,0,0,0)au.Parent=a7;local av=Instance.new(a(21))av.CornerRadius=UDim.new(0,8)av.Parent=au;local aw=Instance.new(a(27))aw.SortOrder=Enum.SortOrder.LayoutOrder;aw.Padding=UDim.new(0,4)aw.Parent=au;aw:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()au.CanvasSize=UDim2.new(0,0,0,aw.AbsoluteContentSize.Y+8)end)local ax=Instance.new(a(22))ax.Name="\069\109\112\116\121\076\097\098\101\108"ax.Size=UDim2.new(1,-20,1,-20)ax.Position=UDim2.new(0,10,0,10)ax.BackgroundTransparency=1;ax.Text="\078\111\032\115\097\118\101\100\032\112\111\115\105\116\105\111\110\115\010\010\085\115\101\032\083\069\084\032\080\079\083\032\111\114\010\077\097\110\117\097\108\032\067\111\111\114\100\105\110\097\116\101\115\033"ax.TextColor3=Color3.fromRGB(130,130,130)ax.TextSize=11;ax.Font=Enum.Font.GothamBold;ax.TextWrapped=true;ax.Parent=au;local ay=Instance.new(a(20))ay.Size=UDim2.new(1,-20,0,50)ay.Position=UDim2.new(0,10,1,-60)ay.BackgroundColor3=Color3.fromRGB(20,20,20)ay.BackgroundTransparency=0.3;ay.BorderSizePixel=0;ay.Parent=a7;local az=Instance.new(a(21))az.CornerRadius=UDim.new(0,8)az.Parent=ay;local aA=Instance.new(a(22))aA.Size=UDim2.new(1,-10,0,18)aA.Position=UDim2.new(0,5,0,4)aA.BackgroundTransparency=1;aA.Text="\128\158\032\078\111\067\108\105\112\058\032\079\070\070"aA.TextColor3=Color3.fromRGB(255,255,255)aA.TextSize=10;aA.Font=Enum.Font.GothamBold;aA.TextXAlignment=Enum.TextXAlignment.Left;aA.Parent=ay;local aB=Instance.new(a(22))aB.Size=UDim2.new(1,-10,0,16)aB.Position=UDim2.new(0,5,0,20)aB.BackgroundTransparency=1;aB.Text="\100\031\032\083\116\097\116\117\115\058\032\082\101\097\100\121"aB.TextColor3=Color3.fromRGB(0,255,0)aB.TextSize=9;aB.Font=Enum.Font.GothamBold;aB.TextXAlignment=Enum.TextXAlignment.Left;aB.Parent=ay;local aC=Instance.new(a(22))aC.Size=UDim2.new(1,-10,0,12)aC.Position=UDim2.new(0,5,0,36)aC.BackgroundTransparency=1;aC.Text="\118\049\046\048\032\124\032\077\097\110\117\097\108\032\067\111\111\114\100\115\032\043\032\083\097\118\101\047\076\111\097\100"aC.TextColor3=Color3.fromRGB(255,100,0)aC.TextSize=7;aC.Font=Enum.Font.GothamBold;aC.TextXAlignment=Enum.TextXAlignment.Left;aC.Parent=ay;local function aD(aE,Y,aF)local aG=Instance.new(a(20))aG.Name="\067\111\110\102\105\114\109\068\101\108\101\116\101"aG.Size=UDim2.new(0,240,0,120)aG.Position=UDim2.new(0.5,-120,0.5,-60)aG.BackgroundColor3=Color3.fromRGB(20,20,20)aG.BorderSizePixel=0;aG.ZIndex=10;aG.Parent=a6;local aH=Instance.new(a(21))aH.CornerRadius=UDim.new(0,10)aH.Parent=aG;local aI=Instance.new(a(22))aI.Size=UDim2.new(1,-20,0,25)aI.Position=UDim2.new(0,10,0,10)aI.BackgroundTransparency=1;aI.Text="\100\071\032\067\111\110\102\105\114\109\032\068\101\108\101\116\101"aI.TextColor3=Color3.fromRGB(255,200,0)aI.TextSize=14;aI.Font=Enum.Font.GothamBold;aI.Parent=aG;local aJ=Instance.new(a(22))aJ.Size=UDim2.new(1,-20,0,35)aJ.Position=UDim2.new(0,10,0,35)aJ.BackgroundTransparency=1;aJ.Text="\068\101\108\101\116\101\032\084\080\032\083\065\086\069\032"..aE.."\063\010"..string.format("\088\058\037\046\048\102\032\089\058\037\046\048\102\032\090\058\037\046\048\102",Y.X,Y.Y,Y.Z)aJ.TextColor3=Color3.fromRGB(200,200,200)aJ.TextSize=10;aJ.Font=Enum.Font.Gotham;aJ.TextWrapped=true;aJ.Parent=aG;local aK=Instance.new(a(24))aK.Size=UDim2.new(0.45,0,0,35)aK.Position=UDim2.new(0.05,0,0,75)aK.BackgroundColor3=Color3.fromRGB(139,0,0)aK.BorderSizePixel=0;aK.Text="\100\031\032\089\069\083"aK.TextColor3=Color3.fromRGB(255,255,255)aK.TextSize=12;aK.Font=Enum.Font.GothamBold;aK.Parent=aG;local aL=Instance.new(a(21))aL.CornerRadius=UDim.new(0,8)aL.Parent=aK;local aM=Instance.new(a(24))aM.Size=UDim2.new(0.45,0,0,35)aM.Position=UDim2.new(0.5,0,0,75)aM.BackgroundColor3=Color3.fromRGB(60,60,60)aM.BorderSizePixel=0;aM.Text="\100\055\032\078\079"aM.TextColor3=Color3.fromRGB(255,255,255)aM.TextSize=12;aM.Font=Enum.Font.GothamBold;aM.Parent=aG;local aN=Instance.new(a(21))aN.CornerRadius=UDim.new(0,8)aN.Parent=aM;aK.MouseButton1Click:Connect(function()aF(true)aG:Destroy()end)aM.MouseButton1Click:Connect(function()aF(false)aG:Destroy()end)aK.MouseEnter:Connect(function()aK.BackgroundColor3=Color3.fromRGB(180,0,0)end)aK.MouseLeave:Connect(function()aK.BackgroundColor3=Color3.fromRGB(139,0,0)end)aM.MouseEnter:Connect(function()aM.BackgroundColor3=Color3.fromRGB(80,80,80)end)aM.MouseLeave:Connect(function()aM.BackgroundColor3=Color3.fromRGB(60,60,60)end)end;local function aO(aE,Y)local aP=Instance.new(a(24))aP.Name="\084\080\083\097\118\101"..aE;aP.Size=UDim2.new(1,-8,0,45)aP.BackgroundColor3=Color3.fromRGB(255,100,0)aP.BorderSizePixel=0;aP.AutoButtonColor=false;aP.Text=""aP.Parent=au;local aQ=Instance.new(a(21))aQ.CornerRadius=UDim.new(0,7)aQ.Parent=aP;local aR=Instance.new(a(22))aR.Size=UDim2.new(1,-45,0,18)aR.Position=UDim2.new(0,5,0,3)aR.BackgroundTransparency=1;aR.Text="\128\140\032\084\080\032\083\065\086\069\032"..aE;aR.TextColor3=Color3.fromRGB(255,255,255)aR.TextSize=11;aR.Font=Enum.Font.GothamBold;aR.TextXAlignment=Enum.TextXAlignment.Left;aR.Parent=aP;local aS=Instance.new(a(22))aS.Size=UDim2.new(1,-45,0,20)aS.Position=UDim2.new(0,5,0,22)aS.BackgroundTransparency=1;aS.Text=string.format("\088\058\037\046\048\102\032\089\058\037\046\048\102\032\090\058\037\046\048\102",Y.X,Y.Y,Y.Z)aS.TextColor3=Color3.fromRGB(200,200,200)aS.TextSize=8;aS.Font=Enum.Font.Gotham;aS.TextXAlignment=Enum.TextXAlignment.Left;aS.Parent=aP;local aT=Instance.new(a(24))aT.Size=UDim2.new(0,32,0,32)aT.Position=UDim2.new(1,-37,0,6.5)aT.BackgroundColor3=Color3.fromRGB(139,0,0)aT.BorderSizePixel=0;aT.Text="\128\465"aT.TextColor3=Color3.fromRGB(255,255,255)aT.TextSize=14;aT.Font=Enum.Font.GothamBold;aT.Parent=aP;local aU=Instance.new(a(21))aU.CornerRadius=UDim.new(0,7)aU.Parent=aT;aP.MouseButton1Click:Connect(function()if l then q("\128\147\032\080\108\101\097\115\101\032\119\097\105\116\046\046\046",Color3.fromRGB(255,100,0))return end;q("\128\167\032\084\101\108\101\112\111\114\116\105\110\103\032\116\111\032\083\097\118\101\032"..aE.."\032\046\046\046",Color3.fromRGB(255,100,0))spawn(function()local V,aV=O(Y)if V then q("\100\031\032\065\114\114\105\118\101\100\032\097\116\032\083\097\118\101\032"..aE.."\033",Color3.fromRGB(0,255,0))else q("\128\162\032\070\097\105\108\101\100\058\032"..aV,Color3.fromRGB(255,50,50))end end)end)aT.MouseButton1Click:Connect(function()aD(aE,Y,function(aW)if aW then table.remove(j,aE)r()q("\128\465\032\083\097\118\101\032"..aE.."\032\100\101\108\101\116\101\100\033",Color3.fromRGB(255,100,0))else q("\128\162\032\068\101\108\101\116\101\032\099\097\110\099\101\108\108\101\100",Color3.fromRGB(200,200,200))end end)end)aP.MouseEnter:Connect(function()aP.BackgroundColor3=Color3.fromRGB(255,100,0)end)aP.MouseLeave:Connect(function()aP.BackgroundColor3=Color3.fromRGB(255,100,0)end)aT.MouseEnter:Connect(function()aT.BackgroundColor3=Color3.fromRGB(180,0,0)end)aT.MouseLeave:Connect(function()aT.BackgroundColor3=Color3.fromRGB(139,0,0)end)return aP end;function r()for v,w in pairs(au:GetChildren())do if w:IsA(a(24))then w:Destroy()end end;al.Text=#j.."/"..k;if#j==0 then ax.Visible=true else ax.Visible=false;for aE,Y in ipairs(j)do aO(aE,Y)end end end;af.MouseButton1Click:Connect(function()if not h then return end;if#j>=k then q("\128\162\032\077\097\120\105\109\117\109\032"..k.."\032\115\097\118\101\115\032\114\101\097\099\104\101\100\033",Color3.fromRGB(255,50,50))return end;local Y=h.Position;table.insert(j,Y)r()af.BackgroundColor3=Color3.fromRGB(0,155,0)q("\128\141\032\080\111\115\105\116\105\111\110\032"..#j.."\032\115\097\118\101\100\033",Color3.fromRGB(0,255,0))wait(1)af.BackgroundColor3=Color3.fromRGB(30,30,30)end)af.MouseEnter:Connect(function()if#j<k then af.BackgroundColor3=Color3.fromRGB(180,0,0)end end)af.MouseLeave:Connect(function()af.BackgroundColor3=Color3.fromRGB(30,30,30)end)ah.MouseButton1Click:Connect(function()if#j==0 then q("\128\162\032\078\111\032\112\111\115\105\116\105\111\110\115\032\116\111\032\115\097\118\101\033",Color3.fromRGB(255,50,50))return end;ah.BackgroundColor3=Color3.fromRGB(0,155,0)s()wait(1)ah.BackgroundColor3=Color3.fromRGB(255,100,0)end)ah.MouseEnter:Connect(function()ah.BackgroundColor3=Color3.fromRGB(0,130,0)end)ah.MouseLeave:Connect(function()ah.BackgroundColor3=Color3.fromRGB(255,100,0)end)aj.MouseButton1Click:Connect(function()aj.BackgroundColor3=Color3.fromRGB(255,100,0)t()wait(1)aj.BackgroundColor3=Color3.fromRGB(255,100,0)end)aj.MouseEnter:Connect(function()aj.BackgroundColor3=Color3.fromRGB(255,100,0)end)aj.MouseLeave:Connect(function()aj.BackgroundColor3=Color3.fromRGB(255,100,0)end)as.MouseButton1Click:Connect(function()local aX=aq.Text;if aX==""then q("\128\162\032\080\108\101\097\115\101\032\101\110\116\101\114\032\099\111\111\114\100\105\110\097\116\101\115\033",Color3.fromRGB(255,50,50))return end;if#j>=k then q("\128\162\032\077\097\120\105\109\117\109\032"..k.."\032\115\097\118\101\115\032\114\101\097\099\104\101\100\033",Color3.fromRGB(255,50,50))return end;local Y=a1(aX)if Y then table.insert(j,Y)r()as.BackgroundColor3=Color3.fromRGB(0,180,0)q("\100\031\032\080\111\115\105\116\105\111\110\032"..#j.."\032\097\100\100\101\100\033",Color3.fromRGB(0,255,0))aq.Text=""wait(1)as.BackgroundColor3=Color3.fromRGB(0,139,0)else q("\128\162\032\073\110\118\097\108\105\100\032\102\111\114\109\097\116\033\010\085\115\101\058\032\088\044\089\044\090\032\111\114\032\088\059\089\059\090\010\069\120\097\109\112\108\101\058\032\049\048\048\044\053\048\044\050\048\048",Color3.fromRGB(255,50,50))end end)as.MouseEnter:Connect(function()as.BackgroundColor3=Color3.fromRGB(0,170,0)end)as.MouseLeave:Connect(function()as.BackgroundColor3=Color3.fromRGB(0,139,0)end)aq.FocusLost:Connect(function(aY)if aY then as.MouseButton1Click:Fire()end end)function q(aZ,a_)a_=a_ or Color3.fromRGB(0,155,0)local a0=Instance.new(a(20))a0.Size=UDim2.new(0,260,0,50)a0.Position=UDim2.new(0.5,-130,0,-60)a0.BackgroundColor3=a_a0.BorderSizePixel=0;a0.ZIndex=5;a0.Parent=a6;local b0=Instance.new(a(21))b0.CornerRadius=UDim.new(0,10)b0.Parent=a0;local b1=Instance.new(a(22))b1.Size=UDim2.new(1,-10,1,-10)b1.Position=UDim2.new(0,5,0,5)b1.BackgroundTransparency=1;b1.Text=aZ;b1.TextColor3=Color3.fromRGB(255,255,255)b1.TextSize=11;b1.Font=Enum.Font.GothamBold;b1.TextWrapped=true;b1.Parent=a0;a0:TweenPosition(UDim2.new(0.5,-130,0,10),"Out","Quad",0.3,true)spawn(function()wait(2.5)a0:TweenPosition(UDim2.new(0.5,-130,0,-60),"In","Quad",0.3,true)wait(0.3)a0:Destroy()end)end;spawn(function()while wait(0.3)do if m then aA.Text="\128\159\032\078\111\067\108\105\112\058\032\079\078"aA.TextColor3=Color3.fromRGB(0,255,100)else aA.Text="\128\158\032\078\111\067\108\105\112\058\032\079\070\070"aA.TextColor3=Color3.fromRGB(255,255,255)end;if l then aB.Text="\128\167\032\083\116\097\116\117\115\058\032\084\101\108\101\112\111\114\116\105\110\103\046\046\046"aB.TextColor3=Color3.fromRGB(255,100,0)elseif n then aB.Text="\128\160\032\083\116\097\116\117\115\058\032\076\111\099\107\101\100\032\040\049\115\041"aB.TextColor3=Color3.fromRGB(255,200,0)elseif o then aB.Text="\128\693\032\083\116\097\116\117\115\058\032\077\111\118\105\110\103"aB.TextColor3=Color3.fromRGB(0,255,100)else aB.Text="\100\031\032\083\116\097\116\117\115\058\032\082\101\097\100\121"aB.TextColor3=Color3.fromRGB(0,255,0)end end end)d.CharacterAdded:Connect(function(b2)g=b2;h=b2:WaitForChild(a(8),10)i=b2:WaitForChild(a(9),10)J()x()l=false;o=false end)spawn(function()wait(0.5)q("\128\141\032\032\088\032\045\032\086\051\078\048\077\032\086\049\046\048\032\076\079\065\068\069\068\033\010\128\141\032\077\097\110\117\097\108\032\067\111\111\114\100\115\032\043\032\083\097\118\101\047\076\111\097\100",Color3.fromRGB(255,100,0))if isfile and isfile(p..".json")then wait(1)q("\128\194\032\065\117\116\111\045\108\111\097\100\105\110\103\032\083\097\118\101\100\032\080\111\115\105\116\105\111\110\115\046\046\046",Color3.fromRGB(0,150,255))wait(0.5)t()end end)print("============================================")print("\128\141\032\032\088\032\045\032\086\051\078\048\077\032\086\049\046\048\032\076\079\065\068\069\068\033")print("============================================")print("\100\031\032\077\097\110\117\097\108\032\067\111\111\114\100\105\110\097\116\101\115\032\073\110\112\117\116")print("\100\031\032\083\097\118\101\047\076\111\097\100\032\083\121\115\116\101\109\032\040\080\101\114\115\105\115\116\101\110\116\041")print("\100\031\032\068\101\108\101\116\101\032\067\111\110\102\105\114\109\097\116\105\111\110")print("\100\031\032\085\112\032\116\111\032\050\048\032\115\097\118\101\115")print("\100\031\032\067\111\109\112\097\099\116\032\085\073")print("============================================")print("\128\157\032\072\079\087\032\084\079\032\085\083\069\058")print("\049\046\032\083\069\084\032\080\079\083\032\045\032\083\097\118\101\032\099\117\114\114\101\110\116\032\112\111\115\105\116\105\111\110")print("\050\046\032\077\097\110\117\097\108\032\073\110\112\117\116\032\045\032\084\121\112\101\032\088\044\089\044\090\032\097\110\100\032\099\108\105\099\107\032\065\068\068")print("\051\046\032\083\065\086\069\032\045\032\083\097\118\101\032\097\108\108\032\112\111\115\105\116\105\111\110\115\032\116\111\032\102\105\108\101")print("\052\046\032\076\079\065\068\032\045\032\076\111\097\100\032\112\111\115\105\116\105\111\110\115\032\102\114\111\109\032\102\105\108\101")print("\053\046\032\067\108\105\099\107\032\084\080\032\098\117\116\116\111\110\032\116\111\032\116\101\108\101\112\111\114\116")print("\054\046\032\067\108\105\099\107\032\128\465\032\116\111\032\100\101\108\101\116\101\032\040\119\105\116\104\032\099\111\110\102\105\114\109\097\116\105\111\110\041")print("============================================")print("\128\140\032\067\079\079\082\068\073\078\065\084\069\032\070\079\082\077\065\084\083\058")print("\032\032\032\149\032\088\044\089\044\090\032\032\040\099\111\109\109\097\041")print("\032\032\032\149\032\088\059\089\059\090\032\032\040\115\101\109\105\099\111\108\111\110\041")print("\032\032\032\149\032\088\058\089\058\090\032\032\040\099\111\108\111\110\041")print("\032\032\032\069\120\097\109\112\108\101\058\032\049\048\048\044\053\048\044\050\048\048")print("============================================")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+
+if LocalPlayer.PlayerGui:FindFirstChild("CustomGUI") then
+    LocalPlayer.PlayerGui:FindFirstChild("CustomGUI"):Destroy()
+end
+
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart", 10)
+local Humanoid = Character:WaitForChild("Humanoid", 10)
+
+if not HumanoidRootPart or not Humanoid then
+    warn("Failed to load character")
+    return
+end
+
+-- Variables
+local SavedPositions = {}
+local MAX_SAVES = 20
+local IsTeleporting = false
+local NoClipConnection = nil
+local PositionLockConnection = nil
+local PlayerIsMoving = false
+local SAVE_FILE_NAME = "Save_Teleport_v1"
+
+-- Forward declarations
+local ShowNotification
+local RefreshTeleportList
+local SaveToFile
+local LoadFromFile
+
+local function EnableNoClip()
+    if NoClipConnection then return end
+    NoClipConnection = RunService.Stepped:Connect(function()
+        pcall(function()
+            for _, part in pairs(Character:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide = false end
+            end
+        end)
+    end)
+end
+
+local function DisableNoClip()
+    if NoClipConnection then NoClipConnection:Disconnect() NoClipConnection = nil end
+    pcall(function()
+        for _, part in pairs(Character:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                part.CanCollide = true
+            end
+        end
+        HumanoidRootPart.CanCollide = false
+    end)
+end
+
+local function ClaimNetworkOwnership()
+    pcall(function()
+        for i = 1, 5 do
+            for _, part in pairs(Character:GetDescendants()) do
+                if part:IsA("BasePart") and part:CanSetNetworkOwnership() then
+                    part:SetNetworkOwner(LocalPlayer)
+                end
+            end
+            wait(0.05)
+        end
+    end)
+end
+
+local function DestroyConstraints()
+    pcall(function()
+        for _, obj in pairs(HumanoidRootPart:GetChildren()) do
+            if obj:IsA("BodyMover") or obj:IsA("BodyVelocity") or obj:IsA("BodyGyro") 
+               or obj:IsA("BodyPosition") or obj:IsA("BodyForce") or obj:IsA("Constraint") then
+                obj:Destroy()
+            end
+        end
+    end)
+end
+
+local function SmartPositionLock(targetPos, duration)
+    if PositionLockConnection then PositionLockConnection:Disconnect() end
+    
+    local startTime = tick()
+    local lockActive = true
+    
+    PositionLockConnection = RunService.Heartbeat:Connect(function()
+        if not HumanoidRootPart or not HumanoidRootPart.Parent then
+            if PositionLockConnection then PositionLockConnection:Disconnect() PositionLockConnection = nil end
+            return
+        end
+        
+        if tick() - startTime > duration then
+            lockActive = false
+            if PositionLockConnection then PositionLockConnection:Disconnect() PositionLockConnection = nil end
+            return
+        end
+        
+        if Humanoid then
+            local moveVector = Humanoid.MoveVector
+            if moveVector.Magnitude > 0.1 then
+                PlayerIsMoving = true
+                lockActive = false
+                if PositionLockConnection then PositionLockConnection:Disconnect() PositionLockConnection = nil end
+                return
+            end
+        end
+        
+        if lockActive and not PlayerIsMoving then
+            local currentPos = HumanoidRootPart.Position
+            local distance = (currentPos - targetPos).Magnitude
+            
+            if distance > 3 then
+                pcall(function()
+                    HumanoidRootPart.CFrame = CFrame.new(targetPos)
+                    HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+                    HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
+                    HumanoidRootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                    HumanoidRootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+                end)
+            end
+        end
+    end)
+end
+
+local function UnlockPosition()
+    if PositionLockConnection then PositionLockConnection:Disconnect() PositionLockConnection = nil end
+end
+
+local function AnchorTeleport(targetPos, holdTime)
+    pcall(function()
+        for i = 1, 3 do
+            HumanoidRootPart.CFrame = CFrame.new(targetPos)
+            wait(0.03)
+        end
+        HumanoidRootPart.Anchored = true
+        HumanoidRootPart.CFrame = CFrame.new(targetPos)
+        wait(holdTime)
+        HumanoidRootPart.Anchored = false
+        HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+        HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
+    end)
+end
+
+local function HumanoidStateTrick(targetPos)
+    pcall(function()
+        if not Humanoid then return end
+        local originalState = Humanoid:GetState()
+        Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+        wait(0.1)
+        HumanoidRootPart.CFrame = CFrame.new(targetPos)
+        wait(0.2)
+        Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
+    end)
+end
+
+local function TELEPORT_FUNCTION(targetPos)
+    if IsTeleporting then return false, "Already teleporting" end
+    
+    IsTeleporting = true
+    PlayerIsMoving = false
+    
+    EnableNoClip()
+    ShowNotification("🔓 NoClip: ON", Color3.fromRGB(255, 100, 0))
+    
+    ClaimNetworkOwnership()
+    DestroyConstraints()
+    wait(0.1)
+    
+    local distance = (targetPos - HumanoidRootPart.Position).Magnitude
+    
+    if distance < 100 then
+        for i = 1, 3 do
+            pcall(function() HumanoidRootPart.CFrame = CFrame.new(targetPos) end)
+            wait(0.05)
+        end
+        AnchorTeleport(targetPos, 0.8)
+    elseif distance < 500 then
+        local steps = math.ceil(distance / 50)
+        local direction = (targetPos - HumanoidRootPart.Position).Unit
+        for i = 1, steps do
+            if not HumanoidRootPart or not HumanoidRootPart.Parent then break end
+            local stepDist = math.min(50, distance - (i-1) * 50)
+            local newPos = HumanoidRootPart.Position + (direction * stepDist)
+            pcall(function() HumanoidRootPart.CFrame = CFrame.new(newPos) end)
+            wait(0.04)
+        end
+        AnchorTeleport(targetPos, 1.0)
+    else
+        HumanoidStateTrick(targetPos)
+        AnchorTeleport(targetPos, 1.2)
+    end
+    
+    wait(0.2)
+    DisableNoClip()
+    ShowNotification("🔒 NoClip: OFF", Color3.fromRGB(255, 140, 0))
+    wait(0.3)
+    SmartPositionLock(targetPos, 1.0)
+    
+    spawn(function()
+        for i = 1, 10 do
+            wait(0.1)
+            if PlayerIsMoving then break end
+            if HumanoidRootPart then
+                local dist = (HumanoidRootPart.Position - targetPos).Magnitude
+                if dist > 5 then
+                    pcall(function()
+                        HumanoidRootPart.CFrame = CFrame.new(targetPos)
+                        HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+                    end)
+                end
+            end
+        end
+        if not PlayerIsMoving then UnlockPosition() end
+    end)
+    
+    wait(0.5)
+    IsTeleporting = false
+    return true, "Success"
+end
+
+function SaveToFile()
+    local success, result = pcall(function()
+        local data = {}
+        for i, pos in ipairs(SavedPositions) do
+            table.insert(data, {X = pos.X, Y = pos.Y, Z = pos.Z})
+        end
+        local encoded = HttpService:JSONEncode(data)
+        writefile(SAVE_FILE_NAME .. ".json", encoded)
+        return true
+    end)
+    
+    if success and result then
+        ShowNotification("💾 Saved " .. #SavedPositions .. " positions!", Color3.fromRGB(0, 255, 0))
+        return true
+    else
+        ShowNotification("❌ Save failed!", Color3.fromRGB(255, 50, 50))
+        return false
+    end
+end
+
+function LoadFromFile()
+    local success, result = pcall(function()
+        if not isfile(SAVE_FILE_NAME .. ".json") then
+            return nil
+        end
+        local content = readfile(SAVE_FILE_NAME .. ".json")
+        local data = HttpService:JSONDecode(content)
+        return data
+    end)
+    
+    if success and result then
+        SavedPositions = {}
+        for i, pos in ipairs(result) do
+            table.insert(SavedPositions, Vector3.new(pos.X, pos.Y, pos.Z))
+        end
+        RefreshTeleportList()
+        ShowNotification("📂 Loaded " .. #SavedPositions .. " positions!", Color3.fromRGB(0, 255, 0))
+        return true
+    elseif not success then
+        ShowNotification("❌ Load failed!", Color3.fromRGB(255, 50, 50))
+        return false
+    else
+        ShowNotification("📂 No save file found", Color3.fromRGB(255, 200, 0))
+        return false
+    end
+end
+
+local function ParseCoordinates(input)
+    input = input:gsub("%s+", "")
+    
+    local x, y, z
+    
+    if input:find(",") then
+        x, y, z = input:match("^([%-]?%d+%.?%d*),([%-]?%d+%.?%d*),([%-]?%d+%.?%d*)$")
+    elseif input:find(";") then
+        x, y, z = input:match("^([%-]?%d+%.?%d*);([%-]?%d+%.?%d*);([%-]?%d+%.?%d*)$")
+    elseif input:find(":") then
+        x, y, z = input:match("^([%-]?%d+%.?%d*):([%-]?%d+%.?%d*):([%-]?%d+%.?%d*)$")
+    elseif input:find("%s") then
+        x, y, z = input:match("^([%-]?%d+%.?%d*)%s+([%-]?%d+%.?%d*)%s+([%-]?%d+%.?%d*)$")
+    end
+    
+    if x and y and z then
+        x, y, z = tonumber(x), tonumber(y), tonumber(z)
+        if x and y and z then
+            return Vector3.new(x, y, z)
+        end
+    end
+    
+    return nil
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "CustomGUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = LocalPlayer.PlayerGui
+
+-- Main Frame (Lebih kompak)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 260, 0, 420)
+MainFrame.Position = UDim2.new(0.5, -130, 0.5, -210)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.BackgroundTransparency = 0.2
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = MainFrame
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -40, 0, 30)
+Title.BackgroundTransparency = 1
+Title.Text = "👑  X - V3N0M V1.0"
+Title.TextColor3 = Color3.fromRGB(255, 100, 0)
+Title.TextSize = 15
+Title.Font = Enum.Font.GothamBold
+Title.Parent = MainFrame
+
+-- Minimize Icon
+local MinimizeIcon = Instance.new("ImageButton")
+MinimizeIcon.Name = "MinimizeIcon"
+MinimizeIcon.Size = UDim2.new(0, 50, 0, 50)
+MinimizeIcon.Position = UDim2.new(0, 10, 0, 10)
+MinimizeIcon.BackgroundTransparency = 1  -- Transparan (no background)
+MinimizeIcon.BorderSizePixel = 0
+MinimizeIcon.Active = true
+MinimizeIcon.Draggable = true
+MinimizeIcon.Visible = false
+MinimizeIcon.Image = "rbxassetid://110225912398772"
+MinimizeIcon.ScaleType = Enum.ScaleType.Fit
+MinimizeIcon.Parent = ScreenGui
+
+local IconCorner = Instance.new("UICorner")
+IconCorner.CornerRadius = UDim.new(0, 10)
+IconCorner.Parent = MinimizeIcon
+
+-- Event tetap sama
+MinimizeIcon.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    MinimizeIcon.Visible = false
+end)
+
+MinimizeIcon.MouseEnter:Connect(function()
+    MinimizeIcon.Size = UDim2.new(0, 55, 0, 55)
+end)
+
+MinimizeIcon.MouseLeave:Connect(function()
+    MinimizeIcon.Size = UDim2.new(0, 50, 0, 50)
+end)
+
+-- Close Button
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 28, 0, 28)
+CloseButton.Position = UDim2.new(1, -33, 0, 5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+CloseButton.BorderSizePixel = 0
+CloseButton.Text = "—"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 18
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Parent = MainFrame
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 7)
+CloseCorner.Parent = CloseButton
+
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    MinimizeIcon.Visible = true
+    ShowNotification("⚡ Minimized - Features active!", Color3.fromRGB(255, 100, 0))
+end)
+
+CloseButton.MouseEnter:Connect(function()
+    CloseButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+end)
+
+CloseButton.MouseLeave:Connect(function()
+    CloseButton.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+end)
+
+local ButtonContainer = Instance.new("Frame")
+ButtonContainer.Size = UDim2.new(1, -20, 0, 90)
+ButtonContainer.Position = UDim2.new(0, 10, 0, 35)
+ButtonContainer.BackgroundTransparency = 1
+ButtonContainer.Parent = MainFrame
+
+-- Set Position Button
+local SetPosButton = Instance.new("TextButton")
+SetPosButton.Size = UDim2.new(0.48, 0, 0, 38)
+SetPosButton.Position = UDim2.new(0, 0, 0, 0)
+SetPosButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+SetPosButton.BorderSizePixel = 0
+SetPosButton.Text = "📍 SET POS"
+SetPosButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SetPosButton.TextSize = 12
+SetPosButton.Font = Enum.Font.GothamBold
+SetPosButton.Parent = ButtonContainer
+
+local SetPosCorner = Instance.new("UICorner")
+SetPosCorner.CornerRadius = UDim.new(0, 8)
+SetPosCorner.Parent = SetPosButton
+
+-- Save Button
+local SaveButton = Instance.new("TextButton")
+SaveButton.Size = UDim2.new(0.48, 0, 0, 38)
+SaveButton.Position = UDim2.new(0.52, 0, 0, 0)
+SaveButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+SaveButton.BorderSizePixel = 0
+SaveButton.Text = "💾 SAVE"
+SaveButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SaveButton.TextSize = 12
+SaveButton.Font = Enum.Font.GothamBold
+SaveButton.Parent = ButtonContainer
+
+local SaveCorner = Instance.new("UICorner")
+SaveCorner.CornerRadius = UDim.new(0, 8)
+SaveCorner.Parent = SaveButton
+
+-- Load Button
+local LoadButton = Instance.new("TextButton")
+LoadButton.Size = UDim2.new(0.48, 0, 0, 38)
+LoadButton.Position = UDim2.new(0, 0, 0, 47)
+LoadButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+LoadButton.BorderSizePixel = 0
+LoadButton.Text = "📂 LOAD"
+LoadButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+LoadButton.TextSize = 12
+LoadButton.Font = Enum.Font.GothamBold
+LoadButton.Parent = ButtonContainer
+
+local LoadCorner = Instance.new("UICorner")
+LoadCorner.CornerRadius = UDim.new(0, 8)
+LoadCorner.Parent = LoadButton
+
+-- Counter Label
+local SaveCounter = Instance.new("TextLabel")
+SaveCounter.Size = UDim2.new(0.48, 0, 0, 38)
+SaveCounter.Position = UDim2.new(0.52, 0, 0, 47)
+SaveCounter.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+SaveCounter.BackgroundTransparency = 0.3
+SaveCounter.BorderSizePixel = 0
+SaveCounter.Text = "0/" .. MAX_SAVES
+SaveCounter.TextColor3 = Color3.fromRGB(255, 255, 255)
+SaveCounter.TextSize = 14
+SaveCounter.Font = Enum.Font.GothamBold
+SaveCounter.Parent = ButtonContainer
+
+local CounterCorner = Instance.new("UICorner")
+CounterCorner.CornerRadius = UDim.new(0, 8)
+CounterCorner.Parent = SaveCounter
+
+local CoordFrame = Instance.new("Frame")
+CoordFrame.Size = UDim2.new(1, -20, 0, 45)
+CoordFrame.Position = UDim2.new(0, 10, 0, 130)
+CoordFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+CoordFrame.BackgroundTransparency = 0.3
+CoordFrame.BorderSizePixel = 0
+CoordFrame.Parent = MainFrame
+
+local CoordCorner = Instance.new("UICorner")
+CoordCorner.CornerRadius = UDim.new(0, 8)
+CoordCorner.Parent = CoordFrame
+
+local CoordLabel = Instance.new("TextLabel")
+CoordLabel.Size = UDim2.new(1, -10, 0, 15)
+CoordLabel.Position = UDim2.new(0, 5, 0, 2)
+CoordLabel.BackgroundTransparency = 1
+CoordLabel.Text = "📝 Manual Coordinates:"
+CoordLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+CoordLabel.TextSize = 9
+CoordLabel.Font = Enum.Font.GothamBold
+CoordLabel.TextXAlignment = Enum.TextXAlignment.Left
+CoordLabel.Parent = CoordFrame
+
+local CoordInput = Instance.new("TextBox")
+CoordInput.Size = UDim2.new(1, -90, 0, 22)
+CoordInput.Position = UDim2.new(0, 5, 0, 20)
+CoordInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+CoordInput.BorderSizePixel = 0
+CoordInput.PlaceholderText = "X,Y,Z or X;Y;Z"
+CoordInput.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+CoordInput.Text = ""
+CoordInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+CoordInput.TextSize = 11
+CoordInput.Font = Enum.Font.Gotham
+CoordInput.ClearTextOnFocus = false
+CoordInput.Parent = CoordFrame
+
+local InputCorner = Instance.new("UICorner")
+InputCorner.CornerRadius = UDim.new(0, 6)
+InputCorner.Parent = CoordInput
+
+local AddCoordButton = Instance.new("TextButton")
+AddCoordButton.Size = UDim2.new(0, 80, 0, 22)
+AddCoordButton.Position = UDim2.new(1, -85, 0, 20)
+AddCoordButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+AddCoordButton.BorderSizePixel = 0
+AddCoordButton.Text = "➕ ADD"
+AddCoordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AddCoordButton.TextSize = 11
+AddCoordButton.Font = Enum.Font.GothamBold
+AddCoordButton.Parent = CoordFrame
+
+local AddCorner = Instance.new("UICorner")
+AddCorner.CornerRadius = UDim.new(0, 6)
+AddCorner.Parent = AddCoordButton
+
+local ScrollFrame = Instance.new("ScrollingFrame")
+ScrollFrame.Name = "TeleportList"
+ScrollFrame.Size = UDim2.new(1, -20, 1, -265)
+ScrollFrame.Position = UDim2.new(0, 10, 0, 180)
+ScrollFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+ScrollFrame.BackgroundTransparency = 0.4
+ScrollFrame.BorderSizePixel = 0
+ScrollFrame.ScrollBarThickness = 5
+ScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(255, 100, 0)
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollFrame.Parent = MainFrame
+
+local ScrollCorner = Instance.new("UICorner")
+ScrollCorner.CornerRadius = UDim.new(0, 8)
+ScrollCorner.Parent = ScrollFrame
+
+local ListLayout = Instance.new("UIListLayout")
+ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+ListLayout.Padding = UDim.new(0, 4)
+ListLayout.Parent = ScrollFrame
+
+ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 8)
+end)
+
+local EmptyLabel = Instance.new("TextLabel")
+EmptyLabel.Name = "EmptyLabel"
+EmptyLabel.Size = UDim2.new(1, -20, 1, -20)
+EmptyLabel.Position = UDim2.new(0, 10, 0, 10)
+EmptyLabel.BackgroundTransparency = 1
+EmptyLabel.Text = "No saved positions\n\nUse SET POS or\nManual Coordinates!"
+EmptyLabel.TextColor3 = Color3.fromRGB(130, 130, 130)
+EmptyLabel.TextSize = 11
+EmptyLabel.Font = Enum.Font.GothamBold
+EmptyLabel.TextWrapped = true
+EmptyLabel.Parent = ScrollFrame
+
+local InfoPanel = Instance.new("Frame")
+InfoPanel.Size = UDim2.new(1, -20, 0, 50)
+InfoPanel.Position = UDim2.new(0, 10, 1, -60)
+InfoPanel.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+InfoPanel.BackgroundTransparency = 0.3
+InfoPanel.BorderSizePixel = 0
+InfoPanel.Parent = MainFrame
+
+local InfoCorner = Instance.new("UICorner")
+InfoCorner.CornerRadius = UDim.new(0, 8)
+InfoCorner.Parent = InfoPanel
+
+local NoClipText = Instance.new("TextLabel")
+NoClipText.Size = UDim2.new(1, -10, 0, 18)
+NoClipText.Position = UDim2.new(0, 5, 0, 4)
+NoClipText.BackgroundTransparency = 1
+NoClipText.Text = "🔒 NoClip: OFF"
+NoClipText.TextColor3 = Color3.fromRGB(255, 255, 255)
+NoClipText.TextSize = 10
+NoClipText.Font = Enum.Font.GothamBold
+NoClipText.TextXAlignment = Enum.TextXAlignment.Left
+NoClipText.Parent = InfoPanel
+
+local StatusText = Instance.new("TextLabel")
+StatusText.Size = UDim2.new(1, -10, 0, 16)
+StatusText.Position = UDim2.new(0, 5, 0, 20)
+StatusText.BackgroundTransparency = 1
+StatusText.Text = "✓ Status: Ready"
+StatusText.TextColor3 = Color3.fromRGB(0, 255, 0)
+StatusText.TextSize = 9
+StatusText.Font = Enum.Font.GothamBold
+StatusText.TextXAlignment = Enum.TextXAlignment.Left
+StatusText.Parent = InfoPanel
+
+local VersionText = Instance.new("TextLabel")
+VersionText.Size = UDim2.new(1, -10, 0, 12)
+VersionText.Position = UDim2.new(0, 5, 0, 36)
+VersionText.BackgroundTransparency = 1
+VersionText.Text = "v1.0 | Manual Coords + Save/Load"
+VersionText.TextColor3 = Color3.fromRGB(255, 100, 0)
+VersionText.TextSize = 7
+VersionText.Font = Enum.Font.GothamBold
+VersionText.TextXAlignment = Enum.TextXAlignment.Left
+VersionText.Parent = InfoPanel
+
+local function ShowDeleteConfirm(index, position, callback)
+    local ConfirmFrame = Instance.new("Frame")
+    ConfirmFrame.Name = "ConfirmDelete"
+    ConfirmFrame.Size = UDim2.new(0, 240, 0, 120)
+    ConfirmFrame.Position = UDim2.new(0.5, -120, 0.5, -60)
+    ConfirmFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    ConfirmFrame.BorderSizePixel = 0
+    ConfirmFrame.ZIndex = 10
+    ConfirmFrame.Parent = ScreenGui
+    
+    local ConfirmCorner = Instance.new("UICorner")
+    ConfirmCorner.CornerRadius = UDim.new(0, 10)
+    ConfirmCorner.Parent = ConfirmFrame
+    
+    local ConfirmTitle = Instance.new("TextLabel")
+    ConfirmTitle.Size = UDim2.new(1, -20, 0, 25)
+    ConfirmTitle.Position = UDim2.new(0, 10, 0, 10)
+    ConfirmTitle.BackgroundTransparency = 1
+    ConfirmTitle.Text = "⚠️ Confirm Delete"
+    ConfirmTitle.TextColor3 = Color3.fromRGB(255, 200, 0)
+    ConfirmTitle.TextSize = 14
+    ConfirmTitle.Font = Enum.Font.GothamBold
+    ConfirmTitle.Parent = ConfirmFrame
+    
+    local ConfirmText = Instance.new("TextLabel")
+    ConfirmText.Size = UDim2.new(1, -20, 0, 35)
+    ConfirmText.Position = UDim2.new(0, 10, 0, 35)
+    ConfirmText.BackgroundTransparency = 1
+    ConfirmText.Text = "Delete TP SAVE " .. index .. "?\n" .. string.format("X:%.0f Y:%.0f Z:%.0f", position.X, position.Y, position.Z)
+    ConfirmText.TextColor3 = Color3.fromRGB(200, 200, 200)
+    ConfirmText.TextSize = 10
+    ConfirmText.Font = Enum.Font.Gotham
+    ConfirmText.TextWrapped = true
+    ConfirmText.Parent = ConfirmFrame
+    
+    local YesButton = Instance.new("TextButton")
+    YesButton.Size = UDim2.new(0.45, 0, 0, 35)
+    YesButton.Position = UDim2.new(0.05, 0, 0, 75)
+    YesButton.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+    YesButton.BorderSizePixel = 0
+    YesButton.Text = "✓ YES"
+    YesButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    YesButton.TextSize = 12
+    YesButton.Font = Enum.Font.GothamBold
+    YesButton.Parent = ConfirmFrame
+    
+    local YesCorner = Instance.new("UICorner")
+    YesCorner.CornerRadius = UDim.new(0, 8)
+    YesCorner.Parent = YesButton
+    
+    local NoButton = Instance.new("TextButton")
+    NoButton.Size = UDim2.new(0.45, 0, 0, 35)
+    NoButton.Position = UDim2.new(0.5, 0, 0, 75)
+    NoButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    NoButton.BorderSizePixel = 0
+    NoButton.Text = "✗ NO"
+    NoButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    NoButton.TextSize = 12
+    NoButton.Font = Enum.Font.GothamBold
+    NoButton.Parent = ConfirmFrame
+    
+    local NoCorner = Instance.new("UICorner")
+    NoCorner.CornerRadius = UDim.new(0, 8)
+    NoCorner.Parent = NoButton
+    
+    YesButton.MouseButton1Click:Connect(function()
+        callback(true)
+        ConfirmFrame:Destroy()
+    end)
+    
+    NoButton.MouseButton1Click:Connect(function()
+        callback(false)
+        ConfirmFrame:Destroy()
+    end)
+    
+    YesButton.MouseEnter:Connect(function()
+        YesButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+    end)
+    
+    YesButton.MouseLeave:Connect(function()
+        YesButton.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+    end)
+    
+    NoButton.MouseEnter:Connect(function()
+        NoButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    end)
+    
+    NoButton.MouseLeave:Connect(function()
+        NoButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    end)
+end
+
+local function CreateTeleportButton(index, position)
+    local Button = Instance.new("TextButton")
+    Button.Name = "TPSave" .. index
+    Button.Size = UDim2.new(1, -8, 0, 45)
+    Button.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+    Button.BorderSizePixel = 0
+    Button.AutoButtonColor = false
+    Button.Text = ""
+    Button.Parent = ScrollFrame
+    
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 7)
+    BtnCorner.Parent = Button
+    
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Size = UDim2.new(1, -45, 0, 18)
+    TitleLabel.Position = UDim2.new(0, 5, 0, 3)
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Text = "📌 TP SAVE " .. index
+    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TitleLabel.TextSize = 11
+    TitleLabel.Font = Enum.Font.GothamBold
+    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TitleLabel.Parent = Button
+    
+    local PosLabel = Instance.new("TextLabel")
+    PosLabel.Size = UDim2.new(1, -45, 0, 20)
+    PosLabel.Position = UDim2.new(0, 5, 0, 22)
+    PosLabel.BackgroundTransparency = 1
+    PosLabel.Text = string.format("X:%.0f Y:%.0f Z:%.0f", position.X, position.Y, position.Z)
+    PosLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    PosLabel.TextSize = 8
+    PosLabel.Font = Enum.Font.Gotham
+    PosLabel.TextXAlignment = Enum.TextXAlignment.Left
+    PosLabel.Parent = Button
+    
+    local DeleteBtn = Instance.new("TextButton")
+    DeleteBtn.Size = UDim2.new(0, 32, 0, 32)
+    DeleteBtn.Position = UDim2.new(1, -37, 0, 6.5)
+    DeleteBtn.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+    DeleteBtn.BorderSizePixel = 0
+    DeleteBtn.Text = "🗑️"
+    DeleteBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    DeleteBtn.TextSize = 14
+    DeleteBtn.Font = Enum.Font.GothamBold
+    DeleteBtn.Parent = Button
+    
+    local DelCorner = Instance.new("UICorner")
+    DelCorner.CornerRadius = UDim.new(0, 7)
+    DelCorner.Parent = DeleteBtn
+    
+    Button.MouseButton1Click:Connect(function()
+        if IsTeleporting then
+            ShowNotification("⏳ Please wait...", Color3.fromRGB(255, 100, 0))
+            return
+        end
+        
+        ShowNotification("⚡ Teleporting to Save " .. index .. "...", Color3.fromRGB(255, 100, 0))
+        
+        spawn(function()
+            local success, msg = TELEPORT_FUNCTION(position)
+            
+            if success then
+                ShowNotification("✓ Arrived at Save " .. index .. "!", Color3.fromRGB(0, 255, 0))
+            else
+                ShowNotification("❌ Failed: " .. msg, Color3.fromRGB(255, 50, 50))
+            end
+        end)
+    end)
+    
+    DeleteBtn.MouseButton1Click:Connect(function()
+        ShowDeleteConfirm(index, position, function(confirmed)
+            if confirmed then
+                table.remove(SavedPositions, index)
+                RefreshTeleportList()
+                ShowNotification("🗑️ Save " .. index .. " deleted!", Color3.fromRGB(255, 100, 0))
+            else
+                ShowNotification("❌ Delete cancelled", Color3.fromRGB(200, 200, 200))
+            end
+        end)
+    end)
+    
+    Button.MouseEnter:Connect(function()
+        Button.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+    end)
+    
+    Button.MouseLeave:Connect(function()
+        Button.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+    end)
+    
+    DeleteBtn.MouseEnter:Connect(function()
+        DeleteBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+    end)
+    
+    DeleteBtn.MouseLeave:Connect(function()
+        DeleteBtn.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+    end)
+    
+    return Button
+end
+
+function RefreshTeleportList()
+    for _, child in pairs(ScrollFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+    
+    SaveCounter.Text = #SavedPositions .. "/" .. MAX_SAVES
+    
+    if #SavedPositions == 0 then
+        EmptyLabel.Visible = true
+    else
+        EmptyLabel.Visible = false
+        
+        for i, pos in ipairs(SavedPositions) do
+            CreateTeleportButton(i, pos)
+        end
+    end
+end
+
+SetPosButton.MouseButton1Click:Connect(function()
+    if not HumanoidRootPart then return end
+    
+    if #SavedPositions >= MAX_SAVES then
+        ShowNotification("❌ Maximum " .. MAX_SAVES .. " saves reached!", Color3.fromRGB(255, 50, 50))
+        return
+    end
+    
+    local currentPos = HumanoidRootPart.Position
+    table.insert(SavedPositions, currentPos)
+    
+    RefreshTeleportList()
+    
+    SetPosButton.BackgroundColor3 = Color3.fromRGB(0, 155, 0)
+    ShowNotification("📍 Position " .. #SavedPositions .. " saved!", Color3.fromRGB(0, 255, 0))
+    
+    wait(1)
+    SetPosButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+end)
+
+SetPosButton.MouseEnter:Connect(function()
+    if #SavedPositions < MAX_SAVES then
+        SetPosButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+    end
+end)
+
+SetPosButton.MouseLeave:Connect(function()
+    SetPosButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+end)
+
+SaveButton.MouseButton1Click:Connect(function()
+    if #SavedPositions == 0 then
+        ShowNotification("❌ No positions to save!", Color3.fromRGB(255, 50, 50))
+        return
+    end
+    
+    SaveButton.BackgroundColor3 = Color3.fromRGB(0, 155, 0)
+    SaveToFile()
+    wait(1)
+    SaveButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+end)
+
+SaveButton.MouseEnter:Connect(function()
+    SaveButton.BackgroundColor3 = Color3.fromRGB(0, 130, 0)
+end)
+
+SaveButton.MouseLeave:Connect(function()
+    SaveButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+end)
+
+LoadButton.MouseButton1Click:Connect(function()
+    LoadButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+    LoadFromFile()
+    wait(1)
+    LoadButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+end)
+
+LoadButton.MouseEnter:Connect(function()
+    LoadButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+end)
+
+LoadButton.MouseLeave:Connect(function()
+    LoadButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+end)
+
+AddCoordButton.MouseButton1Click:Connect(function()
+    local input = CoordInput.Text
+    
+    if input == "" then
+        ShowNotification("❌ Please enter coordinates!", Color3.fromRGB(255, 50, 50))
+        return
+    end
+    
+    if #SavedPositions >= MAX_SAVES then
+        ShowNotification("❌ Maximum " .. MAX_SAVES .. " saves reached!", Color3.fromRGB(255, 50, 50))
+        return
+    end
+    
+    local pos = ParseCoordinates(input)
+    
+    if pos then
+        table.insert(SavedPositions, pos)
+        RefreshTeleportList()
+        
+        AddCoordButton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+        ShowNotification("✓ Position " .. #SavedPositions .. " added!", Color3.fromRGB(0, 255, 0))
+        CoordInput.Text = ""
+        
+        wait(1)
+        AddCoordButton.BackgroundColor3 = Color3.fromRGB(0, 139, 0)
+    else
+        ShowNotification("❌ Invalid format!\nUse: X,Y,Z or X;Y;Z\nExample: 100,50,200", Color3.fromRGB(255, 50, 50))
+    end
+end)
+
+AddCoordButton.MouseEnter:Connect(function()
+    AddCoordButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+end)
+
+AddCoordButton.MouseLeave:Connect(function()
+    AddCoordButton.BackgroundColor3 = Color3.fromRGB(0, 139, 0)
+end)
+
+CoordInput.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        AddCoordButton.MouseButton1Click:Fire()
+    end
+end)
+
+function ShowNotification(text, color)
+    color = color or Color3.fromRGB(0, 155, 0)
+    
+    local NotifFrame = Instance.new("Frame")
+    NotifFrame.Size = UDim2.new(0, 260, 0, 50)
+    NotifFrame.Position = UDim2.new(0.5, -130, 0, -60)
+    NotifFrame.BackgroundColor3 = color
+    NotifFrame.BorderSizePixel = 0
+    NotifFrame.ZIndex = 5
+    NotifFrame.Parent = ScreenGui
+    
+    local NotifCorner = Instance.new("UICorner")
+    NotifCorner.CornerRadius = UDim.new(0, 10)
+    NotifCorner.Parent = NotifFrame
+    
+    local NotifText = Instance.new("TextLabel")
+    NotifText.Size = UDim2.new(1, -10, 1, -10)
+    NotifText.Position = UDim2.new(0, 5, 0, 5)
+    NotifText.BackgroundTransparency = 1
+    NotifText.Text = text
+    NotifText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    NotifText.TextSize = 11
+    NotifText.Font = Enum.Font.GothamBold
+    NotifText.TextWrapped = true
+    NotifText.Parent = NotifFrame
+    
+    NotifFrame:TweenPosition(UDim2.new(0.5, -130, 0, 10), "Out", "Quad", 0.3, true)
+    
+    spawn(function()
+        wait(2.5)
+        NotifFrame:TweenPosition(UDim2.new(0.5, -130, 0, -60), "In", "Quad", 0.3, true)
+        wait(0.3)
+        NotifFrame:Destroy()
+    end)
+end
+
+spawn(function()
+    while wait(0.3) do
+        if NoClipConnection then
+            NoClipText.Text = "🔓 NoClip: ON"
+            NoClipText.TextColor3 = Color3.fromRGB(0, 255, 100)
+        else
+            NoClipText.Text = "🔒 NoClip: OFF"
+            NoClipText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        end
+        
+        if IsTeleporting then
+            StatusText.Text = "⚡ Status: Teleporting..."
+            StatusText.TextColor3 = Color3.fromRGB(255, 100, 0)
+        elseif PositionLockConnection then
+            StatusText.Text = "🔐 Status: Locked (1s)"
+            StatusText.TextColor3 = Color3.fromRGB(255, 200, 0)
+        elseif PlayerIsMoving then
+            StatusText.Text = "🏃 Status: Moving"
+            StatusText.TextColor3 = Color3.fromRGB(0, 255, 100)
+        else
+            StatusText.Text = "✓ Status: Ready"
+            StatusText.TextColor3 = Color3.fromRGB(0, 255, 0)
+        end
+    end
+end)
+
+LocalPlayer.CharacterAdded:Connect(function(newChar)
+    Character = newChar
+    HumanoidRootPart = newChar:WaitForChild("HumanoidRootPart", 10)
+    Humanoid = newChar:WaitForChild("Humanoid", 10)
+    UnlockPosition()
+    DisableNoClip()
+    IsTeleporting = false
+    PlayerIsMoving = false
+end)
+
+spawn(function()
+    wait(0.5)
+    ShowNotification("👑  X - V3N0M V1.0 LOADED!\n📍 Manual Coords + Save/Load", Color3.fromRGB(255, 100, 0))
+    
+    -- Auto-load jika ada file save
+    if isfile and isfile(SAVE_FILE_NAME .. ".json") then
+        wait(1)
+        ShowNotification("📂 Auto-loading Saved Positions...", Color3.fromRGB(0, 150, 255))
+        wait(0.5)
+        LoadFromFile()
+    end
+end)
+
+print("============================================")
+print("👑  X - V3N0M V1.0 LOADED!")
+print("============================================")
+print("✓ Manual Coordinates Input")
+print("✓ Save/Load System (Persistent)")
+print("✓ Delete Confirmation")
+print("✓ Up to 20 saves")
+print("✓ Compact UI")
+print("============================================")
+print("📝 HOW TO USE:")
+print("1. SET POS - Save current position")
+print("2. Manual Input - Type X,Y,Z and click ADD")
+print("3. SAVE - Save all positions to file")
+print("4. LOAD - Load positions from file")
+print("5. Click TP button to teleport")
+print("6. Click 🗑️ to delete (with confirmation)")
+print("============================================")
+print("📌 COORDINATE FORMATS:")
+print("   • X,Y,Z  (comma)")
+print("   • X;Y;Z  (semicolon)")
+print("   • X:Y:Z  (colon)")
+print("   Example: 100,50,200")
+print("============================================")
