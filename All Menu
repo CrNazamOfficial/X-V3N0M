@@ -1,0 +1,1982 @@
+local Player = game.Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+-- ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = PlayerGui
+ScreenGui.Enabled = true
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Name = "All MenuI"
+
+-- Main Frame (16:9 RATIO - MODERN SPACIOUS DESIGN)
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 720, 0, 405)
+MainFrame.Position = UDim2.new(0.5, -360, 0.5, -202.5)
+MainFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 8)
+MainFrame.BackgroundTransparency = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.ClipsDescendants = true
+MainFrame.Parent = ScreenGui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 20)
+mainCorner.Parent = MainFrame
+
+-- Gradient Background Effect
+local gradientBg = Instance.new("Frame")
+gradientBg.Size = UDim2.new(1, 0, 1, 0)
+gradientBg.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+gradientBg.BackgroundTransparency = 0.97
+gradientBg.Parent = MainFrame
+
+local gradCorner = Instance.new("UICorner")
+gradCorner.CornerRadius = UDim.new(0, 20)
+gradCorner.Parent = gradientBg
+
+local uiGradient = Instance.new("UIGradient")
+uiGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 215, 0)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(218, 165, 32))
+}
+uiGradient.Rotation = 45
+uiGradient.Parent = gradientBg
+
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = Color3.fromRGB(255, 215, 0)
+mainStroke.Thickness = 2.5
+mainStroke.Transparency = 0
+mainStroke.Parent = MainFrame
+
+-- Glow Effect Animation
+local glowStroke = Instance.new("UIStroke")
+glowStroke.Color = Color3.fromRGB(255, 223, 0)
+glowStroke.Thickness = 0
+glowStroke.Transparency = 0.6
+glowStroke.Parent = MainFrame
+
+task.spawn(function()
+    while task.wait() do
+        TweenService:Create(glowStroke, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+            Thickness = 5
+        }):Play()
+        task.wait(2)
+        TweenService:Create(glowStroke, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+            Thickness = 0
+        }):Play()
+        task.wait(2)
+    end
+end)
+
+-- Navbar (TOP BAR)
+local Navbar = Instance.new("Frame")
+Navbar.Size = UDim2.new(1, 0, 0, 45)
+Navbar.Position = UDim2.new(0, 0, 0, 0)
+Navbar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Navbar.BackgroundTransparency = 0
+Navbar.Parent = MainFrame
+
+local navCorner = Instance.new("UICorner")
+navCorner.CornerRadius = UDim.new(0, 20)
+navCorner.Parent = Navbar
+
+local navBlock = Instance.new("Frame")
+navBlock.Size = UDim2.new(1, 0, 0, 20)
+navBlock.Position = UDim2.new(0, 0, 1, -20)
+navBlock.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+navBlock.BorderSizePixel = 0
+navBlock.Parent = Navbar
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, -120, 1, 0)
+TitleLabel.Position = UDim2.new(0, 15, 0, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "⚡ X - V3N0M"
+TitleLabel.Font = Enum.Font.GothamBlack
+TitleLabel.TextSize = 18
+TitleLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.Parent = Navbar
+
+task.spawn(function()
+    while true do
+        TweenService:Create(TitleLabel, TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+            TextColor3 = Color3.fromRGB(255, 240, 0)
+        }):Play()
+        task.wait(1.5)
+        TweenService:Create(TitleLabel, TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+            TextColor3 = Color3.fromRGB(218, 165, 32)
+        }):Play()
+        task.wait(1.5)
+    end
+end)
+
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0, 32, 0, 32)
+MinimizeBtn.Position = UDim2.new(1, -75, 0.5, -16)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+MinimizeBtn.BackgroundTransparency = 0.1
+MinimizeBtn.Text = "━"
+MinimizeBtn.Font = Enum.Font.GothamBold
+MinimizeBtn.TextSize = 16
+MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeBtn.Parent = Navbar
+
+local minimizeCorner = Instance.new("UICorner")
+minimizeCorner.CornerRadius = UDim.new(0, 8)
+minimizeCorner.Parent = MinimizeBtn
+
+local minimizeStroke = Instance.new("UIStroke")
+minimizeStroke.Color = Color3.fromRGB(255, 215, 0)
+minimizeStroke.Thickness = 1.5
+minimizeStroke.Parent = MinimizeBtn
+
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 32, 0, 32)
+CloseBtn.Position = UDim2.new(1, -38, 0.5, -16)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+CloseBtn.BackgroundTransparency = 0.1
+CloseBtn.Text = "✕"
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.TextSize = 18
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.Parent = Navbar
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = CloseBtn
+
+local closeStroke = Instance.new("UIStroke")
+closeStroke.Color = Color3.fromRGB(200, 100, 100)
+closeStroke.Thickness = 1.5
+closeStroke.Parent = CloseBtn
+
+-- Container (MAIN CONTENT AREA)
+local Container = Instance.new("Frame")
+Container.Size = UDim2.new(1, -20, 1, -65)
+Container.Position = UDim2.new(0, 10, 0, 55)
+Container.BackgroundTransparency = 1
+Container.Parent = MainFrame
+
+-- Profile Frame (LEFT SIDEBAR - LEBIH LEBAR)
+local ProfileFrame = Instance.new("Frame")
+ProfileFrame.Size = UDim2.new(0, 180, 1, -10)
+ProfileFrame.Position = UDim2.new(0, 0, 0, 5)
+ProfileFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ProfileFrame.BackgroundTransparency = 0.3
+ProfileFrame.Parent = Container
+
+local profileCorner = Instance.new("UICorner")
+profileCorner.CornerRadius = UDim.new(0, 12)
+profileCorner.Parent = ProfileFrame
+
+local profileStroke = Instance.new("UIStroke")
+profileStroke.Color = Color3.fromRGB(255, 215, 0)
+profileStroke.Thickness = 1.5
+profileStroke.Transparency = 0.5
+profileStroke.Parent = ProfileFrame
+
+local ProfileContent = Instance.new("Frame")
+ProfileContent.Size = UDim2.new(1, -20, 1, -20)
+ProfileContent.Position = UDim2.new(0, 10, 0, 10)
+ProfileContent.BackgroundTransparency = 1
+ProfileContent.Parent = ProfileFrame
+
+local ProfilePicture = Instance.new("ImageLabel")
+ProfilePicture.Size = UDim2.new(0, 100, 0, 100)
+ProfilePicture.Position = UDim2.new(0.5, -50, 0, 20)
+ProfilePicture.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ProfilePicture.BorderSizePixel = 0
+ProfilePicture.Parent = ProfileContent
+
+local pictureCorner = Instance.new("UICorner")
+pictureCorner.CornerRadius = UDim.new(0, 50)
+pictureCorner.Parent = ProfilePicture
+
+local pictureStroke = Instance.new("UIStroke")
+pictureStroke.Color = Color3.fromRGB(255, 215, 0)
+pictureStroke.Thickness = 3
+pictureStroke.Parent = ProfilePicture
+
+local userId = Player.UserId
+
+local function loadThumbnailWithFallbacks()
+    local success1, result1 = pcall(function()
+        return game:GetService("Players"):GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+    end)
+    
+    if success1 and result1 and result1 ~= "" then
+        ProfilePicture.Image = result1
+        return
+    end
+    
+    local success2 = pcall(function()
+        ProfilePicture.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. userId .. "&width=150&height=150&format=png"
+    end)
+    
+    if success2 then return end
+    
+    ProfilePicture.Image = "rbxasset://textures/ui/avatar_placeholder.png"
+end
+
+ProfilePicture.Image = "rbxasset://textures/ui/avatar_placeholder.png"
+task.spawn(loadThumbnailWithFallbacks)
+task.delay(3, loadThumbnailWithFallbacks)
+
+-- Username Label
+local UsernameLabel = Instance.new("TextLabel")
+UsernameLabel.Size = UDim2.new(1, 0, 0, 25)
+UsernameLabel.Position = UDim2.new(0, 0, 0, 130)
+UsernameLabel.BackgroundTransparency = 1
+UsernameLabel.Text = "@" .. Player.Name
+UsernameLabel.Font = Enum.Font.GothamBold
+UsernameLabel.TextSize = 14
+UsernameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+UsernameLabel.TextXAlignment = Enum.TextXAlignment.Center
+UsernameLabel.Parent = ProfileContent
+
+-- Display Name Label
+local DisplayLabel = Instance.new("TextLabel")
+DisplayLabel.Size = UDim2.new(1, 0, 0, 20)
+DisplayLabel.Position = UDim2.new(0, 0, 0, 155)
+DisplayLabel.BackgroundTransparency = 1
+DisplayLabel.Text = Player.DisplayName
+DisplayLabel.Font = Enum.Font.Gotham
+DisplayLabel.TextSize = 11
+DisplayLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+DisplayLabel.TextXAlignment = Enum.TextXAlignment.Center
+DisplayLabel.Parent = ProfileContent
+
+-- Divider (SEPARATOR LINE)
+local Divider = Instance.new("Frame")
+Divider.Size = UDim2.new(0, 2, 1, -10)
+Divider.Position = UDim2.new(0, 190, 0, 5)
+Divider.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+Divider.BackgroundTransparency = 0.3
+Divider.BorderSizePixel = 0
+Divider.Parent = Container
+
+local dividerCorner = Instance.new("UICorner")
+dividerCorner.CornerRadius = UDim.new(1, 0)
+dividerCorner.Parent = Divider
+
+-- Buttons Frame (RIGHT CONTENT AREA - LEBIH LUAS)
+local ButtonsFrame = Instance.new("Frame")
+ButtonsFrame.Size = UDim2.new(1, -210, 1, -10)
+ButtonsFrame.Position = UDim2.new(0, 205, 0, 5)
+ButtonsFrame.BackgroundTransparency = 1
+ButtonsFrame.ClipsDescendants = true
+ButtonsFrame.Parent = Container
+
+local ScrollFrame = Instance.new("ScrollingFrame")
+ScrollFrame.Size = UDim2.new(1, 0, 1, 0)
+ScrollFrame.BackgroundTransparency = 1
+ScrollFrame.ScrollBarThickness = 8
+ScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(255, 215, 0)
+ScrollFrame.ScrollBarImageTransparency = 0.3
+ScrollFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollFrame.BorderSizePixel = 0
+ScrollFrame.Parent = ButtonsFrame
+
+local ButtonGrid = Instance.new("UIGridLayout")
+ButtonGrid.CellSize = UDim2.new(0, 155, 0, 42)
+ButtonGrid.CellPadding = UDim2.new(0, 12, 0, 12)
+ButtonGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+ButtonGrid.VerticalAlignment = Enum.VerticalAlignment.Top
+ButtonGrid.SortOrder = Enum.SortOrder.LayoutOrder
+ButtonGrid.StartCorner = Enum.StartCorner.TopLeft
+ButtonGrid.Parent = ScrollFrame
+
+ButtonGrid:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, ButtonGrid.AbsoluteContentSize.Y + 15)
+end)
+
+-- MINI FRAME (MINIMIZED ICON)
+local MiniFrame = Instance.new("ImageButton")
+MiniFrame.Size = UDim2.new(0, 60, 0, 60)
+MiniFrame.Position = UDim2.new(0, 15, 0, 15)
+MiniFrame.BackgroundTransparency = 1
+MiniFrame.BorderSizePixel = 0
+MiniFrame.Active = true
+MiniFrame.Draggable = true
+MiniFrame.Visible = false
+MiniFrame.Image = "rbxassetid://110225912398772"
+MiniFrame.ScaleType = Enum.ScaleType.Fit
+MiniFrame.Parent = ScreenGui
+
+local IconCorner = Instance.new("UICorner")
+IconCorner.CornerRadius = UDim.new(0, 15)
+IconCorner.Parent = MiniFrame
+
+local iconStroke = Instance.new("UIStroke")
+iconStroke.Color = Color3.fromRGB(255, 215, 0)
+iconStroke.Thickness = 2.5
+iconStroke.Parent = MiniFrame
+
+CloseBtn.MouseButton1Click:Connect(function()
+    local tween = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)})
+    tween:Play()
+    tween.Completed:Wait()
+    ScreenGui:Destroy()
+end)
+
+MinimizeBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    MiniFrame.Visible = true
+end)
+
+MiniFrame.MouseButton1Click:Connect(function()
+    MiniFrame.Visible = false
+    MainFrame.Visible = true
+end)
+
+MiniFrame.MouseEnter:Connect(function()
+    TweenService:Create(MiniFrame, TweenInfo.new(0.2), {Size = UDim2.new(0, 68, 0, 68)}):Play()
+end)
+
+MiniFrame.MouseLeave:Connect(function()
+    TweenService:Create(MiniFrame, TweenInfo.new(0.2), {Size = UDim2.new(0, 60, 0, 60)}):Play()
+end)
+
+local buttonStates = {}
+
+local function createButton(icon, text)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 155, 0, 42)
+    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.BackgroundTransparency = 0.2
+    btn.Text = icon .. "  " .. text
+    btn.TextSize = 14
+    btn.Font = Enum.Font.GothamBold
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.LayoutOrder = 0
+    btn.AutoButtonColor = false
+    
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 10)
+    btnCorner.Parent = btn
+    
+    local btnStroke = Instance.new("UIStroke")
+    btnStroke.Color = Color3.fromRGB(255, 215, 0)
+    btnStroke.Thickness = 2
+    btnStroke.Transparency = 0.5
+    btnStroke.Parent = btn
+    
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 15)
+    padding.Parent = btn
+
+    local defaultColor = Color3.fromRGB(0, 0, 0)
+    local hoverColor = Color3.fromRGB(40, 35, 0)
+
+    buttonStates[btn] = false
+
+    btn.MouseEnter:Connect(function()
+        if not buttonStates[btn] then
+            TweenService:Create(btn, TweenInfo.new(0.2), {
+                BackgroundColor3 = hoverColor,
+                BackgroundTransparency = 0
+            }):Play()
+            TweenService:Create(btnStroke, TweenInfo.new(0.2), {
+                Color = Color3.fromRGB(255, 240, 0),
+                Transparency = 0
+            }):Play()
+        end
+    end)
+    
+    btn.MouseLeave:Connect(function()
+        if not buttonStates[btn] then
+            TweenService:Create(btn, TweenInfo.new(0.2), {
+                BackgroundColor3 = defaultColor,
+                BackgroundTransparency = 0.2
+            }):Play()
+            TweenService:Create(btnStroke, TweenInfo.new(0.2), {
+                Color = Color3.fromRGB(255, 215, 0),
+                Transparency = 0.5
+            }):Play()
+        end
+    end)
+
+    btn.Parent = ScrollFrame
+    return btn
+end
+
+local function setButtonActive(button, active)
+    buttonStates[button] = active
+    if active then
+        TweenService:Create(button, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(218, 165, 32),
+            BackgroundTransparency = 0
+        }):Play()
+        TweenService:Create(button:FindFirstChildOfClass("UIStroke"), TweenInfo.new(0.2), {
+            Color = Color3.fromRGB(255, 240, 0),
+            Transparency = 0,
+            Thickness = 2.5
+        }):Play()
+    else
+        TweenService:Create(button, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+            BackgroundTransparency = 0.2
+        }):Play()
+        TweenService:Create(button:FindFirstChildOfClass("UIStroke"), TweenInfo.new(0.2), {
+            Color = Color3.fromRGB(255, 215, 0),
+            Transparency = 0.5,
+            Thickness = 2
+        }):Play()
+    end
+end
+
+-- Notification Function
+local function ShowNotification(text, color)
+    color = color or Color3.fromRGB(255, 215, 0)
+    
+    local NotifFrame = Instance.new("Frame")
+    NotifFrame.Size = UDim2.new(0, 320, 0, 65)
+    NotifFrame.Position = UDim2.new(0.5, -160, 0, -80)
+    NotifFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+    NotifFrame.BackgroundTransparency = 0
+    NotifFrame.BorderSizePixel = 0
+    NotifFrame.ZIndex = 100
+    NotifFrame.Parent = ScreenGui
+    
+    local NotifCorner = Instance.new("UICorner")
+    NotifCorner.CornerRadius = UDim.new(0, 15)
+    NotifCorner.Parent = NotifFrame
+    
+    local NotifStroke = Instance.new("UIStroke")
+    NotifStroke.Color = color
+    NotifStroke.Thickness = 2.5
+    NotifStroke.Parent = NotifFrame
+    
+    local NotifText = Instance.new("TextLabel")
+    NotifText.Size = UDim2.new(1, -30, 1, -20)
+    NotifText.Position = UDim2.new(0, 15, 0, 10)
+    NotifText.BackgroundTransparency = 1
+    NotifText.Text = text
+    NotifText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    NotifText.TextSize = 13
+    NotifText.Font = Enum.Font.GothamBold
+    NotifText.TextWrapped = true
+    NotifText.TextYAlignment = Enum.TextYAlignment.Center
+    NotifText.Parent = NotifFrame
+    
+    NotifFrame:TweenPosition(UDim2.new(0.5, -160, 0, 25), "Out", "Back", 0.5, true)
+    
+    spawn(function()
+        wait(2.8)
+        NotifFrame:TweenPosition(UDim2.new(0.5, -160, 0, -80), "In", "Back", 0.4, true)
+        wait(0.4)
+        NotifFrame:Destroy()
+    end)
+end
+
+-- ========== AIRWALK ==========
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+
+local AirwalkActive = false
+local AirWPart = nil
+local baseY = nil
+
+local AirwalkBtn = createButton("🚶", "Jalan di udara")
+
+local function StartAirwalk()
+    if AirWPart then return end
+    local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local root = character:WaitForChild("HumanoidRootPart")
+    local humanoid = character:WaitForChild("Humanoid")
+
+    AirWPart = Instance.new("Part", Workspace)
+    AirWPart.Size = Vector3.new(7, 1, 3)
+    AirWPart.Anchored = true
+    AirWPart.Transparency = 1
+    AirWPart.CanCollide = true
+    AirWPart.Name = "Airwalk"
+
+    baseY = root.Position.Y - (root.Size.Y/2 + 0.5)
+    AirWPart.Position = Vector3.new(root.Position.X, baseY, root.Position.Z)
+
+    task.spawn(function()
+        while AirwalkActive and AirWPart do
+            AirWPart.Position = Vector3.new(root.Position.X, AirWPart.Position.Y, root.Position.Z)
+            task.wait(0.05)
+        end
+    end)
+
+    humanoid.StateChanged:Connect(function(_, new)
+        if not AirwalkActive then return end
+        if new == Enum.HumanoidStateType.Jumping then
+            if root and AirWPart then
+                AirWPart.Position = Vector3.new(AirWPart.Position.X, root.Position.Y - (root.Size.Y/16 + 0), AirWPart.Position.Z)
+            end
+        end
+    end)
+end
+
+local function StopAirwalk()
+    AirwalkActive = false
+    if AirWPart then
+        AirWPart:Destroy()
+        AirWPart = nil
+    end
+end
+
+AirwalkBtn.MouseButton1Click:Connect(function()
+    AirwalkActive = not AirwalkActive
+    if AirwalkActive then
+        StartAirwalk()
+        setButtonActive(AirwalkBtn, true)
+        ShowNotification("🚶 Airwalk: AKTIF", Color3.fromRGB(255, 215, 0))
+    else
+        StopAirwalk()
+        setButtonActive(AirwalkBtn, false)
+        ShowNotification("🚶 Airwalk: NONAKTIF", Color3.fromRGB(150, 150, 150))
+    end
+end)
+
+LocalPlayer.CharacterAdded:Connect(function()
+    StopAirwalk()
+    setButtonActive(AirwalkBtn, false)
+end)
+
+-- ========== LAMPU ==========
+local LampBtn = createButton("💡", "Lampu")
+local lampOn = false
+local headLamp = nil
+
+local function addHeadLamp(char)
+    local head = char:FindFirstChild("Head")
+    if not head then return end
+    if char:FindFirstChild("HeadLamp") then return end
+
+    headLamp = Instance.new("Part")
+    headLamp.Name = "HeadLamp"
+    headLamp.Size = Vector3.new(0.5,0.5,0.5)
+    headLamp.Shape = Enum.PartType.Ball
+    headLamp.Color = Color3.fromRGB(255, 215, 0)
+    headLamp.Material = Enum.Material.Neon
+    headLamp.Anchored = false
+    headLamp.CanCollide = false
+    headLamp.CFrame = head.CFrame * CFrame.new(0,0.8,0)
+    headLamp.Parent = char
+
+    local weld = Instance.new("WeldConstraint")
+    weld.Part0 = head
+    weld.Part1 = headLamp
+    weld.Parent = headLamp
+
+    local light = Instance.new("PointLight")
+    light.Color = Color3.fromRGB(255, 215, 0)
+    light.Range = 100
+    light.Brightness = 2
+    light.Parent = headLamp
+end
+
+local function removeHeadLamp()
+    if headLamp and headLamp.Parent then
+        headLamp:Destroy()
+    end
+    headLamp = nil
+end
+
+LampBtn.MouseButton1Click:Connect(function()
+    lampOn = not lampOn
+    local char = Player.Character or Player.CharacterAdded:Wait()
+    if lampOn then
+        addHeadLamp(char)
+        setButtonActive(LampBtn, true)
+        ShowNotification("💡 Lampu: AKTIF", Color3.fromRGB(255, 215, 0))
+    else
+        removeHeadLamp()
+        setButtonActive(LampBtn, false)
+        ShowNotification("💡 Lampu: NONAKTIF", Color3.fromRGB(150, 150, 150))
+    end
+end)
+
+Player.CharacterAdded:Connect(function(char)
+    if lampOn then
+        task.wait(1)
+        addHeadLamp(char)
+        setButtonActive(LampBtn, true)
+    else
+        setButtonActive(LampBtn, false)
+    end
+end)
+
+-- ========== INFINITE JUMP ==========
+local character = Player.Character or Player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local root = character:WaitForChild("HumanoidRootPart")
+
+local infiniteJumpEnabled = false
+local jumpPowerBoost = 25
+local slowFallSpeed = -50
+
+local JumpBtn = createButton("🦘", "Infinite Jump")
+
+local function updateCharacterRefs(char)
+    character = char
+    humanoid = char:WaitForChild("Humanoid")
+    root = char:WaitForChild("HumanoidRootPart")
+end
+Player.CharacterAdded:Connect(updateCharacterRefs)
+
+UserInputService.JumpRequest:Connect(function()
+    if infiniteJumpEnabled and humanoid then
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        local goalVelocity = Vector3.new(root.Velocity.X, jumpPowerBoost, root.Velocity.Z)
+        local tween = TweenService:Create(root, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Velocity = goalVelocity})
+        tween:Play()
+    end
+end)
+
+RunService.Stepped:Connect(function()
+    if humanoid and infiniteJumpEnabled then
+        if humanoid:GetState() == Enum.HumanoidStateType.Freefall then
+            if root.Velocity.Y < slowFallSpeed then
+                root.Velocity = Vector3.new(root.Velocity.X, slowFallSpeed, root.Velocity.Z)
+            end
+        end
+    end
+end)
+
+JumpBtn.MouseButton1Click:Connect(function()
+    infiniteJumpEnabled = not infiniteJumpEnabled
+    setButtonActive(JumpBtn, infiniteJumpEnabled)
+    if infiniteJumpEnabled then
+        ShowNotification("🦘 Infinite Jump: AKTIF", Color3.fromRGB(255, 215, 0))
+    else
+        ShowNotification("🦘 Infinite Jump: NONAKTIF", Color3.fromRGB(150, 150, 150))
+    end
+end)
+
+-- ========== SPEED ==========
+local SpeedBtn = createButton("⚡", "Speed")
+local speedOn = false
+local selendangPart = nil
+
+local colors = {
+    Color3.fromRGB(255,0,0),
+    Color3.fromRGB(255,127,0),
+    Color3.fromRGB(255,255,0),
+    Color3.fromRGB(0,255,0),
+    Color3.fromRGB(0,0,255),
+    Color3.fromRGB(75,0,130),
+    Color3.fromRGB(148,0,211)
+}
+
+local function lerpColor(c1, c2, t)
+    return Color3.new(
+        c1.R + (c2.R - c1.R) * t,
+        c1.G + (c2.G - c1.G) * t,
+        c1.B + (c2.B - c1.B) * t
+    )
+end
+
+local function addSelendang(char)
+    if selendangPart then
+        selendangPart:Destroy()
+        selendangPart = nil
+    end
+
+    local torso = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("UpperTorso")
+    if not torso then return end
+
+    selendangPart = Instance.new("Part")
+    selendangPart.Name = "SelendangPart"
+    selendangPart.Size = Vector3.new(0.5,0.5,0.5)
+    selendangPart.Transparency = 1
+    selendangPart.Anchored = false
+    selendangPart.CanCollide = false
+    selendangPart.CFrame = torso.CFrame
+    selendangPart.Parent = char
+
+    local weld = Instance.new("WeldConstraint")
+    weld.Part0 = torso
+    weld.Part1 = selendangPart
+    weld.Parent = selendangPart
+
+    local trails = {}
+    local spacing = -0.04
+    local startY = 0.5
+
+    for i = 1, 40 do
+        local yPos = startY + (i-1) * spacing
+        local attLeft = Instance.new("Attachment", selendangPart)
+        attLeft.Position = Vector3.new(-1, yPos, 0)
+
+        local attRight = Instance.new("Attachment", selendangPart)
+        attRight.Position = Vector3.new(1, yPos, 0)
+
+        local newTrail = Instance.new("Trail")
+        newTrail.Attachment0 = attLeft
+        newTrail.Attachment1 = attRight
+        newTrail.Lifetime = 0.6
+        newTrail.MinLength = 0.1
+        newTrail.LightEmission = 1
+        newTrail.Transparency = NumberSequence.new(0,1)
+        newTrail.WidthScale = NumberSequence.new(0.5,0)
+        newTrail.Parent = selendangPart
+
+        table.insert(trails, newTrail)
+    end
+
+    task.spawn(function()
+        local step = 0
+        while speedOn and selendangPart and selendangPart.Parent do
+            local idx1 = math.floor(step) % #colors + 1
+            local idx2 = (idx1 % #colors) + 1
+            local t = step % 1
+            local col = lerpColor(colors[idx1], colors[idx2], t)
+            for _, tr in ipairs(trails) do
+                tr.Color = ColorSequence.new(col)
+            end
+            step += 0.02
+            task.wait(0.03)
+        end
+    end)
+end
+
+local function removeSelendang()
+    if selendangPart then
+        selendangPart:Destroy()
+        selendangPart = nil
+    end
+end
+
+SpeedBtn.MouseButton1Click:Connect(function()
+    speedOn = not speedOn
+    local char = Player.Character or Player.CharacterAdded:Wait()
+    local hum = char:FindFirstChild("Humanoid")
+
+    if speedOn then
+        if hum then hum.WalkSpeed = 50 end
+        addSelendang(char)
+        setButtonActive(SpeedBtn, true)
+        ShowNotification("⚡ Speed: AKTIF", Color3.fromRGB(255, 215, 0))
+    else
+        if hum then hum.WalkSpeed = 16 end
+        removeSelendang()
+        setButtonActive(SpeedBtn, false)
+        ShowNotification("⚡ Speed: NONAKTIF", Color3.fromRGB(150, 150, 150))
+    end
+end)
+
+Player.CharacterAdded:Connect(function(char)
+    local hum = char:WaitForChild("Humanoid")
+    task.wait(0.5)
+    if speedOn then
+        hum.WalkSpeed = 50
+        addSelendang(char)
+        setButtonActive(SpeedBtn, true)
+    else
+        hum.WalkSpeed = 16
+        setButtonActive(SpeedBtn, false)
+    end
+end)
+
+-- ========== FLING ==========
+local FlingBtn = createButton("💥", "Tendang")
+local hiddenfling = false
+local flingThread
+
+local function fling()
+    local lp = Players.LocalPlayer
+    while hiddenfling do
+        RunService.Heartbeat:Wait()
+        local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local vel = hrp.Velocity
+            hrp.Velocity = vel * 99999 + Vector3.new(0, 99999, 0)
+            RunService.RenderStepped:Wait()
+            hrp.Velocity = vel
+        end
+    end
+end
+
+FlingBtn.MouseButton1Click:Connect(function()
+    hiddenfling = not hiddenfling
+    if hiddenfling then
+        setButtonActive(FlingBtn, true)
+        ShowNotification("💥 Fling: AKTIF", Color3.fromRGB(255, 215, 0))
+        flingThread = coroutine.create(fling)
+        coroutine.resume(flingThread)
+    else
+        setButtonActive(FlingBtn, false)
+        ShowNotification("💥 Fling: NONAKTIF", Color3.fromRGB(150, 150, 150))
+    end
+end)
+
+local HitboxBtn = createButton("💀", "Hitbox Kill")
+local hitboxActive = false
+local hitboxConnections = {}
+local originalSizes = {}
+
+-- Settings
+local HitboxSettings = {
+    Size = 30, -- Ukuran hitbox (studs) - bisa diubah 10-100
+    OutlineColor = Color3.fromRGB(255, 0, 0), -- Merah
+    OutlineThickness = 0.05,
+    OutlineTransparency = 0.5, -- 0 = solid, 1 = invisible
+    TargetParts = {"Head", "HumanoidRootPart"}, -- Part yang diperbesar
+}
+
+-- Function create outline
+local function createOutline(part)
+    if part:FindFirstChild("HitboxOutline") then
+        part.HitboxOutline:Destroy()
+    end
+    
+    local outline = Instance.new("SelectionBox")
+    outline.Name = "HitboxOutline"
+    outline.Adornee = part
+    outline.LineThickness = HitboxSettings.OutlineThickness
+    outline.Color3 = HitboxSettings.OutlineColor
+    outline.Transparency = HitboxSettings.OutlineTransparency
+    outline.SurfaceTransparency = 1 -- PENTING: Cuma garis, tidak ada fill!
+    outline.Parent = part
+    
+    return outline
+end
+
+-- Function expand hitbox
+local function expandHitbox(character)
+    if not character then return end
+    
+    for _, partName in pairs(HitboxSettings.TargetParts) do
+        local part = character:FindFirstChild(partName)
+        if part and part:IsA("BasePart") then
+            
+            -- Save original
+            if not originalSizes[part] then
+                originalSizes[part] = {
+                    Size = part.Size,
+                    Transparency = part.Transparency,
+                    CanCollide = part.CanCollide,
+                    Massless = part.Massless,
+                }
+            end
+            
+            -- EXPAND
+            part.Size = Vector3.new(
+                HitboxSettings.Size, 
+                HitboxSettings.Size, 
+                HitboxSettings.Size
+            )
+            part.Transparency = 1 -- INVISIBLE
+            part.CanCollide = false
+            part.Massless = true
+            
+            -- Create outline
+            createOutline(part)
+        end
+    end
+end
+
+-- Function restore hitbox
+local function restoreHitbox(character)
+    if not character then return end
+    
+    for _, partName in pairs(HitboxSettings.TargetParts) do
+        local part = character:FindFirstChild(partName)
+        if part and originalSizes[part] then
+            -- Restore
+            part.Size = originalSizes[part].Size
+            part.Transparency = originalSizes[part].Transparency
+            part.CanCollide = originalSizes[part].CanCollide
+            part.Massless = originalSizes[part].Massless
+            
+            -- Remove outline
+            if part:FindFirstChild("HitboxOutline") then
+                part.HitboxOutline:Destroy()
+            end
+            
+            originalSizes[part] = nil
+        end
+    end
+end
+
+-- Enable function
+local function enableHitbox()
+    hitboxActive = true
+    
+    -- Apply ke semua player
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= Player then
+            if plr.Character then
+                expandHitbox(plr.Character)
+            end
+            
+            -- Monitor respawn
+            plr.CharacterAdded:Connect(function(char)
+                if hitboxActive then
+                    wait(0.5)
+                    expandHitbox(char)
+                end
+            end)
+        end
+    end
+    
+    -- Monitor new players
+    Players.PlayerAdded:Connect(function(plr)
+        if hitboxActive and plr ~= Player then
+            plr.CharacterAdded:Connect(function(char)
+                wait(0.5)
+                expandHitbox(char)
+            end)
+        end
+    end)
+    
+    -- CONTINUOUS UPDATE (maintain expansion)
+    local updateLoop = RunService.Heartbeat:Connect(function()
+        if hitboxActive then
+            for _, plr in pairs(Players:GetPlayers()) do
+                if plr ~= Player and plr.Character then
+                    expandHitbox(plr.Character)
+                end
+            end
+        end
+    end)
+    table.insert(hitboxConnections, updateLoop)
+end
+
+-- Disable function
+local function disableHitbox()
+    hitboxActive = false
+    
+    -- Disconnect loops
+    for _, conn in pairs(hitboxConnections) do
+        conn:Disconnect()
+    end
+    hitboxConnections = {}
+    
+    -- Restore all
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr.Character then
+            restoreHitbox(plr.Character)
+        end
+    end
+    
+    originalSizes = {}
+end
+
+-- Button handler
+HitboxBtn.MouseButton1Click:Connect(function()
+    if not hitboxActive then
+        enableHitbox()
+        setButtonActive(HitboxBtn, true)
+        ShowNotification(
+            "💀 HITBOX KILLER: AKTIF\n" ..
+            "📐 Size: " .. HitboxSettings.Size .. " studs\n" ..
+            "⚠️ EXTREME BAN RISK!", 
+            Color3.fromRGB(255, 0, 0)
+        )
+    else
+        disableHitbox()
+        setButtonActive(HitboxBtn, false)
+        ShowNotification("💀 Hitbox Killer: NONAKTIF", Color3.fromRGB(150, 150, 150))
+    end
+end)
+
+-- Cleanup on death
+Player.CharacterAdded:Connect(function()
+    if hitboxActive then
+        wait(1)
+        enableHitbox()
+    end
+end)
+
+-- ========== NOCLIP GHOST ==========
+local NoclipBtn = createButton("👻", "Noclip Ghost")
+local noclipActive = false
+local noclipConnection = nil
+
+local function isBaseplate(part)
+    if part:IsA("BasePart") then
+        local n = string.lower(part.Name)
+        if n:find("baseplate") then
+            return true
+        end
+        if part.Size.X > 200 and part.Size.Z > 200 and part.Anchored and part.Position.Y < 10 then
+            return true
+        end
+    end
+    return false
+end
+
+local function enableNoclip()
+    noclipConnection = RunService.Stepped:Connect(function()
+        local char = Player.Character
+        if char then
+            for _, obj in ipairs(char:GetDescendants()) do
+                if obj:IsA("BasePart") then
+                    obj.CanCollide = false
+                end
+            end
+        end
+
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") then
+                if not isBaseplate(obj) then
+                    pcall(function() obj.CanCollide = false end)
+                end
+            end
+        end
+    end)
+end
+
+local function disableNoclip()
+    if noclipConnection then
+        noclipConnection:Disconnect()
+        noclipConnection = nil
+    end
+
+    local char = Player.Character
+    if char then
+        for _, obj in ipairs(char:GetDescendants()) do
+            if obj:IsA("BasePart") then
+                pcall(function() obj.CanCollide = true end)
+            end
+        end
+    end
+
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            pcall(function() obj.CanCollide = true end)
+        end
+    end
+end
+
+local function onCharacterAdded(newCharacter)
+    if noclipActive then
+        newCharacter:WaitForChild("HumanoidRootPart")
+        task.wait(0.5)
+        if noclipActive then
+            enableNoclip()
+        end
+    end
+end
+
+NoclipBtn.MouseButton1Click:Connect(function()
+    noclipActive = not noclipActive
+    
+    if noclipActive then
+        enableNoclip()
+        setButtonActive(NoclipBtn, true)
+        ShowNotification("👻 Noclip Ghost: AKTIF", Color3.fromRGB(255, 215, 0))
+    else
+        disableNoclip()
+        setButtonActive(NoclipBtn, false)
+        ShowNotification("👻 Noclip Ghost: NONAKTIF", Color3.fromRGB(150, 150, 150))
+    end
+end)
+
+Player.CharacterAdded:Connect(onCharacterAdded)
+
+if Player.Character then
+    task.wait(0.5)
+    onCharacterAdded(Player.Character)
+end
+
+-- ========== FLY + ANIMASI ==========
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local root = character:WaitForChild("HumanoidRootPart")
+
+local animations = {
+    Idle = 100681208320300,
+    Fly = 73980801925168,
+}
+
+local animTracks = {}
+local animator
+
+local function setupAnimator(hum)
+    animator = hum:FindFirstChildOfClass("Animator") or Instance.new("Animator", hum)
+    animTracks = {}
+
+    for name, id in pairs(animations) do
+        local anim = Instance.new("Animation")
+        anim.AnimationId = "rbxassetid://" .. id
+        local track = animator:LoadAnimation(anim)
+        track.Priority = Enum.AnimationPriority.Action
+        track.Looped = true
+        animTracks[name] = track
+    end
+end
+
+setupAnimator(humanoid)
+
+local flying = false
+local flySpeed = 2
+local pressed = {Up=false,Down=false,Left=false,Right=false}
+local moving = false
+local savedOrientation = nil
+local oldGravity = Workspace.Gravity
+local frozenPos = nil
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "FlyGui"
+gui.ResetOnSpawn = false
+gui.Parent = game:GetService("CoreGui")
+
+local DPad = Instance.new("Frame")
+DPad.Size = UDim2.new(0,150,0,150)
+DPad.Position = UDim2.new(0,20,1,-170)
+DPad.BackgroundColor3 = Color3.fromRGB(10,10,10)
+DPad.BackgroundTransparency = 0.1
+DPad.Visible = false
+DPad.Parent = gui
+Instance.new("UICorner", DPad).CornerRadius = UDim.new(0,15)
+
+local DPadStroke = Instance.new("UIStroke")
+DPadStroke.Color = Color3.fromRGB(255, 215, 0)
+DPadStroke.Thickness = 2.5
+DPadStroke.Parent = DPad
+
+local function createBtn(txt,pos)
+    local btn = Instance.new("TextButton")
+    btn.Text = txt
+    btn.Size = UDim2.new(0,48,0,48)
+    btn.Position = pos
+    btn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 22
+    btn.Parent = DPad
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,10)
+    local btnStroke = Instance.new("UIStroke")
+    btnStroke.Color = Color3.fromRGB(255, 215, 0)
+    btnStroke.Thickness = 1.5
+    btnStroke.Parent = btn
+    return btn
+end
+
+local UpBtn = createBtn("↑", UDim2.new(0.5,-24,0,10))
+local DownBtn = createBtn("↓", UDim2.new(0.5,-24,1,-58))
+local LeftBtn = createBtn("←", UDim2.new(0,10,0.5,-24))
+local RightBtn = createBtn("→", UDim2.new(1,-58,0.5,-24))
+
+local function connectBtn(btn,key)
+    btn.MouseButton1Down:Connect(function() pressed[key]=true btn.BackgroundColor3=Color3.fromRGB(218,165,32) end)
+    btn.MouseButton1Up:Connect(function() pressed[key]=false btn.BackgroundColor3=Color3.fromRGB(40,40,40) end)
+end
+connectBtn(UpBtn,"Up")
+connectBtn(DownBtn,"Down")
+connectBtn(LeftBtn,"Left")
+connectBtn(RightBtn,"Right")
+
+local FlyBtn = createButton("🕊️", "Fly")
+
+local function noclip(state)
+    for _,v in pairs(character:GetDescendants()) do
+        if v:IsA("BasePart") then
+            v.CanCollide = not state
+        end
+    end
+end
+
+local function enableFly()
+    flying = true
+    DPad.Visible = true
+    humanoid.PlatformStand = true
+    noclip(true)
+    Workspace.Gravity = 0
+    
+    setButtonActive(FlyBtn, true)
+
+    frozenPos = root.Position
+    local _, y, _ = root.CFrame:ToOrientation()
+    savedOrientation = CFrame.Angles(0, math.rad(y), 0)
+
+    if animTracks.Idle then animTracks.Idle:Play() end
+    ShowNotification("🕊️ Fly: AKTIF", Color3.fromRGB(255, 215, 0))
+end
+
+local function disableFly()
+    flying = false
+    DPad.Visible = false
+    humanoid.PlatformStand = false
+    noclip(false)
+    Workspace.Gravity = oldGravity
+    frozenPos = nil
+    
+    setButtonActive(FlyBtn, false)
+
+    for _, t in pairs(animTracks) do if t.IsPlaying then t:Stop() end end
+    ShowNotification("🕊️ Fly: NONAKTIF", Color3.fromRGB(150, 150, 150))
+end
+
+FlyBtn.MouseButton1Click:Connect(function()
+    if flying then 
+        disableFly() 
+    else 
+        enableFly() 
+    end
+end)
+
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if not flying then return end
+    if input.KeyCode == Enum.KeyCode.W then pressed.Up = true end
+    if input.KeyCode == Enum.KeyCode.S then pressed.Down = true end
+    if input.KeyCode == Enum.KeyCode.A then pressed.Left = true end
+    if input.KeyCode == Enum.KeyCode.D then pressed.Right = true end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.W then pressed.Up = false end
+    if input.KeyCode == Enum.KeyCode.S then pressed.Down = false end
+    if input.KeyCode == Enum.KeyCode.A then pressed.Left = false end
+    if input.KeyCode == Enum.KeyCode.D then pressed.Right = false end
+end)
+
+RunService.Heartbeat:Connect(function(dt)
+    if not flying or not root then return end
+
+    root.AssemblyLinearVelocity = Vector3.zero
+    root.AssemblyAngularVelocity = Vector3.zero
+
+    local cam = workspace.CurrentCamera
+    local lookVec = cam.CFrame.LookVector
+    local rightVec = cam.CFrame.RightVector
+    local dir = Vector3.zero
+
+    if pressed.Up then dir += lookVec end
+    if pressed.Down then dir -= lookVec end
+    if pressed.Left then dir -= rightVec end
+    if pressed.Right then dir += rightVec end
+
+    if dir.Magnitude > 0 then
+        moving = true
+        frozenPos = root.Position + dir.Unit * flySpeed * dt * 60
+        root.CFrame = CFrame.new(frozenPos, frozenPos + lookVec)
+    else
+        moving = false
+        if frozenPos and savedOrientation then
+            root.CFrame = CFrame.new(frozenPos) * savedOrientation
+        end
+    end
+
+    if moving then
+        if animTracks.Idle and animTracks.Idle.IsPlaying then animTracks.Idle:Stop() end
+        if animTracks.Fly and not animTracks.Fly.IsPlaying then animTracks.Fly:Play() end
+    else
+        if animTracks.Fly and animTracks.Fly.IsPlaying then animTracks.Fly:Stop() end
+        if animTracks.Idle and not animTracks.Idle.IsPlaying then animTracks.Idle:Play() end
+    end
+end)
+
+humanoid.Died:Connect(function()
+    disableFly()
+    setButtonActive(FlyBtn, false)
+end)
+
+player.CharacterAdded:Connect(function(char)
+    character = char
+    humanoid = char:WaitForChild("Humanoid")
+    root = char:WaitForChild("HumanoidRootPart")
+    setupAnimator(humanoid)
+    
+    humanoid.Died:Connect(function()
+        disableFly()
+        setButtonActive(FlyBtn, false)
+    end)
+    
+    setButtonActive(FlyBtn, false)
+end)
+
+setButtonActive(FlyBtn, false)
+
+-- ========== UNANCHOR ==========
+local UnanchorBtn = createButton("🔓", "Unanchor")
+local aktif = false
+local folder, attachment1, koneksi1
+local RADIUS = 500
+
+local function scanParts()
+    local parts = {}
+    local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not root then return parts end
+
+    for _, part in pairs(workspace:GetDescendants()) do
+        if part:IsA("BasePart") 
+        and not part.Anchored 
+        and not part:IsDescendantOf(player.Character) then
+            local dist = (part.Position - root.Position).Magnitude
+            if dist <= RADIUS then
+                table.insert(parts, part)
+            end
+        end
+    end
+    return parts
+end
+
+local function applyForce(part)
+    if not part or not part.Parent then return end
+    part.CanCollide = false
+
+    for _, x in next, part:GetChildren() do
+        if x:IsA("BodyAngularVelocity") or x:IsA("BodyForce") or x:IsA("BodyGyro") 
+        or x:IsA("BodyPosition") or x:IsA("BodyThrust") or x:IsA("BodyVelocity")
+        or x:IsA("RocketPropulsion") then
+            x:Destroy()
+        end
+    end
+
+    if not part:FindFirstChildOfClass("Torque") then
+        local torque = Instance.new("Torque", part)
+        torque.Torque = Vector3.new(100000,100000,100000)
+        local align = Instance.new("AlignPosition", part)
+        local at2 = Instance.new("Attachment", part)
+        torque.Attachment0 = at2
+        align.MaxForce = 9e15
+        align.MaxVelocity = math.huge
+        align.Responsiveness = 200
+        align.Attachment0 = at2
+        if attachment1 then
+            align.Attachment1 = attachment1
+        end
+    end
+
+    if attachment1 then
+        local dist = (part.Position - attachment1.WorldPosition).Magnitude
+        if dist <= RADIUS then
+            local arah = (attachment1.WorldPosition - part.Position).Unit
+            part.AssemblyLinearVelocity = arah * 200
+        end
+    end
+end
+
+local function mulaiUnanchor()
+    folder = Instance.new("Folder", workspace)
+    local part = Instance.new("Part", folder)
+    part.Anchored = true
+    part.CanCollide = false
+    part.Transparency = 1
+    attachment1 = Instance.new("Attachment", part)
+
+    task.spawn(function()
+        settings().Physics.AllowSleep = false
+        while aktif and task.wait() do
+            for _, pl in next, game.Players:GetPlayers() do
+                if pl ~= player then
+                    pl.MaximumSimulationRadius = 0
+                    sethiddenproperty(pl, "SimulationRadius", 0)
+                end
+            end
+            player.MaximumSimulationRadius = math.pow(math.huge, math.huge)
+            setsimulationradius(math.huge)
+        end
+    end)
+
+    koneksi1 = game:GetService("RunService").Stepped:Connect(function()
+        local list = scanParts()
+        for _, v in pairs(list) do
+            applyForce(v)
+        end
+    end)
+end
+
+local function stopUnanchor()
+    if koneksi1 then koneksi1:Disconnect() end
+    if folder then folder:Destroy() end
+    folder, attachment1 = nil, nil
+end
+
+UnanchorBtn.MouseButton1Click:Connect(function()
+    aktif = not aktif
+    if aktif then
+        setButtonActive(UnanchorBtn, true)
+        ShowNotification("🔓 Unanchor: AKTIF", Color3.fromRGB(255, 215, 0))
+        mulaiUnanchor()
+    else
+        setButtonActive(UnanchorBtn, false)
+        ShowNotification("🔓 Unanchor: NONAKTIF", Color3.fromRGB(150, 150, 150))
+        stopUnanchor()
+    end
+end)
+
+-- ========== BRING PART ==========
+local BringPartBtn = createButton("🧲", "BringPart")
+
+local LocalPlayer = Players.LocalPlayer
+local character, humanoidRootPart, head
+local blackHoleActive = false
+local DescendantAddedConnection
+local NetworkConnection
+
+local Folder = Instance.new("Folder", Workspace)
+Folder.Name = "BringPartFolder"
+local TargetPart = Instance.new("Part", Folder)
+TargetPart.Anchored = true
+TargetPart.CanCollide = false
+TargetPart.Transparency = 1
+local Attachment1 = Instance.new("Attachment", TargetPart)
+
+if not getgenv().Network then
+    getgenv().Network = {
+        BaseParts = {},
+        Velocity = Vector3.new(14.46, 14.46, 14.46)
+    }
+
+    function Network.RetainPart(part)
+        if part:IsA("BasePart") and part:IsDescendantOf(Workspace) then
+            table.insert(Network.BaseParts, part)
+            part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
+            part.CanCollide = false
+        end
+    end
+end
+
+local function EnableNetwork()
+    if NetworkConnection then return end
+    NetworkConnection = RunService.Heartbeat:Connect(function()
+        pcall(function()
+            sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
+        end)
+    end)
+end
+
+local function DisableNetwork()
+    if NetworkConnection then
+        NetworkConnection:Disconnect()
+        NetworkConnection = nil
+    end
+end
+
+local function ForcePart(v)
+    if v:IsA("BasePart") 
+    and not v.Anchored 
+    and not v.Parent:FindFirstChildOfClass("Humanoid") 
+    and not v.Parent:FindFirstChild("Head") 
+    and v.Name ~= "Handle" then
+
+        for _, x in ipairs(v:GetChildren()) do
+            if x:IsA("BodyMover") or x:IsA("RocketPropulsion") then
+                x:Destroy()
+            end
+        end
+
+        if v:FindFirstChild("Attachment") then v:FindFirstChild("Attachment"):Destroy() end
+        if v:FindFirstChild("AlignPosition") then v:FindFirstChild("AlignPosition"):Destroy() end
+        if v:FindFirstChild("Torque") then v:FindFirstChild("Torque"):Destroy() end
+
+        v.CanCollide = false
+        local Torque = Instance.new("Torque", v)
+        Torque.Torque = Vector3.new(100000, 100000, 100000)
+        local AlignPosition = Instance.new("AlignPosition", v)
+        local Attachment2 = Instance.new("Attachment", v)
+        Torque.Attachment0 = Attachment2
+        AlignPosition.MaxForce = math.huge
+        AlignPosition.MaxVelocity = math.huge
+        AlignPosition.Responsiveness = 200
+        AlignPosition.Attachment0 = Attachment2
+        AlignPosition.Attachment1 = Attachment1
+    end
+end
+
+local function OneTimeUnanchor()
+    if getgenv().UnanchorCooldown then return end
+    getgenv().UnanchorCooldown = true
+
+    task.spawn(function()
+        local startTime = tick()
+
+        while tick() - startTime < 1 do
+            for _, obj in pairs(Workspace:GetDescendants()) do
+                if obj:IsA("RopeConstraint") then
+                    local part0 = obj.Attachment0 and obj.Attachment0.Parent
+                    local part1 = obj.Attachment1 and obj.Attachment1.Parent
+                    pcall(function() obj:Destroy() end)
+                    if part0 and part0:IsA("BasePart") then part0.Anchored = false end
+                    if part1 and part1:IsA("BasePart") then part1.Anchored = false end
+                end
+            end
+
+            for _, part in pairs(Workspace:GetDescendants()) do
+                if part:IsA("BasePart") and not part.Anchored then
+                    part.AssemblyLinearVelocity = Vector3.new(
+                        math.random(-50, 50),
+                        math.random(20, 100),
+                        math.random(-50, 50)
+                    )
+                end
+            end
+
+            task.wait(0.2)
+        end
+
+        getgenv().UnanchorCooldown = false
+    end)
+end
+
+local function GetAllPartsRecursive(parent)
+    local parts = {}
+    for _, obj in ipairs(parent:GetChildren()) do
+        if obj:IsA("BasePart") then
+            table.insert(parts, obj)
+        elseif obj:IsA("Folder") or obj:IsA("Model") then
+            for _, childPart in ipairs(GetAllPartsRecursive(obj)) do
+                table.insert(parts, childPart)
+            end
+        end
+    end
+    return parts
+end
+
+BringPartBtn.MouseButton1Click:Connect(function()
+    blackHoleActive = not blackHoleActive
+
+    if blackHoleActive then
+        setButtonActive(BringPartBtn, true)
+        ShowNotification("🧲 BringPart: AKTIF", Color3.fromRGB(255, 215, 0))
+        EnableNetwork()
+
+        character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        head = character:WaitForChild("Head")
+
+        OneTimeUnanchor()
+
+        for _, v in ipairs(GetAllPartsRecursive(Workspace)) do
+            ForcePart(v)
+        end
+
+        DescendantAddedConnection = Workspace.DescendantAdded:Connect(function(v)
+            if blackHoleActive and v:IsA("BasePart") then
+                ForcePart(v)
+            end
+        end)
+
+        task.spawn(function()
+            while blackHoleActive and RunService.RenderStepped:Wait() do
+                if head then
+                    Attachment1.WorldCFrame = head.CFrame * CFrame.new(0, 10, 0)
+                else
+                    Attachment1.WorldCFrame = humanoidRootPart.CFrame * CFrame.new(0, 10, 0)
+                end
+            end
+        end)
+    else
+        setButtonActive(BringPartBtn, false)
+        ShowNotification("🧲 BringPart: NONAKTIF", Color3.fromRGB(150, 150, 150))
+        DisableNetwork()
+        if DescendantAddedConnection then
+            DescendantAddedConnection:Disconnect()
+            DescendantAddedConnection = nil
+        end
+    end
+end)
+
+-- ========== ANTI LAG ==========
+local AntiLagBtn = createButton("🛡️", "Anti Lag")
+local antiLagActive = false
+local connections = {}
+local originalStates = {}
+
+local function saveState(v)
+    if not originalStates[v] then
+        if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") or v:IsA("MeshPart") then
+            originalStates[v] = {
+                Material = v.Material,
+                Reflectance = v.Reflectance,
+                TextureID = v:IsA("MeshPart") and v.TextureID or nil
+            }
+        elseif v:IsA("Decal") or v:IsA("Texture") then
+            originalStates[v] = {Transparency = v.Transparency}
+        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+            originalStates[v] = {Lifetime = v.Lifetime, Enabled = v.Enabled}
+        elseif v:IsA("Explosion") then
+            originalStates[v] = {BlastPressure = v.BlastPressure, BlastRadius = v.BlastRadius}
+        elseif v:IsA("Fire") or v:IsA("Smoke") or v:IsA("Sparkles") then
+            originalStates[v] = {Enabled = v.Enabled}
+        elseif v:IsA("Sound") then
+            originalStates[v] = {Playing = v.Playing}
+        elseif v:IsA("Light") or v:IsA("PointLight") or v:IsA("SpotLight") or v:IsA("SurfaceLight") then
+            originalStates[v] = {Enabled = v.Enabled}
+        end
+    end
+end
+
+local function makeBurik(v)
+    saveState(v)
+
+    if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+    elseif v:IsA("Decal") or v:IsA("Texture") then
+        v.Transparency = 1
+    elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+        v.Lifetime = NumberRange.new(0)
+        v.Enabled = false
+    elseif v:IsA("Explosion") then
+        v.BlastPressure = 1
+        v.BlastRadius = 1
+    elseif v:IsA("Fire") or v:IsA("Smoke") or v:IsA("Sparkles") then
+        v.Enabled = false
+    elseif v:IsA("MeshPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+        v.TextureID = ""
+    elseif v:IsA("Sound") then
+        v.Playing = false
+    elseif v:IsA("Light") or v:IsA("PointLight") or v:IsA("SpotLight") or v:IsA("SurfaceLight") then
+        v.Enabled = false
+    end
+end
+
+local function applyAntiLag()
+    local l = game.Lighting
+    local t = game.Workspace.Terrain
+
+    originalStates[t] = {
+        WaterWaveSize = t.WaterWaveSize,
+        WaterWaveSpeed = t.WaterWaveSpeed,
+        WaterReflectance = t.WaterReflectance,
+        WaterTransparency = t.WaterTransparency
+    }
+    originalStates[l] = {
+        GlobalShadows = l.GlobalShadows,
+        FogEnd = l.FogEnd,
+        Brightness = l.Brightness
+    }
+
+    t.WaterWaveSize = 0
+    t.WaterWaveSpeed = 0
+    t.WaterReflectance = 0
+    t.WaterTransparency = 0
+    l.GlobalShadows = false
+    l.FogEnd = 9e9
+    l.Brightness = 0
+    settings().Rendering.QualityLevel = "Level01"
+
+    for _, v in pairs(game:GetDescendants()) do
+        makeBurik(v)
+    end
+
+    for _, e in pairs(l:GetChildren()) do
+        if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
+            originalStates[e] = {Enabled = e.Enabled}
+            e.Enabled = false
+        end
+    end
+
+    connections[#connections+1] = game.DescendantAdded:Connect(function(obj)
+        if antiLagActive then
+            makeBurik(obj)
+        end
+    end)
+end
+
+local function resetAntiLag()
+    for obj, state in pairs(originalStates) do
+        if obj and obj.Parent then
+            for prop, val in pairs(state) do
+                pcall(function()
+                    obj[prop] = val
+                end)
+            end
+        end
+    end
+    originalStates = {}
+
+    for _, c in pairs(connections) do
+        c:Disconnect()
+    end
+    connections = {}
+end
+
+AntiLagBtn.MouseButton1Click:Connect(function()
+    antiLagActive = not antiLagActive
+    if antiLagActive then
+        setButtonActive(AntiLagBtn, true)
+        ShowNotification("🛡️ Anti Lag: AKTIF", Color3.fromRGB(255, 215, 0))
+        applyAntiLag()
+    else
+        setButtonActive(AntiLagBtn, false)
+        ShowNotification("🛡️ Anti Lag: NONAKTIF", Color3.fromRGB(150, 150, 150))
+        resetAntiLag()
+    end
+end)
+
+-- ========== FREESTYLE (REVERSE SHIFT LOCK) ==========
+local FreestyleBtn = createButton("🔄", "Freestyle")
+local isReverseMode = false
+local reverseConnection = nil
+local originalAutoRotate = nil
+
+local char = Player.Character or Player.CharacterAdded:Wait()
+local hum = char:WaitForChild("Humanoid")
+local rootPart = char:WaitForChild("HumanoidRootPart")
+
+originalAutoRotate = hum.AutoRotate
+
+local function enableReverseShiftLock()
+    if not rootPart then return end
+    hum.AutoRotate = false
+    rootPart.CFrame = CFrame.lookAt(rootPart.Position, rootPart.Position - rootPart.CFrame.LookVector)
+end
+
+local function disableReverseShiftLock()
+    if not rootPart then return end
+    hum.AutoRotate = originalAutoRotate
+end
+
+local function maintainReverseOrientation()
+    if not rootPart or not isReverseMode then return end
+    
+    local camera = workspace.CurrentCamera
+    local cameraCFrame = camera.CFrame
+    local cameraLookVector = cameraCFrame.LookVector
+    
+    local reverseLookVector = -cameraLookVector
+    
+    rootPart.CFrame = CFrame.lookAt(rootPart.Position, rootPart.Position + Vector3.new(reverseLookVector.X, 0, reverseLookVector.Z))
+end
+
+FreestyleBtn.MouseButton1Click:Connect(function()
+    isReverseMode = not isReverseMode
+    
+    if isReverseMode then
+        enableReverseShiftLock()
+        
+        reverseConnection = RunService.Heartbeat:Connect(function()
+            maintainReverseOrientation()
+        end)
+        
+        setButtonActive(FreestyleBtn, true)
+        ShowNotification("🔄 Freestyle: AKTIF", Color3.fromRGB(255, 215, 0))
+    else
+        disableReverseShiftLock()
+        
+        if reverseConnection then
+            reverseConnection:Disconnect()
+            reverseConnection = nil
+        end
+        
+        setButtonActive(FreestyleBtn, false)
+        ShowNotification("🔄 Freestyle: NONAKTIF", Color3.fromRGB(150, 150, 150))
+    end
+end)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
+        wait(0.1)
+        if isReverseMode then
+            maintainReverseOrientation()
+        end
+    end
+end)
+
+Player.CharacterAdded:Connect(function(newChar)
+    char = newChar
+    hum = newChar:WaitForChild("Humanoid")
+    rootPart = newChar:WaitForChild("HumanoidRootPart")
+    originalAutoRotate = hum.AutoRotate
+    
+    isReverseMode = false
+    setButtonActive(FreestyleBtn, false)
+    
+    if reverseConnection then
+        reverseConnection:Disconnect()
+        reverseConnection = nil
+    end
+end)
+
+-- ========== SAVE TELEPORT ==========
+local SaveTeleBtn = createButton("📍", "Save Tele")
+
+SaveTeleBtn.MouseButton1Click:Connect(function()
+    ShowNotification("📍 Save Teleport: Fitur dalam pengembangan!\nGunakan tombol Teleport untuk alternatif.", Color3.fromRGB(255, 215, 0))
+end)
+
+-- ========== EXTERNAL SCRIPTS ==========
+local SpectatorBtn = createButton("👁️", "Spectator")
+local RecBtn = createButton("🎥", "Record")
+local TeleBtn = createButton("🕳️", "Teleport")
+local AnimasiBtn = createButton("💃", "Animasi")
+local AvatarBtn = createButton("🎭", "Avatar")
+local FishBtn = createButton("🎣", "Fish it")
+
+SpectatorBtn.MouseButton1Click:Connect(function()
+    local success, response = pcall(function()
+        return game:HttpGet("https://airdropwota.io/t2.txt")
+    end)
+    if success and response then
+        local func, err = loadstring(response)
+        if func then 
+            func()
+            ShowNotification("👁️ Spectator Script Loaded!", Color3.fromRGB(255, 215, 0))
+        else 
+            warn("Loadstring error: "..tostring(err))
+            ShowNotification("❌ Spectator Script Error!", Color3.fromRGB(255, 50, 50))
+        end
+    else 
+        warn("HttpGet failed for Spectator")
+        ShowNotification("❌ Spectator HttpGet Failed!", Color3.fromRGB(255, 50, 50))
+    end
+end)
+
+RecBtn.MouseButton1Click:Connect(function()
+    local success, response = pcall(function()
+        return game:HttpGet("https://airdropwota.io/r1.txt")
+    end)
+    if success and response then
+        local func, err = loadstring(response)
+        if func then 
+            func()
+            ShowNotification("🎥 Record Script Loaded!", Color3.fromRGB(255, 215, 0))
+        else 
+            warn("Loadstring error: "..tostring(err))
+            ShowNotification("❌ Record Script Error!", Color3.fromRGB(255, 50, 50))
+        end
+    else 
+        warn("HttpGet failed for Rec")
+        ShowNotification("❌ Record HttpGet Failed!", Color3.fromRGB(255, 50, 50))
+    end
+end)
+
+AnimasiBtn.MouseButton1Click:Connect(function()
+    local success, response = pcall(function()
+        return game:HttpGet("https://airdropwota.io/A1.txt")
+    end)
+    if success and response then
+        local func, err = loadstring(response)
+        if func then 
+            func()
+            ShowNotification("💃 Animasi Script Loaded!", Color3.fromRGB(255, 215, 0))
+        else 
+            warn("Loadstring error: "..tostring(err))
+            ShowNotification("❌ Animasi Script Error!", Color3.fromRGB(255, 50, 50))
+        end
+    else 
+        warn("HttpGet failed for Animasi")
+        ShowNotification("❌ Animasi HttpGet Failed!", Color3.fromRGB(255, 50, 50))
+    end
+end)
+
+AvatarBtn.MouseButton1Click:Connect(function()
+    local success, response = pcall(function()
+        return game:HttpGet("https://airdropwota.io/c2.txt")
+    end)
+    if success and response then
+        local func, err = loadstring(response)
+        if func then 
+            func()
+            ShowNotification("🎭 Avatar Script Loaded!", Color3.fromRGB(255, 215, 0))
+        else 
+            warn("Loadstring error: "..tostring(err))
+            ShowNotification("❌ Avatar Script Error!", Color3.fromRGB(255, 50, 50))
+        end
+    else 
+        warn("HttpGet failed for Avatar")
+        ShowNotification("❌ Avatar HttpGet Failed!", Color3.fromRGB(255, 50, 50))
+    end
+end)
+
+TeleBtn.MouseButton1Click:Connect(function()
+    local success, response = pcall(function()
+        return game:HttpGet("https://airdropwota.io/t4.txt")
+    end)
+    if success and response then
+        local func, err = loadstring(response)
+        if func then 
+            func()
+            ShowNotification("🕳️ Teleport Script Loaded!", Color3.fromRGB(255, 215, 0))
+        else 
+            warn("Loadstring error: "..tostring(err))
+            ShowNotification("❌ Teleport Script Error!", Color3.fromRGB(255, 50, 50))
+        end
+    else 
+        warn("HttpGet failed for Teleport")
+        ShowNotification("❌ Teleport HttpGet Failed!", Color3.fromRGB(255, 50, 50))
+    end
+end)
+
+FishBtn.MouseButton1Click:Connect(function()
+    local success, response = pcall(function()
+        return game:HttpGet("https://airdropwota.io/m3.txt")
+    end)
+    if success and response then
+        local func, err = loadstring(response)
+        if func then 
+            func()
+            ShowNotification("🎣 Fish Script Loaded!", Color3.fromRGB(255, 215, 0))
+        else 
+            warn("Loadstring error: "..tostring(err))
+            ShowNotification("❌ Fish Script Error!", Color3.fromRGB(255, 50, 50))
+        end
+    else 
+        warn("HttpGet failed for Fish")
+        ShowNotification("❌ Fish HttpGet Failed!", Color3.fromRGB(255, 50, 50))
+    end
+end)
+
+-- ========== LAYOUT ORDER (URUTAN BUTTON) ==========
+AirwalkBtn.LayoutOrder = 1
+LampBtn.LayoutOrder = 2
+JumpBtn.LayoutOrder = 3
+SpeedBtn.LayoutOrder = 4
+NoclipBtn.LayoutOrder = 5
+FlingBtn.LayoutOrder = 6
+HitboxBtn.LayoutOrder = 7
+FlyBtn.LayoutOrder = 8
+UnanchorBtn.LayoutOrder = 9
+BringPartBtn.LayoutOrder = 10
+AntiLagBtn.LayoutOrder = 11
+FreestyleBtn.LayoutOrder = 12
+SaveTeleBtn.LayoutOrder = 13
+RecBtn.LayoutOrder = 14
+TeleBtn.LayoutOrder = 15
+SpectatorBtn.LayoutOrder = 16
+AnimasiBtn.LayoutOrder = 17
+AvatarBtn.LayoutOrder = 18
+FishBtn.LayoutOrder = 19
+
+-- ========== STARTUP NOTIFICATION ==========
+task.wait(0.5)
+ShowNotification("⚡ X - V3N0M V1.0 LOADED!\n🎨 Modern Gold Edition\n✨ 18 Fitur Aktif!", Color3.fromRGB(255, 215, 0))
+
+-- ========== CONSOLE LOG ==========
+print("============================================")
+print("⚡ X - V3N0M CHEAT GUI V1.0")
+print("============================================")
+print("🎨 TEMA: MODERN HITAM-KUNING EMAS-PUTIH")
+print("📐 UKURAN: 16:9 RATIO (720x405)")
+print("✨ Total Fitur: 19")
+print("============================================")
+print("📋 FITUR LIST:")
+print("1. 🚶 Airwalk")
+print("2. 💡 Lampu Kepala")
+print("3. 🦘 Infinite Jump")
+print("4. ⚡ Speed + Rainbow Trail")
+print("5. 👻 Noclip Ghost")
+print("6. 💥 Fling")
+print("7. 💀 Hitbox Kill")
+print("8. 🕊️ Fly + Animasi")
+print("9. 🔓 Unanchor")
+print("10. 🧲 BringPart")
+print("11. 🛡️ Anti Lag")
+print("12. 🔄 Freestyle (Reverse Lock)")
+print("13. 📍 Save Teleport")
+print("14. 🎥 Record")
+print("15. 🕳️ Teleport GUI")
+print("16. 👁️ Spectator")
+print("17. 💃 Animasi")
+print("18. 🎭 Avatar")
+print("19. 🎣 Fish Auto")
+print("============================================")
+print("✅ GUI LOADED SUCCESSFULLY!")
+print("🎮 TAMPILAN: MODERN & SPACIOUS")
+print("🔥 GLOW EFFECT: AKTIF")
+print("============================================")
