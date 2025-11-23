@@ -1,115 +1,459 @@
+-- TELEPORT V1.0 by Nazam Official - ADVANCED ANTI-CHEAT BYPASS
+-- Mencegah teleport gagal dan kembali ke posisi awal
 
+local TeleportV1 = {
+    positions = {},
+    maxPositions = 3,
+    currentSelected = 1,
+    antiCheatBypass = true,
+    deleteMode = false
+}
 
-local TsuoCrashGui = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
-local Title = Instance.new("TextLabel")
-local CrashButton = Instance.new("TextButton")
-local CloseButton = Instance.new("TextButton")
+local GUI = {
+    mainColor = Color3.fromRGB(0, 80, 160),
+    secondaryColor = Color3.fromRGB(240, 240, 240),
+    accentColor = Color3.fromRGB(20, 20, 20),
+    successColor = Color3.fromRGB(0, 180, 0),
+    warningColor = Color3.fromRGB(180, 0, 0)
+}
 
-TsuoCrashGui.Name = "TsuoCrashNuclear"
-TsuoCrashGui.Parent = game.CoreGui
-TsuoCrashGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+local Sizes = {
+    mainFrame = UDim2.new(0, 350, 0, 450),
+    titleHeight = 45,
+    posFrameHeight = 85,
+    buttonHeight = 35,
+    spacing = 15
+}
 
-MainFrame.Name = "MainFrame"
-MainFrame.Parent = TsuoCrashGui
-MainFrame.BackgroundColor3 = Color3.new(0, 0, 0)
-MainFrame.BorderColor3 = Color3.new(1, 0, 0)
-MainFrame.Position = UDim2.new(0.35, 0, 0.35, 0)
-MainFrame.Size = UDim2.new(0, 300, 0, 150)
-MainFrame.Active = true
-MainFrame.Draggable = true
-
-Title.Name = "Title"
-Title.Parent = MainFrame
-Title.BackgroundColor3 = Color3.new(0, 0, 0)
-Title.Size = UDim2.new(0, 300, 0, 30)
-Title.Font = Enum.Font.GothamBold
-Title.Text = "TSUO SERVER CRASHER v4.2"
-Title.TextColor3 = Color3.new(1, 0, 0)
-Title.TextSize = 16
-
-CloseButton.Name = "CloseButton"
-CloseButton.Parent = MainFrame
-CloseButton.BackgroundColor3 = Color3.new(1, 0, 0)
-CloseButton.Position = UDim2.new(0.9, 0, 0.03, 0)
-CloseButton.Size = UDim2.new(0, 25, 0, 25)
-CloseButton.Font = Enum.Font.GothamBlack
-CloseButton.Text = "X"
-CloseButton.TextColor3 = Color3.new(0, 0, 0)
-CloseButton.TextSize = 14
-
-CrashButton.Name = "CrashButton"
-CrashButton.Parent = MainFrame
-CrashButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-CrashButton.Position = UDim2.new(0.2, 0, 0.3, 0)
-CrashButton.Size = UDim2.new(0, 200, 0, 50)
-CrashButton.Font = Enum.Font.GothamBlack
-CrashButton.Text = "CRASH SERVER NOW"
-CrashButton.TextColor3 = Color3.new(1, 0, 0)
-CrashButton.TextSize = 18
-
-local function NuclearCrash()
+-- ROBLOX ANTI-CHEAT BYPASS SYSTEM YANG LEBIH AGGRESIF
+local function bypassAntiCheat()
+    if not TeleportV1.antiCheatBypass then return end
+    
+    print("[ANTI-CHEAT] Memulai bypass system...")
+    
+    -- Method 1: Hook semua function detection yang umum
     pcall(function()
-        
-        for i = 1, 5000 do
-            game:GetService("ReplicatedStorage"):FireServer(math.random(), math.random(), math.random())
+        -- Hook __namecall untuk intercept semua checks
+        if not getgenv().namecallHooked then
+            local oldNamecall
+            oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+                local method = getnamecallmethod()
+                local args = {...}
+                
+                -- Block teleport detection
+                if method and tostring(method):lower():find("teleport") then
+                    return true
+                end
+                
+                -- Block position checks
+                if method and (tostring(method):lower():find("check") or tostring(method):lower():find("validate")) then
+                    return true
+                end
+                
+                -- Block anti-cheat reports
+                if method and tostring(method):lower():find("kick") or tostring(method):lower():find("report") then
+                    return nil
+                end
+                
+                return oldNamecall(self, ...)
+            end)
+            getgenv().namecallHooked = true
         end
-
-        
-        local nukeParts = {}
-        for i = 1, 1000 do
-            local part = Instance.new("Part")
-            part.Anchored = false
-            part.Size = Vector3.new(100, 100, 100)
-            part.Position = Vector3.new(math.random(-500, 500), 1000, math.random(-500, 500))
-            part.Parent = workspace
-            table.insert(nukeParts, part)
-            task.wait()
+    end)
+    
+    -- Method 2: Hook index service untuk bypass property checks
+    pcall(function()
+        if not getgenv().indexHooked then
+            local oldIndex
+            oldIndex = hookmetamethod(game, "__index", function(self, key)
+                if tostring(key):lower():find("position") or tostring(key):lower():find("cframe") then
+                    if self == game.Players.LocalPlayer.Character then
+                        return oldIndex(self, key)
+                    end
+                end
+                return oldIndex(self, key)
+            end)
+            getgenv().indexHooked = true
         end
-
-       
-        local hugeTable = {}
-        for i = 1, 5000000 do
-            hugeTable[i] = "CRASH"..tostring(math.random(1,1000000000))
-        end
-
-        
-        while true do
-            for _, v in pairs(game:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v:Destroy()
+    end)
+    
+    -- Method 3: Manipulasi memory untuk disable anti-cheat
+    pcall(function()
+        for i, v in pairs(getreg()) do
+            if type(v) == "table" then
+                for x, y in pairs(v) do
+                    if type(y) == "function" then
+                        local info = debug.getinfo(y)
+                        if info.name and (info.name:lower():find("check") or info.name:lower():find("teleport") or info.name:lower():find("anti")) then
+                            hookfunction(y, function(...) return true end)
+                        end
+                    end
                 end
             end
         end
     end)
+    
+    -- Method 4: Network manipulation
+    pcall(function()
+        local players = game:GetService("Players")
+        local localPlayer = players.LocalPlayer
+        
+        if localPlayer.Character then
+            local rootPart = localPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if rootPart then
+                -- Set network ownership untuk avoid checks
+                pcall(function()
+                    rootPart:SetNetworkOwner(nil)
+                end)
+                
+                -- Disable collision temporarily selama teleport
+                pcall(function()
+                    rootPart.CanCollide = false
+                end)
+            end
+        end
+    end)
+    
+    -- Method 5: Service hooks untuk bypass game-specific anti-cheat
+    pcall(function()
+        local runService = game:GetService("RunService")
+        
+        -- Preemptively block common anti-cheat services
+        for _, service in pairs({"PhysicsService", "PathfindingService", "ScriptContext"}) do
+            pcall(function()
+                local serv = game:GetService(service)
+                if serv then
+                    -- Hook methods yang mungkin digunakan untuk detection
+                    for name, func in pairs(serv) do
+                        if type(func) == "function" and tostring(name):lower():find("check") then
+                            hookfunction(func, function(...) return true end)
+                        end
+                    end
+                end
+            end)
+        end
+    end)
 end
 
-spawn(function()
-    game:GetService("RunService").RenderStepped:Connect(function()
+function TeleportV1:setPosition(index)
+    if index > self.maxPositions then return end
+    
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        self.positions[index] = character.HumanoidRootPart.CFrame
+        self.currentSelected = index
+        self:updateGUI()
+    end
+end
+
+function TeleportV1:teleportToPosition(index)
+    if not self.positions[index] then 
+        print("[TELEPORT] Posisi "..index.." belum di-set!")
+        return 
+    end
+    
+    print("[TELEPORT] Memulai teleport ke posisi "..index.."...")
+    
+    -- Execute anti-cheat bypass SEBELUM teleport
+    bypassAntiCheat()
+    
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local rootPart = character.HumanoidRootPart
+        
+        -- Method 1: Direct CFrame assignment (primary)
         pcall(function()
-            if game.Players.LocalPlayer.Character then
-                game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Health = 100
+            rootPart.CFrame = self.positions[index]
+        end)
+        
+        -- Method 2: Alternative method jika method 1 gagal
+        wait(0.1)
+        pcall(function()
+            character:SetPrimaryPartCFrame(self.positions[index])
+        end)
+        
+        -- Method 3: Force position update
+        wait(0.05)
+        pcall(function()
+            rootPart.Position = self.positions[index].Position
+        end)
+        
+        -- Method 4: Network manipulation untuk force sync
+        pcall(function()
+            rootPart:SetNetworkOwner(nil)
+            wait(0.1)
+            rootPart:SetNetworkOwner(game.Players.LocalPlayer)
+        end)
+        
+        print("[TELEPORT] Berhasil teleport ke posisi "..index)
+    else
+        print("[TELEPORT] Character tidak ditemukan!")
+    end
+end
+
+function TeleportV1:deletePosition(index)
+    self.positions[index] = nil
+    self:updateGUI()
+end
+
+function TeleportV1:changePosition(index, newCFrame)
+    if index > self.maxPositions then return end
+    self.positions[index] = newCFrame
+    self.currentSelected = index
+    self:updateGUI()
+end
+
+-- [GUI Creation dan functions lainnya tetap sama seperti sebelumnya...]
+function TeleportV1:createGUI()
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "TeleportV1_NazamOfficial"
+    screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = Sizes.mainFrame
+    mainFrame.Position = UDim2.new(0, 20, 0.5, -Sizes.mainFrame.Y.Scale/2)
+    mainFrame.BackgroundColor3 = GUI.mainColor
+    mainFrame.BackgroundTransparency = 0.1
+    mainFrame.BorderSizePixel = 0
+    mainFrame.ClipsDescendants = true
+    mainFrame.Parent = screenGui
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = mainFrame
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = GUI.accentColor
+    stroke.Thickness = 2
+    stroke.Parent = mainFrame
+    
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, Sizes.titleHeight)
+    title.Position = UDim2.new(0, 0, 0, 0)
+    title.BackgroundColor3 = GUI.accentColor
+    title.TextColor3 = GUI.secondaryColor
+    title.Text = "TELEPORT V1.0 - Nazam Official"
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 18
+    title.TextStrokeTransparency = 0.7
+    title.Parent = mainFrame
+    
+    local titleCorner = Instance.new("UICorner")
+    titleCorner.CornerRadius = UDim.new(0, 8)
+    titleCorner.Parent = title
+    
+    local scrollFrame = Instance.new("ScrollingFrame")
+    scrollFrame.Size = UDim2.new(1, 0, 1, -Sizes.titleHeight - 100)
+    scrollFrame.Position = UDim2.new(0, 0, 0, Sizes.titleHeight)
+    scrollFrame.BackgroundTransparency = 1
+    scrollFrame.BorderSizePixel = 0
+    scrollFrame.ScrollBarThickness = 4
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, Sizes.posFrameHeight * self.maxPositions + Sizes.spacing * (self.maxPositions - 1))
+    scrollFrame.Parent = mainFrame
+    
+    for i = 1, self.maxPositions do
+        local yPosition = (i - 1) * (Sizes.posFrameHeight + Sizes.spacing)
+        
+        local posFrame = Instance.new("Frame")
+        posFrame.Size = UDim2.new(0.9, 0, 0, Sizes.posFrameHeight)
+        posFrame.Position = UDim2.new(0.05, 0, 0, yPosition)
+        posFrame.BackgroundColor3 = GUI.secondaryColor
+        posFrame.BackgroundTransparency = 0.05
+        posFrame.BorderSizePixel = 0
+        posFrame.Parent = scrollFrame
+        
+        local posFrameCorner = Instance.new("UICorner")
+        posFrameCorner.CornerRadius = UDim.new(0, 6)
+        posFrameCorner.Parent = posFrame
+        
+        local posFrameStroke = Instance.new("UIStroke")
+        posFrameStroke.Color = GUI.accentColor
+        posFrameStroke.Thickness = 1
+        posFrameStroke.Parent = posFrame
+        
+        local posLabel = Instance.new("TextLabel")
+        posLabel.Size = UDim2.new(0.6, 0, 0.5, 0)
+        posLabel.Position = UDim2.new(0.05, 0, 0.1, 0)
+        posLabel.BackgroundTransparency = 1
+        posLabel.TextColor3 = GUI.accentColor
+        posLabel.Text = "POSISI "..i.." [BELUM DI SET]"
+        posLabel.Font = Enum.Font.GothamSemibold
+        posLabel.TextSize = 14
+        posLabel.TextXAlignment = Enum.TextXAlignment.Left
+        posLabel.Name = "PosLabel"..i
+        posLabel.Parent = posFrame
+        
+        local statusIndicator = Instance.new("Frame")
+        statusIndicator.Size = UDim2.new(0.8, 0, 0, 3)
+        statusIndicator.Position = UDim2.new(0.05, 0, 0.6, 0)
+        statusIndicator.BackgroundColor3 = GUI.warningColor
+        statusIndicator.BorderSizePixel = 0
+        statusIndicator.Name = "StatusIndicator"..i
+        statusIndicator.Parent = posFrame
+        
+        local buttonContainer = Instance.new("Frame")
+        buttonContainer.Size = UDim2.new(0.35, 0, 0.7, 0)
+        buttonContainer.Position = UDim2.new(0.6, 0, 0.15, 0)
+        buttonContainer.BackgroundTransparency = 1
+        buttonContainer.Parent = posFrame
+        
+        local teleportBtn = Instance.new("TextButton")
+        teleportBtn.Size = UDim2.new(1, 0, 0.45, 0)
+        teleportBtn.Position = UDim2.new(0, 0, 0, 0)
+        teleportBtn.BackgroundColor3 = GUI.mainColor
+        teleportBtn.TextColor3 = GUI.secondaryColor
+        teleportBtn.Text = "TELEPORT"
+        teleportBtn.Font = Enum.Font.GothamBold
+        teleportBtn.TextSize = 12
+        teleportBtn.AutoButtonColor = true
+        teleportBtn.Name = "TeleportBtn"..i
+        teleportBtn.Parent = buttonContainer
+        
+        local teleportCorner = Instance.new("UICorner")
+        teleportCorner.CornerRadius = UDim.new(0, 4)
+        teleportCorner.Parent = teleportBtn
+        
+        local setBtn = Instance.new("TextButton")
+        setBtn.Size = UDim2.new(1, 0, 0.45, 0)
+        setBtn.Position = UDim2.new(0, 0, 0.55, 0)
+        setBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 0)
+        setBtn.TextColor3 = GUI.secondaryColor
+        setBtn.Text = "SET POSISI"
+        setBtn.Font = Enum.Font.GothamBold
+        setBtn.TextSize = 11
+        setBtn.AutoButtonColor = true
+        setBtn.Name = "SetBtn"..i
+        setBtn.Parent = buttonContainer
+        
+        local setCorner = Instance.new("UICorner")
+        setCorner.CornerRadius = UDim.new(0, 4)
+        setCorner.Parent = setBtn
+        
+        local deleteBtn = Instance.new("TextButton")
+        deleteBtn.Size = UDim2.new(0, 25, 0, 25)
+        deleteBtn.Position = UDim2.new(0.9, 0, 0.1, 0)
+        deleteBtn.BackgroundColor3 = Color3.fromRGB(220, 0, 0)
+        deleteBtn.TextColor3 = GUI.secondaryColor
+        deleteBtn.Text = "✕"
+        deleteBtn.Font = Enum.Font.GothamBold
+        deleteBtn.TextSize = 14
+        deleteBtn.AutoButtonColor = true
+        deleteBtn.Name = "DeleteBtn"..i
+        deleteBtn.Visible = false
+        deleteBtn.ZIndex = 2
+        deleteBtn.Parent = posFrame
+        
+        local deleteCorner = Instance.new("UICorner")
+        deleteCorner.CornerRadius = UDim.new(0, 12)
+        deleteCorner.Parent = deleteBtn
+    end
+    
+    local controlFrame = Instance.new("Frame")
+    controlFrame.Size = UDim2.new(1, 0, 0, 100)
+    controlFrame.Position = UDim2.new(0, 0, 1, -100)
+    controlFrame.BackgroundTransparency = 1
+    controlFrame.Parent = mainFrame
+    
+    local changePosBtn = Instance.new("TextButton")
+    changePosBtn.Size = UDim2.new(0.9, 0, 0, Sizes.buttonHeight)
+    changePosBtn.Position = UDim2.new(0.05, 0, 0.1, 0)
+    changePosBtn.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+    changePosBtn.TextColor3 = GUI.secondaryColor
+    changePosBtn.Text = "CHANGE POSISI"
+    changePosBtn.Font = Enum.Font.GothamBold
+    changePosBtn.TextSize = 14
+    changePosBtn.AutoButtonColor = true
+    changePosBtn.Name = "ChangePosBtn"
+    changePosBtn.Parent = controlFrame
+    
+    local changeCorner = Instance.new("UICorner")
+    changeCorner.CornerRadius = UDim.new(0, 6)
+    changeCorner.Parent = changePosBtn
+    
+    local deleteModeBtn = Instance.new("TextButton")
+    deleteModeBtn.Size = UDim2.new(0.9, 0, 0, Sizes.buttonHeight)
+    deleteModeBtn.Position = UDim2.new(0.05, 0, 0.55, 0)
+    deleteModeBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+    deleteModeBtn.TextColor3 = GUI.secondaryColor
+    deleteModeBtn.Text = "DELLET POSISI"
+    deleteModeBtn.Font = Enum.Font.GothamBold
+    deleteModeBtn.TextSize = 14
+    deleteModeBtn.AutoButtonColor = true
+    deleteModeBtn.Name = "DeleteModeBtn"
+    deleteModeBtn.Parent = controlFrame
+    
+    local deleteModeCorner = Instance.new("UICorner")
+    deleteModeCorner.CornerRadius = UDim.new(0, 6)
+    deleteModeCorner.Parent = deleteModeBtn
+    
+    return screenGui
+end
+
+function TeleportV1:updateGUI()
+    for i = 1, self.maxPositions do
+        local posLabel = self.gui:FindFirstChild("PosLabel"..i, true)
+        local statusIndicator = self.gui:FindFirstChild("StatusIndicator"..i, true)
+        
+        if posLabel and statusIndicator then
+            if self.positions[i] then
+                posLabel.Text = "POSISI "..i.." [ACTIVE]"
+                posLabel.TextColor3 = GUI.successColor
+                statusIndicator.BackgroundColor3 = GUI.successColor
+            else
+                posLabel.Text = "POSISI "..i.." [BELUM DI SET]"
+                posLabel.TextColor3 = GUI.warningColor
+                statusIndicator.BackgroundColor3 = GUI.warningColor
+            end
+        end
+    end
+end
+
+function TeleportV1:init()
+    self.gui = self:createGUI()
+    self:setupEvents()
+    -- Pre-load anti-cheat bypass
+    bypassAntiCheat()
+end
+
+function TeleportV1:setupEvents()
+    for i = 1, self.maxPositions do
+        local setBtn = self.gui:FindFirstChild("SetBtn"..i, true)
+        local teleportBtn = self.gui:FindFirstChild("TeleportBtn"..i, true)
+        local deleteBtn = self.gui:FindFirstChild("DeleteBtn"..i, true)
+        
+        if setBtn then
+            setBtn.MouseButton1Click:Connect(function()
+                self:setPosition(i)
+            end)
+        end
+        
+        if teleportBtn then
+            teleportBtn.MouseButton1Click:Connect(function()
+                self:teleportToPosition(i)
+            end)
+        end
+        
+        if deleteBtn then
+            deleteBtn.MouseButton1Click:Connect(function()
+                self:deletePosition(i)
+                deleteBtn.Visible = false
+            end)
+        end
+    end
+    
+    local deleteModeBtn = self.gui:FindFirstChild("DeleteModeBtn", true)
+    if deleteModeBtn then
+        deleteModeBtn.MouseButton1Click:Connect(function()
+            self.deleteMode = not self.deleteMode
+            for i = 1, self.maxPositions do
+                local deleteBtn = self.gui:FindFirstChild("DeleteBtn"..i, true)
+                if deleteBtn then
+                    deleteBtn.Visible = self.deleteMode
+                end
             end
         end)
-    end)
-end)
-
-CloseButton.MouseButton1Click:Connect(function()
-    TsuoCrashGui:Destroy()
-end)
-
-CrashButton.MouseButton1Click:Connect(function()
-    CrashButton.Text = "CRASHING IN 3..."
-    wait(1)
-    CrashButton.Text = "CRASHING IN 2..."
-    wait(1)
-    CrashButton.Text = "CRASHING IN 1..."
-    wait(1)
-    CrashButton.Text = "NUCLEAR LAUNCH DETECTED"
-    NuclearCrash()
-end)
-
-if not hookmetamethod then
-    game.Players.LocalPlayer:Kick("Exploit tidak support!")
-    return
+    end
 end
+
+-- Initialize system
+TeleportV1:init()
