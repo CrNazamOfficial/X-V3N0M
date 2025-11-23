@@ -9,7 +9,7 @@ local TeleportV1 = {
     deleteMode = false,
     menuVisible = true
 }
-
+ 
 local GUI = {
     mainColor = Color3.fromRGB(20, 20, 20),      -- Hitam
     secondaryColor = Color3.fromRGB(255, 255, 255), -- Putih
