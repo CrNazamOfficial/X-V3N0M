@@ -1,5 +1,9 @@
--- TELEPORT V1.0 by Nazam Official - DRAGGABLE GUI + TOGGLE MENU
--- Hitam Merah Putih Theme
+-- TELEPORT V1.0 by Nazam Official - FULLY FIXED
+-- Hitam Merah Putih Theme - Fixed Minimize & Initial Load
+
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 
 local TeleportV1 = {
     positions = {},
@@ -7,15 +11,18 @@ local TeleportV1 = {
     currentSelected = 1,
     antiCheatBypass = true,
     deleteMode = false,
-    menuVisible = true
+    menuVisible = true,  -- Start VISIBLE
+    gui = nil,
+    mainFrame = nil,
+    menuIcon = nil
 }
- 
+
 local GUI = {
-    mainColor = Color3.fromRGB(20, 20, 20),      -- Hitam
-    secondaryColor = Color3.fromRGB(255, 255, 255), -- Putih
-    accentColor = Color3.fromRGB(200, 0, 0),     -- Merah
-    successColor = Color3.fromRGB(0, 180, 0),    -- Hijau untuk status active
-    warningColor = Color3.fromRGB(255, 50, 50)   -- Merah muda untuk status belum set
+    mainColor = Color3.fromRGB(20, 20, 20),
+    secondaryColor = Color3.fromRGB(255, 255, 255),
+    accentColor = Color3.fromRGB(200, 0, 0),
+    successColor = Color3.fromRGB(0, 180, 0),
+    warningColor = Color3.fromRGB(255, 50, 50)
 }
 
 local Sizes = {
@@ -27,7 +34,7 @@ local Sizes = {
     menuIconSize = 50
 }
 
--- ANTI-CHEAT BYPASS SYSTEM (tetap sama)
+-- ANTI-CHEAT BYPASS
 local function bypassAntiCheat()
     if not TeleportV1.antiCheatBypass then return end
     
@@ -36,7 +43,6 @@ local function bypassAntiCheat()
             local oldNamecall
             oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
                 local method = getnamecallmethod()
-                local args = {...}
                 
                 if method and tostring(method):lower():find("teleport") then
                     return true
@@ -46,7 +52,7 @@ local function bypassAntiCheat()
                     return true
                 end
                 
-                if method and tostring(method):lower():find("kick") or tostring(method):lower():find("report") then
+                if method and (tostring(method):lower():find("kick") or tostring(method):lower():find("report")) then
                     return nil
                 end
                 
@@ -55,12 +61,43 @@ local function bypassAntiCheat()
             getgenv().namecallHooked = true
         end
     end)
-    
-    -- ... (rest of anti-cheat code tetap sama)
 end
 
+-- SMOOTH TOGGLE FUNCTION
+function TeleportV1:toggleMenu()
+    self.menuVisible = not self.menuVisible
+    
+    if self.menuVisible then
+        -- Show main frame with animation
+        self.mainFrame.Visible = true
+        self.mainFrame.Size = UDim2.new(0, 0, 0, 0)
+        
+        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+        local tween = TweenService:Create(self.mainFrame, tweenInfo, {
+            Size = Sizes.mainFrame
+        })
+        tween:Play()
+        
+        -- Hide menu icon
+        self.menuIcon.Visible = false
+    else
+        -- Hide main frame with animation
+        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+        local tween = TweenService:Create(self.mainFrame, tweenInfo, {
+            Size = UDim2.new(0, 0, 0, 0)
+        })
+        tween:Play()
+        
+        tween.Completed:Connect(function()
+            self.mainFrame.Visible = false
+            -- Show menu icon
+            self.menuIcon.Visible = true
+        end)
+    end
+end
+
+-- CREATE MENU ICON
 function TeleportV1:createMenuIcon()
-    -- Menu Icon yang bisa digeser
     local menuIcon = Instance.new("TextButton")
     menuIcon.Size = UDim2.new(0, Sizes.menuIconSize, 0, Sizes.menuIconSize)
     menuIcon.Position = UDim2.new(0, 20, 0, 20)
@@ -72,6 +109,7 @@ function TeleportV1:createMenuIcon()
     menuIcon.AutoButtonColor = true
     menuIcon.Name = "MenuIcon"
     menuIcon.ZIndex = 10
+    menuIcon.Visible = false  -- Hidden saat start
     menuIcon.Parent = self.gui
     
     local iconCorner = Instance.new("UICorner")
@@ -80,15 +118,15 @@ function TeleportV1:createMenuIcon()
     
     local iconStroke = Instance.new("UIStroke")
     iconStroke.Color = GUI.secondaryColor
-    stroke.Thickness = 2
+    iconStroke.Thickness = 2
     iconStroke.Parent = menuIcon
     
-    -- Drag functionality untuk menu icon
+    -- Drag functionality
     local dragging = false
     local dragInput, dragStart, startPos
     
     menuIcon.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
             startPos = menuIcon.Position
@@ -102,12 +140,12 @@ function TeleportV1:createMenuIcon()
     end)
     
     menuIcon.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
     end)
     
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
+    UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
             local delta = input.Position - dragStart
             menuIcon.Position = UDim2.new(
@@ -119,7 +157,7 @@ function TeleportV1:createMenuIcon()
         end
     end)
     
-    -- Toggle menu functionality
+    -- Click to toggle
     menuIcon.MouseButton1Click:Connect(function()
         self:toggleMenu()
     end)
@@ -127,15 +165,16 @@ function TeleportV1:createMenuIcon()
     return menuIcon
 end
 
+-- CREATE MAIN FRAME
 function TeleportV1:createMainFrame()
     local mainFrame = Instance.new("Frame")
     mainFrame.Size = Sizes.mainFrame
-    mainFrame.Position = UDim2.new(0, 20, 0.5, -Sizes.mainFrame.Y.Scale/2)
+    mainFrame.Position = UDim2.new(0.5, -Sizes.mainFrame.X.Offset/2, 0.5, -Sizes.mainFrame.Y.Offset/2)
     mainFrame.BackgroundColor3 = GUI.mainColor
     mainFrame.BackgroundTransparency = 0.05
     mainFrame.BorderSizePixel = 0
     mainFrame.ClipsDescendants = true
-    mainFrame.Visible = self.menuVisible
+    mainFrame.Visible = true  -- VISIBLE AWALNYA
     mainFrame.Name = "MainFrame"
     mainFrame.Parent = self.gui
     
@@ -148,7 +187,7 @@ function TeleportV1:createMainFrame()
     stroke.Thickness = 2
     stroke.Parent = mainFrame
     
-    -- Title bar dengan close button dan drag functionality
+    -- Title bar
     local titleBar = Instance.new("Frame")
     titleBar.Size = UDim2.new(1, 0, 0, Sizes.titleHeight)
     titleBar.Position = UDim2.new(0, 0, 0, 0)
@@ -161,6 +200,14 @@ function TeleportV1:createMainFrame()
     titleCorner.CornerRadius = UDim.new(0, 8)
     titleCorner.Parent = titleBar
     
+    -- Fix bottom corners
+    local bottomFix = Instance.new("Frame")
+    bottomFix.Size = UDim2.new(1, 0, 0, 8)
+    bottomFix.Position = UDim2.new(0, 0, 1, -8)
+    bottomFix.BackgroundColor3 = GUI.accentColor
+    bottomFix.BorderSizePixel = 0
+    bottomFix.Parent = titleBar
+    
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(0.7, 0, 1, 0)
     titleLabel.Position = UDim2.new(0.05, 0, 0, 0)
@@ -172,29 +219,43 @@ function TeleportV1:createMainFrame()
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = titleBar
     
-    -- Close button
-    local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0, 30, 0, 30)
-    closeBtn.Position = UDim2.new(0.9, 0, 0.5, -15)
-    closeBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-    closeBtn.TextColor3 = GUI.secondaryColor
-    closeBtn.Text = "✕"
-    closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.TextSize = 16
-    closeBtn.AutoButtonColor = true
-    closeBtn.Name = "CloseBtn"
-    closeBtn.Parent = titleBar
+    -- Minimize button (was close button)
+    local minimizeBtn = Instance.new("TextButton")
+    minimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+    minimizeBtn.Position = UDim2.new(1, -40, 0.5, -15)
+    minimizeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    minimizeBtn.TextColor3 = GUI.secondaryColor
+    minimizeBtn.Text = "−"
+    minimizeBtn.Font = Enum.Font.GothamBold
+    minimizeBtn.TextSize = 18
+    minimizeBtn.AutoButtonColor = false
+    minimizeBtn.Name = "MinimizeBtn"
+    minimizeBtn.Parent = titleBar
     
-    local closeCorner = Instance.new("UICorner")
-    closeCorner.CornerRadius = UDim.new(0, 6)
-    closeCorner.Parent = closeBtn
+    local minimizeCorner = Instance.new("UICorner")
+    minimizeCorner.CornerRadius = UDim.new(0, 6)
+    minimizeCorner.Parent = minimizeBtn
     
-    -- Drag functionality untuk main frame
+    -- Hover effect
+    minimizeBtn.MouseEnter:Connect(function()
+        minimizeBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    end)
+    
+    minimizeBtn.MouseLeave:Connect(function()
+        minimizeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    end)
+    
+    -- Minimize functionality
+    minimizeBtn.MouseButton1Click:Connect(function()
+        self:toggleMenu()
+    end)
+    
+    -- Drag functionality
     local dragging = false
     local dragInput, dragStart, startPos
     
     titleBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
             startPos = mainFrame.Position
@@ -208,12 +269,12 @@ function TeleportV1:createMainFrame()
     end)
     
     titleBar.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
     end)
     
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
+    UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
             local delta = input.Position - dragStart
             mainFrame.Position = UDim2.new(
@@ -225,41 +286,25 @@ function TeleportV1:createMainFrame()
         end
     end)
     
-    -- Close button functionality
-    closeBtn.MouseButton1Click:Connect(function()
-        self:toggleMenu()
-    end)
-    
     return mainFrame
 end
 
-function TeleportV1:toggleMenu()
-    self.menuVisible = not self.menuVisible
-    local mainFrame = self.gui:FindFirstChild("MainFrame")
-    local menuIcon = self.gui:FindFirstChild("MenuIcon")
-    
-    if mainFrame then
-        mainFrame.Visible = self.menuVisible
-    end
-    
-    if menuIcon then
-        menuIcon.Visible = not self.menuVisible
-    end
-end
-
+-- CREATE GUI
 function TeleportV1:createGUI()
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "TeleportV1_NazamOfficial"
-    screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
     
-    -- Create menu icon pertama (akan hidden ketika menu terbuka)
     self.gui = screenGui
-    local menuIcon = self:createMenuIcon()
     
-    -- Create main frame
-    local mainFrame = self:createMainFrame()
+    -- Create main frame (VISIBLE FIRST)
+    self.mainFrame = self:createMainFrame()
     
-    -- Scroll frame dan content (sama seperti sebelumnya dengan tema baru)
+    -- Create menu icon (HIDDEN FIRST)
+    self.menuIcon = self:createMenuIcon()
+    
+    -- Scroll frame
     local scrollFrame = Instance.new("ScrollingFrame")
     scrollFrame.Size = UDim2.new(1, 0, 1, -Sizes.titleHeight - 100)
     scrollFrame.Position = UDim2.new(0, 0, 0, Sizes.titleHeight)
@@ -267,18 +312,18 @@ function TeleportV1:createGUI()
     scrollFrame.BorderSizePixel = 0
     scrollFrame.ScrollBarThickness = 4
     scrollFrame.ScrollBarImageColor3 = GUI.accentColor
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, Sizes.posFrameHeight * self.maxPositions + Sizes.spacing * (self.maxPositions - 1))
-    scrollFrame.Parent = mainFrame
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, Sizes.posFrameHeight * self.maxPositions + Sizes.spacing * (self.maxPositions + 1))
+    scrollFrame.Parent = self.mainFrame
     
-    -- Position buttons dengan tema hitam-merah-putih
+    -- Position frames
     for i = 1, self.maxPositions do
-        local yPosition = (i - 1) * (Sizes.posFrameHeight + Sizes.spacing)
+        local yPosition = Sizes.spacing + (i - 1) * (Sizes.posFrameHeight + Sizes.spacing)
         
         local posFrame = Instance.new("Frame")
         posFrame.Size = UDim2.new(0.9, 0, 0, Sizes.posFrameHeight)
         posFrame.Position = UDim2.new(0.05, 0, 0, yPosition)
         posFrame.BackgroundColor3 = GUI.secondaryColor
-        posFrame.BackgroundTransparency = 0.1
+        posFrame.BackgroundTransparency = 0.9
         posFrame.BorderSizePixel = 0
         posFrame.Parent = scrollFrame
         
@@ -292,28 +337,28 @@ function TeleportV1:createGUI()
         posFrameStroke.Parent = posFrame
         
         local posLabel = Instance.new("TextLabel")
-        posLabel.Size = UDim2.new(0.6, 0, 0.5, 0)
+        posLabel.Size = UDim2.new(0.55, 0, 0.4, 0)
         posLabel.Position = UDim2.new(0.05, 0, 0.1, 0)
         posLabel.BackgroundTransparency = 1
-        posLabel.TextColor3 = GUI.mainColor
+        posLabel.TextColor3 = GUI.warningColor
         posLabel.Text = "POSISI "..i.." [BELUM DI SET]"
         posLabel.Font = Enum.Font.GothamSemibold
-        posLabel.TextSize = 14
+        posLabel.TextSize = 13
         posLabel.TextXAlignment = Enum.TextXAlignment.Left
         posLabel.Name = "PosLabel"..i
         posLabel.Parent = posFrame
         
         local statusIndicator = Instance.new("Frame")
-        statusIndicator.Size = UDim2.new(0.8, 0, 0, 3)
-        statusIndicator.Position = UDim2.new(0.05, 0, 0.6, 0)
+        statusIndicator.Size = UDim2.new(0.55, 0, 0, 3)
+        statusIndicator.Position = UDim2.new(0.05, 0, 0.55, 0)
         statusIndicator.BackgroundColor3 = GUI.warningColor
         statusIndicator.BorderSizePixel = 0
         statusIndicator.Name = "StatusIndicator"..i
         statusIndicator.Parent = posFrame
         
         local buttonContainer = Instance.new("Frame")
-        buttonContainer.Size = UDim2.new(0.35, 0, 0.7, 0)
-        buttonContainer.Position = UDim2.new(0.6, 0, 0.15, 0)
+        buttonContainer.Size = UDim2.new(0.35, 0, 0.75, 0)
+        buttonContainer.Position = UDim2.new(0.6, 0, 0.125, 0)
         buttonContainer.BackgroundTransparency = 1
         buttonContainer.Parent = posFrame
         
@@ -324,14 +369,22 @@ function TeleportV1:createGUI()
         teleportBtn.TextColor3 = GUI.secondaryColor
         teleportBtn.Text = "TELEPORT"
         teleportBtn.Font = Enum.Font.GothamBold
-        teleportBtn.TextSize = 12
-        teleportBtn.AutoButtonColor = true
+        teleportBtn.TextSize = 11
+        teleportBtn.AutoButtonColor = false
         teleportBtn.Name = "TeleportBtn"..i
         teleportBtn.Parent = buttonContainer
         
         local teleportCorner = Instance.new("UICorner")
         teleportCorner.CornerRadius = UDim.new(0, 4)
         teleportCorner.Parent = teleportBtn
+        
+        teleportBtn.MouseEnter:Connect(function()
+            teleportBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        end)
+        
+        teleportBtn.MouseLeave:Connect(function()
+            teleportBtn.BackgroundColor3 = GUI.accentColor
+        end)
         
         local setBtn = Instance.new("TextButton")
         setBtn.Size = UDim2.new(1, 0, 0.45, 0)
@@ -340,8 +393,8 @@ function TeleportV1:createGUI()
         setBtn.TextColor3 = GUI.secondaryColor
         setBtn.Text = "SET POSISI"
         setBtn.Font = Enum.Font.GothamBold
-        setBtn.TextSize = 11
-        setBtn.AutoButtonColor = true
+        setBtn.TextSize = 10
+        setBtn.AutoButtonColor = false
         setBtn.Name = "SetBtn"..i
         setBtn.Parent = buttonContainer
         
@@ -349,15 +402,23 @@ function TeleportV1:createGUI()
         setCorner.CornerRadius = UDim.new(0, 4)
         setCorner.Parent = setBtn
         
+        setBtn.MouseEnter:Connect(function()
+            setBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+        end)
+        
+        setBtn.MouseLeave:Connect(function()
+            setBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        end)
+        
         local deleteBtn = Instance.new("TextButton")
         deleteBtn.Size = UDim2.new(0, 25, 0, 25)
-        deleteBtn.Position = UDim2.new(0.9, 0, 0.1, 0)
+        deleteBtn.Position = UDim2.new(1, -30, 0, 5)
         deleteBtn.BackgroundColor3 = GUI.accentColor
         deleteBtn.TextColor3 = GUI.secondaryColor
         deleteBtn.Text = "✕"
         deleteBtn.Font = Enum.Font.GothamBold
         deleteBtn.TextSize = 14
-        deleteBtn.AutoButtonColor = true
+        deleteBtn.AutoButtonColor = false
         deleteBtn.Name = "DeleteBtn"..i
         deleteBtn.Visible = false
         deleteBtn.ZIndex = 2
@@ -366,40 +427,32 @@ function TeleportV1:createGUI()
         local deleteCorner = Instance.new("UICorner")
         deleteCorner.CornerRadius = UDim.new(0, 12)
         deleteCorner.Parent = deleteBtn
+        
+        deleteBtn.MouseEnter:Connect(function()
+            deleteBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        end)
+        
+        deleteBtn.MouseLeave:Connect(function()
+            deleteBtn.BackgroundColor3 = GUI.accentColor
+        end)
     end
     
-    -- Control buttons
+    -- Control frame
     local controlFrame = Instance.new("Frame")
     controlFrame.Size = UDim2.new(1, 0, 0, 100)
     controlFrame.Position = UDim2.new(0, 0, 1, -100)
     controlFrame.BackgroundTransparency = 1
-    controlFrame.Parent = mainFrame
-    
-    local changePosBtn = Instance.new("TextButton")
-    changePosBtn.Size = UDim2.new(0.9, 0, 0, Sizes.buttonHeight)
-    changePosBtn.Position = UDim2.new(0.05, 0, 0.1, 0)
-    changePosBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
-    changePosBtn.TextColor3 = GUI.secondaryColor
-    changePosBtn.Text = "CHANGE POSISI"
-    changePosBtn.Font = Enum.Font.GothamBold
-    changePosBtn.TextSize = 14
-    changePosBtn.AutoButtonColor = true
-    changePosBtn.Name = "ChangePosBtn"
-    changePosBtn.Parent = controlFrame
-    
-    local changeCorner = Instance.new("UICorner")
-    changeCorner.CornerRadius = UDim.new(0, 6)
-    changeCorner.Parent = changePosBtn
+    controlFrame.Parent = self.mainFrame
     
     local deleteModeBtn = Instance.new("TextButton")
     deleteModeBtn.Size = UDim2.new(0.9, 0, 0, Sizes.buttonHeight)
-    deleteModeBtn.Position = UDim2.new(0.05, 0, 0.55, 0)
+    deleteModeBtn.Position = UDim2.new(0.05, 0, 0.3, 0)
     deleteModeBtn.BackgroundColor3 = GUI.accentColor
     deleteModeBtn.TextColor3 = GUI.secondaryColor
-    deleteModeBtn.Text = "DELLET POSISI"
+    deleteModeBtn.Text = "DELETE POSISI"
     deleteModeBtn.Font = Enum.Font.GothamBold
     deleteModeBtn.TextSize = 14
-    deleteModeBtn.AutoButtonColor = true
+    deleteModeBtn.AutoButtonColor = false
     deleteModeBtn.Name = "DeleteModeBtn"
     deleteModeBtn.Parent = controlFrame
     
@@ -407,18 +460,22 @@ function TeleportV1:createGUI()
     deleteModeCorner.CornerRadius = UDim.new(0, 6)
     deleteModeCorner.Parent = deleteModeBtn
     
-    -- Sembunyikan menu icon jika menu visible
-    menuIcon.Visible = not self.menuVisible
+    deleteModeBtn.MouseEnter:Connect(function()
+        deleteModeBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    end)
+    
+    deleteModeBtn.MouseLeave:Connect(function()
+        deleteModeBtn.BackgroundColor3 = GUI.accentColor
+    end)
     
     return screenGui
 end
 
--- [Fungsi lainnya tetap sama: setPosition, teleportToPosition, deletePosition, updateGUI, setupEvents, init]
-
+-- TELEPORT FUNCTIONS
 function TeleportV1:setPosition(index)
     if index > self.maxPositions then return end
     
-    local character = game.Players.LocalPlayer.Character
+    local character = Players.LocalPlayer.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
         self.positions[index] = character.HumanoidRootPart.CFrame
         self.currentSelected = index
@@ -431,7 +488,7 @@ function TeleportV1:teleportToPosition(index)
     
     bypassAntiCheat()
     
-    local character = game.Players.LocalPlayer.Character
+    local character = Players.LocalPlayer.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
         local rootPart = character.HumanoidRootPart
         
@@ -511,6 +568,14 @@ function TeleportV1:setupEvents()
                     deleteBtn.Visible = self.deleteMode
                 end
             end
+            
+            if self.deleteMode then
+                deleteModeBtn.Text = "CANCEL DELETE"
+                deleteModeBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+            else
+                deleteModeBtn.Text = "DELETE POSISI"
+                deleteModeBtn.BackgroundColor3 = GUI.accentColor
+            end
         end)
     end
 end
@@ -519,7 +584,9 @@ function TeleportV1:init()
     self.gui = self:createGUI()
     self:setupEvents()
     bypassAntiCheat()
+    
+    print("✅ Teleport V1.0 Loaded - By Nazam Official")
 end
 
--- Initialize system
+-- Initialize
 TeleportV1:init()
