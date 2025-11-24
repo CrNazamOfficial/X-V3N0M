@@ -1,5 +1,5 @@
 -- X - V3N0M v1.0 by Nazam Official
--- Fixed System with Save/Load
+-- Fixed Effective + Stealth Teleport System
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -12,7 +12,7 @@ local VenomSystem = {
     isRunning = false,
     currentIndex = 1,
     menuVisible = true,
-    teleportCooldown = 0.8,
+    teleportCooldown = 1.2, -- Cooldown lebih lama untuk stealth
     lastTeleport = 0,
     lastLoadClick = 0
 }
@@ -30,107 +30,155 @@ local Theme = {
 
 -- Compact Sizes
 local Sizes = {
-    mainFrame = UDim2.new(0, 220, 0, 300),  -- Slightly taller for LOAD button
+    mainFrame = UDim2.new(0, 220, 0, 300),
     titleHeight = 28,
     buttonHeight = 32,
     posItemHeight = 36,
     spacing = 5
 }
 
--- Save positions to file
+-- FIXED Save System
 local function savePositions()
-    local saveData = {}
-    for i, pos in ipairs(VenomSystem.positions) do
-        if pos then
-            saveData[i] = {
-                X = pos.X, Y = pos.Y, Z = pos.Z,
-                RightX = pos.RightVector.X, RightY = pos.RightVector.Y, RightZ = pos.RightVector.Z,
-                UpX = pos.UpVector.X, UpY = pos.UpVector.Y, UpZ = pos.UpVector.Z,
-                LookX = pos.LookVector.X, LookY = pos.LookVector.Y, LookZ = pos.LookVector.Z
-            }
-        end
+    if #VenomSystem.positions == 0 then
+        print("Tidak ada posisi untuk disimpan")
+        return false
     end
     
-    local success = pcall(function()
-        writefile("venom_save.json", HttpService:JSONEncode(saveData))
+    local success, result = pcall(function()
+        local saveData = {}
+        for i, pos in ipairs(VenomSystem.positions) do
+            if pos then
+                saveData[i] = {
+                    X = pos.X, Y = pos.Y, Z = pos.Z,
+                    RX = pos.RightVector.X, RY = pos.RightVector.Y, RZ = pos.RightVector.Z,
+                    UX = pos.UpVector.X, UY = pos.UpVector.Y, UZ = pos.UpVector.Z,
+                    LX = pos.LookVector.X, LY = pos.LookVector.Y, LZ = pos.LookVector.Z
+                }
+            end
+        end
+        
+        -- Gunakan nama file yang lebih spesifik
+        writefile("venom_positions_v2.json", HttpService:JSONEncode(saveData))
+        return true
     end)
+    
+    if success then
+        print("✅ Posisi berhasil disimpan: " .. #VenomSystem.positions .. " posisi")
+        return true
+    else
+        print("❌ Gagal menyimpan: " .. tostring(result))
+        return false
+    end
+end
+
+-- FIXED Load System
+local function loadPositions()
+    local success, result = pcall(function()
+        -- Coba beberapa nama file untuk compatibility
+        local filenames = {"venom_positions_v2.json", "venom_save.json", "venom_positions.json"}
+        
+        for _, filename in ipairs(filenames) do
+            if isfile(filename) then
+                local fileData = readfile(filename)
+                local data = HttpService:JSONDecode(fileData)
+                
+                if data then
+                    VenomSystem.positions = {}
+                    for i = 1, #data do
+                        local posData = data[i]
+                        if posData then
+                            VenomSystem.positions[i] = CFrame.new(
+                                posData.X, posData.Y, posData.Z,
+                                posData.RX, posData.RY, posData.RZ,
+                                posData.UX, posData.UY, posData.UZ,
+                                posData.LX, posData.LY, posData.LZ
+                            )
+                        end
+                    end
+                    
+                    -- Validasi data yang dimuat
+                    local validPositions = 0
+                    for i, pos in ipairs(VenomSystem.positions) do
+                        if pos then validPositions += 1 end
+                    end
+                    
+                    print("✅ Posisi dimuat: " .. validPositions .. " posisi valid")
+                    VenomSystem:updatePositionsList()
+                    return true
+                end
+            end
+        end
+        return false
+    end)
+    
+    if not success then
+        print("❌ Tidak ada data posisi yang ditemukan")
+        VenomSystem.positions = {}
+        VenomSystem:updatePositionsList()
+    end
     
     return success
 end
 
--- Load positions from file
-local function loadPositions()
-    local success, data = pcall(function()
-        if isfile("venom_save.json") then
-            local fileData = readfile("venom_save.json")
-            return HttpService:JSONDecode(fileData)
-        end
-    end)
-    
-    if success and data then
-        VenomSystem.positions = {}
-        for i, posData in pairs(data) do
-            if posData then
-                VenomSystem.positions[tonumber(i)] = CFrame.new(
-                    posData.X, posData.Y, posData.Z,
-                    posData.RightX, posData.RightY, posData.RightZ,
-                    posData.UpX, posData.UpY, posData.UpZ,
-                    posData.LookX, posData.LookY, posData.LookZ
-                )
-            end
-        end
-        VenomSystem:updatePositionsList()
-        return true
+-- EFFECTIVE + STEALTH TELEPORT
+local function stealthEffectiveTeleport(cframe)
+    if tick() - VenomSystem.lastTeleport < VenomSystem.teleportCooldown then
+        return false
     end
-    return false
-end
-
--- Advanced Checkpoint Trigger (Avatar tetap normal)
-local function triggerCheckpoint(cframe)
+    
+    VenomSystem.lastTeleport = tick()
+    
     local character = Players.LocalPlayer.Character
     if not character then return false end
 
     local rootPart = character:FindFirstChild("HumanoidRootPart")
     if not rootPart then return false end
 
-    -- Simulasi checkpoint tanpa menggerakkan avatar visual
-    pcall(function()
-        -- Method 1: Network manipulation untuk trigger detection
-        local originalOwner = rootPart:GetNetworkOwner()
+    local success = pcall(function()
+        -- 1. Simpan state asli
+        local originalPosition = rootPart.CFrame
+        local originalTransparency = {}
+        
+        -- 2. Sembunyikan avatar sementara (0.08 detik)
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                originalTransparency[part] = part.Transparency
+                part.Transparency = 0.8 -- Semi-transparent
+            end
+        end
+        
+        -- 3. Teleport ke checkpoint (SANGAT CEPAT)
+        rootPart.CFrame = cframe
+        
+        -- 4. Tunggu sebentar untuk collision detection
+        wait(0.08)
+        
+        -- 5. Kembalikan ke posisi asli
+        rootPart.CFrame = originalPosition
+        
+        -- 6. Restore transparency
+        wait(0.02)
+        for part, transparency in pairs(originalTransparency) do
+            if part and part.Parent then
+                part.Transparency = transparency
+            end
+        end
+        
+        -- 7. Network manipulation untuk reduce visibility
         rootPart:SetNetworkOwner(nil)
-        
-        -- Method 2: Trigger proximity prompts dalam radius
-        for _, obj in pairs(workspace:GetDescendants()) do
-            if obj:IsA("ProximityPrompt") and (obj.WorldPosition - cframe.Position).Magnitude < 15 then
-                -- Trigger prompt tanpa menggerakkan player
-                fireproximityprompt(obj)
-            end
-        end
-        
-        -- Method 3: Touch event simulation
-        local touchParts = workspace:FindPartsInRegion3(
-            Region3.new(cframe.Position - Vector3.new(5,5,5), cframe.Position + Vector3.new(5,5,5)),
-            nil, 50
-        )
-        
-        for _, part in pairs(touchParts) do
-            if part:FindFirstChildWhichIsA("TouchTransmitter") then
-                -- Trigger touch events
-                part.Touched:Fire(rootPart)
-            end
-        end
-        
-        -- Kembalikan network ownership
-        wait(0.05)
-        rootPart:SetNetworkOwner(originalOwner)
+        wait(0.01)
+        rootPart:SetNetworkOwner(Players.LocalPlayer)
     end)
     
-    return true
+    return success
 end
 
--- Auto Teleport Loop (Fixed - avatar tetap normal)
+-- Auto Teleport Loop
 local function startAutoTeleport()
-    if #VenomSystem.positions == 0 then return end
+    if #VenomSystem.positions == 0 then 
+        print("❌ Tidak ada posisi yang diset!")
+        return 
+    end
     if VenomSystem.isRunning then return end
     
     VenomSystem.isRunning = true
@@ -142,6 +190,8 @@ local function startAutoTeleport()
         startBtn.BackgroundColor3 = Theme.success
     end
     
+    print("🚀 Memulai auto teleport ke " .. #VenomSystem.positions .. " checkpoint...")
+    
     spawn(function()
         while VenomSystem.isRunning and #VenomSystem.positions > 0 do
             if VenomSystem.currentIndex > #VenomSystem.positions then
@@ -150,12 +200,12 @@ local function startAutoTeleport()
             
             local targetCFrame = VenomSystem.positions[VenomSystem.currentIndex]
             if targetCFrame then
-                -- Trigger checkpoint tanpa menggerakkan avatar
-                triggerCheckpoint(targetCFrame)
+                print("📍 Checkpoint " .. VenomSystem.currentIndex)
+                stealthEffectiveTeleport(targetCFrame)
                 VenomSystem.currentIndex += 1
             end
             
-            wait(VenomSystem.teleportCooldown + 0.1)
+            wait(VenomSystem.teleportCooldown)
         end
     end)
 end
@@ -169,9 +219,10 @@ local function stopAutoTeleport()
         startBtn.Text = "START"
         startBtn.BackgroundColor3 = Theme.primary
     end
+    print("⏹️ Auto teleport dihentikan")
 end
 
--- Direct Teleport (Normal teleport)
+-- Direct Teleport (Normal)
 local function directTeleport(index)
     if VenomSystem.positions[index] then
         local character = Players.LocalPlayer.Character
@@ -179,50 +230,74 @@ local function directTeleport(index)
             local rootPart = character:FindFirstChild("HumanoidRootPart")
             if rootPart then
                 rootPart.CFrame = VenomSystem.positions[index]
+                print("🎯 Teleport manual ke posisi " .. index)
             end
         end
+    else
+        print("❌ Posisi " .. index .. " belum diset!")
     end
 end
 
--- Add New Position
+-- Add New Position with Auto-Save
 local function addPosition()
     local character = Players.LocalPlayer.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
         local newIndex = #VenomSystem.positions + 1
         VenomSystem.positions[newIndex] = character.HumanoidRootPart.CFrame
         VenomSystem:updatePositionsList()
+        
+        -- Auto-save setiap tambah posisi
+        spawn(function()
+            savePositions()
+        end)
+        
+        print("✅ Posisi " .. newIndex .. " disimpan")
+    else
+        print("❌ Character tidak ditemukan!")
     end
 end
 
--- Delete Position
+-- Delete Position with Auto-Save
 local function deletePosition(index)
-    table.remove(VenomSystem.positions, index)
-    
-    local newPositions = {}
-    for i, pos in ipairs(VenomSystem.positions) do
-        newPositions[i] = pos
+    if VenomSystem.positions[index] then
+        table.remove(VenomSystem.positions, index)
+        
+        -- Reindex positions
+        local newPositions = {}
+        for i, pos in ipairs(VenomSystem.positions) do
+            newPositions[i] = pos
+        end
+        VenomSystem.positions = newPositions
+        
+        VenomSystem:updatePositionsList()
+        
+        -- Auto-save setiap hapus posisi
+        spawn(function()
+            savePositions()
+        end)
+        
+        print("🗑️ Posisi " .. index .. " dihapus")
     end
-    VenomSystem.positions = newPositions
-    
-    VenomSystem:updatePositionsList()
 end
 
--- LOAD Button Handler
+-- FIXED LOAD Button Handler
 local function handleLoadButton()
     local currentTime = tick()
     
     if currentTime - VenomSystem.lastLoadClick < 0.5 then
         -- Double click: Save current positions
+        print("💾 Menyimpan posisi...")
         savePositions()
         VenomSystem.lastLoadClick = 0
     else
         -- Single click: Load saved positions
+        print("📂 Memuat posisi...")
         loadPositions()
         VenomSystem.lastLoadClick = currentTime
     end
 end
 
--- Create Compact GUI with LOAD Button
+-- GUI Creation (tetap sama)
 function VenomSystem:createGUI()
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "VenomV1_NazamOfficial"
@@ -346,7 +421,7 @@ function VenomSystem:createGUI()
     
     -- Left Side - Positions List
     local positionsFrame = Instance.new("ScrollingFrame")
-    positionsFrame.Size = UDim2.new(0.58, 0, 1, -40) -- Space for buttons
+    positionsFrame.Size = UDim2.new(0.58, 0, 1, -40)
     positionsFrame.Position = UDim2.new(0, 0, 0, 0)
     positionsFrame.BackgroundTransparency = 1
     positionsFrame.BorderSizePixel = 0
@@ -358,7 +433,7 @@ function VenomSystem:createGUI()
     
     -- Right Side - Control Buttons
     local controlsFrame = Instance.new("Frame")
-    controlsFrame.Size = UDim2.new(0.38, 0, 1, -40) -- Space for LOAD button
+    controlsFrame.Size = UDim2.new(0.38, 0, 1, -40)
     controlsFrame.Position = UDim2.new(0.6, 0, 0, 0)
     controlsFrame.BackgroundTransparency = 1
     controlsFrame.Parent = contentFrame
@@ -669,9 +744,16 @@ function VenomSystem:init()
     self:setupEvents()
     self:updatePositionsList()
     
-    print("V3N0M v1.0 - Fixed System Ready")
-    print("START: Checkpoint trigger | LOAD: Save/Load positions")
-    print("Single-click LOAD: Load | Double-click LOAD: Save")
+    -- Auto-load saat start
+    spawn(function()
+        wait(1)
+        loadPositions()
+    end)
+    
+    print("🎯 V3N0M v1.0 - Fixed System Ready")
+    print("✅ Effective + Stealth Teleport")
+    print("✅ Fixed Save/Load System") 
+    print("✅ Auto-save on Add/Delete")
 end
 
 -- Start the System
