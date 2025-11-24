@@ -1,309 +1,678 @@
--- X-V3N0M Teleport System by Nazam Official
--- Version 1.0
+-- X - V3N0M v1.0 by Nazam Official
+-- Fixed System with Save/Load
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
 
-local player = Players.LocalPlayer
-local mouse = player:GetMouse()
+local VenomSystem = {
+    positions = {},
+    isRunning = false,
+    currentIndex = 1,
+    menuVisible = true,
+    teleportCooldown = 0.8,
+    lastTeleport = 0,
+    lastLoadClick = 0
+}
 
--- Data storage
-local savedPositions = {}
-local isAutoRunning = false
-local currentIndex = 1
-local isUIVisible = true
+-- Color Theme: Red, White, Black
+local Theme = {
+    primary = Color3.fromRGB(200, 0, 0),
+    secondary = Color3.fromRGB(255, 255, 255),
+    background = Color3.fromRGB(15, 15, 15),
+    accent = Color3.fromRGB(150, 0, 0),
+    success = Color3.fromRGB(0, 180, 0),
+    warning = Color3.fromRGB(255, 80, 80),
+    info = Color3.fromRGB(0, 120, 200)
+}
 
--- Create main screen GUI
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "X_V3N0M_Teleport"
-screenGui.ResetOnSpawn = false
-screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+-- Compact Sizes
+local Sizes = {
+    mainFrame = UDim2.new(0, 220, 0, 300),  -- Slightly taller for LOAD button
+    titleHeight = 28,
+    buttonHeight = 32,
+    posItemHeight = 36,
+    spacing = 5
+}
 
--- Main frame (220x280 pixels - UKURAN ASLI)
-local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 220, 0, 280)
-mainFrame.Position = UDim2.new(0, 50, 0, 50)
-mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-mainFrame.BorderSizePixel = 2
-mainFrame.BorderColor3 = Color3.fromRGB(255, 0, 0)
-mainFrame.Active = true
-mainFrame.Draggable = true
-
--- Title bar
-local titleBar = Instance.new("Frame")
-titleBar.Size = UDim2.new(1, 0, 0, 25)
-titleBar.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-titleBar.BorderSizePixel = 0
-
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(1, -25, 1, 0)
-titleLabel.Position = UDim2.new(0, 5, 0, 0)
-titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "X - V3N0M"
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.TextScaled = true
-titleLabel.Font = Enum.Font.GothamBold
-titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-local closeButton = Instance.new("TextButton")
-closeButton.Size = UDim2.new(0, 20, 0, 20)
-closeButton.Position = UDim2.new(1, -25, 0, 2)
-closeButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.Text = "X"
-closeButton.TextScaled = true
-
--- Mini icon (hidden initially) - 30x30 pixels
-local miniIcon = Instance.new("TextButton")
-miniIcon.Size = UDim2.new(0, 30, 0, 30)
-miniIcon.Position = UDim2.new(0, 10, 0, 10)
-miniIcon.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-miniIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
-miniIcon.Text = "X"
-miniIcon.TextScaled = true
-miniIcon.Visible = false
-
--- Left side - Positions list (60% width)
-local positionsFrame = Instance.new("ScrollingFrame")
-positionsFrame.Size = UDim2.new(0.6, -5, 1, -30)
-positionsFrame.Position = UDim2.new(0, 5, 0, 30)
-positionsFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-positionsFrame.BorderSizePixel = 0
-positionsFrame.ScrollBarThickness = 6
-positionsFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-
--- Right side - Control buttons (40% width)
-local controlsFrame = Instance.new("Frame")
-controlsFrame.Size = UDim2.new(0.4, -5, 1, -30)
-controlsFrame.Position = UDim2.new(0.6, 0, 0, 30)
-controlsFrame.BackgroundTransparency = 1
-
--- Function to create control buttons (32 pixels height)
-function createControlButton(text, index)
-	local button = Instance.new("TextButton")
-	button.Size = UDim2.new(1, 0, 0, 32)
-	button.Position = UDim2.new(0, 0, 0, index * 37)
-	button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-	button.BorderColor3 = Color3.fromRGB(255, 0, 0)
-	button.BorderSizePixel = 1
-	button.Text = text
-	button.TextColor3 = Color3.fromRGB(255, 255, 255)
-	button.TextScaled = true
-	button.Font = Enum.Font.GothamBold
-	button.Parent = controlsFrame
-	
-	return button
+-- Save positions to file
+local function savePositions()
+    local saveData = {}
+    for i, pos in ipairs(VenomSystem.positions) do
+        if pos then
+            saveData[i] = {
+                X = pos.X, Y = pos.Y, Z = pos.Z,
+                RightX = pos.RightVector.X, RightY = pos.RightVector.Y, RightZ = pos.RightVector.Z,
+                UpX = pos.UpVector.X, UpY = pos.UpVector.Y, UpZ = pos.UpVector.Z,
+                LookX = pos.LookVector.X, LookY = pos.LookVector.Y, LookZ = pos.LookVector.Z
+            }
+        end
+    end
+    
+    local success = pcall(function()
+        writefile("venom_save.json", HttpService:JSONEncode(saveData))
+    end)
+    
+    return success
 end
 
--- Create control buttons
-local startButton = createControlButton("START", 0)
-local setPosButton = createControlButton("SET POSISI", 1)
-local stopButton = createControlButton("STOP", 2)
-local loadButton = createControlButton("LOAD", 3)
-
--- Function to create position item (36 pixels height)
-function createPositionItem(index, position)
-	local itemFrame = Instance.new("Frame")
-	itemFrame.Size = UDim2.new(1, -10, 0, 36)
-	itemFrame.Position = UDim2.new(0, 5, 0, (index-1) * 41)
-	itemFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-	itemFrame.BorderSizePixel = 1
-	itemFrame.BorderColor3 = Color3.fromRGB(100, 100, 100)
-	
-	local label = Instance.new("TextLabel")
-	label.Size = UDim2.new(0.5, -5, 1, 0)
-	label.Position = UDim2.new(0, 5, 0, 0)
-	label.BackgroundTransparency = 1
-	label.Text = "Set Posisi " .. index
-	label.TextColor3 = Color3.fromRGB(255, 255, 255)
-	label.TextScaled = true
-	label.Font = Enum.Font.Gotham
-	label.TextXAlignment = Enum.TextXAlignment.Left
-	label.Parent = itemFrame
-	
-	local tpButton = Instance.new("TextButton")
-	tpButton.Size = UDim2.new(0, 25, 0, 20)
-	tpButton.Position = UDim2.new(0.5, 5, 0.5, -10)
-	tpButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-	tpButton.Text = "TP"
-	tpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-	tpButton.TextScaled = true
-	tpButton.Font = Enum.Font.GothamBold
-	tpButton.Parent = itemFrame
-	
-	local deleteButton = Instance.new("TextButton")
-	deleteButton.Size = UDim2.new(0, 40, 0, 20)
-	deleteButton.Position = UDim2.new(0.75, 5, 0.5, -10)
-	deleteButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-	deleteButton.Text = "Hapus"
-	deleteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-	deleteButton.TextScaled = true
-	deleteButton.Font = Enum.Font.GothamBold
-	deleteButton.Parent = itemFrame
-	
-	-- TP button functionality
-	tpButton.MouseButton1Click:Connect(function()
-		teleportToPosition(position)
-	end)
-	
-	-- Delete button functionality
-	deleteButton.MouseButton1Click:Connect(function()
-		table.remove(savedPositions, index)
-		updatePositionsList()
-	end)
-	
-	return itemFrame
+-- Load positions from file
+local function loadPositions()
+    local success, data = pcall(function()
+        if isfile("venom_save.json") then
+            local fileData = readfile("venom_save.json")
+            return HttpService:JSONDecode(fileData)
+        end
+    end)
+    
+    if success and data then
+        VenomSystem.positions = {}
+        for i, posData in pairs(data) do
+            if posData then
+                VenomSystem.positions[tonumber(i)] = CFrame.new(
+                    posData.X, posData.Y, posData.Z,
+                    posData.RightX, posData.RightY, posData.RightZ,
+                    posData.UpX, posData.UpY, posData.UpZ,
+                    posData.LookX, posData.LookY, posData.LookZ
+                )
+            end
+        end
+        VenomSystem:updatePositionsList()
+        return true
+    end
+    return false
 end
 
--- Function to update positions list
-function updatePositionsList()
-	-- Clear existing items
-	for _, child in pairs(positionsFrame:GetChildren()) do
-		if child:IsA("Frame") then
-			child:Destroy()
-		end
-	end
-	
-	-- Recreate items
-	local totalHeight = 0
-	for i, pos in ipairs(savedPositions) do
-		local item = createPositionItem(i, pos)
-		item.Parent = positionsFrame
-		totalHeight = totalHeight + 41
-	end
-	
-	positionsFrame.CanvasSize = UDim2.new(0, 0, 0, math.max(totalHeight, positionsFrame.AbsoluteSize.Y))
+-- Advanced Checkpoint Trigger (Avatar tetap normal)
+local function triggerCheckpoint(cframe)
+    local character = Players.LocalPlayer.Character
+    if not character then return false end
+
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    if not rootPart then return false end
+
+    -- Simulasi checkpoint tanpa menggerakkan avatar visual
+    pcall(function()
+        -- Method 1: Network manipulation untuk trigger detection
+        local originalOwner = rootPart:GetNetworkOwner()
+        rootPart:SetNetworkOwner(nil)
+        
+        -- Method 2: Trigger proximity prompts dalam radius
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("ProximityPrompt") and (obj.WorldPosition - cframe.Position).Magnitude < 15 then
+                -- Trigger prompt tanpa menggerakkan player
+                fireproximityprompt(obj)
+            end
+        end
+        
+        -- Method 3: Touch event simulation
+        local touchParts = workspace:FindPartsInRegion3(
+            Region3.new(cframe.Position - Vector3.new(5,5,5), cframe.Position + Vector3.new(5,5,5)),
+            nil, 50
+        )
+        
+        for _, part in pairs(touchParts) do
+            if part:FindFirstChildWhichIsA("TouchTransmitter") then
+                -- Trigger touch events
+                part.Touched:Fire(rootPart)
+            end
+        end
+        
+        -- Kembalikan network ownership
+        wait(0.05)
+        rootPart:SetNetworkOwner(originalOwner)
+    end)
+    
+    return true
 end
 
--- Function to teleport to position
-function teleportToPosition(position)
-	if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-		player.Character.HumanoidRootPart.CFrame = position
-	end
+-- Auto Teleport Loop (Fixed - avatar tetap normal)
+local function startAutoTeleport()
+    if #VenomSystem.positions == 0 then return end
+    if VenomSystem.isRunning then return end
+    
+    VenomSystem.isRunning = true
+    VenomSystem.currentIndex = VenomSystem.currentIndex or 1
+    
+    local startBtn = VenomSystem.gui:FindFirstChild("StartBtn", true)
+    if startBtn then
+        startBtn.Text = "RUNNING"
+        startBtn.BackgroundColor3 = Theme.success
+    end
+    
+    spawn(function()
+        while VenomSystem.isRunning and #VenomSystem.positions > 0 do
+            if VenomSystem.currentIndex > #VenomSystem.positions then
+                VenomSystem.currentIndex = 1
+            end
+            
+            local targetCFrame = VenomSystem.positions[VenomSystem.currentIndex]
+            if targetCFrame then
+                -- Trigger checkpoint tanpa menggerakkan avatar
+                triggerCheckpoint(targetCFrame)
+                VenomSystem.currentIndex += 1
+            end
+            
+            wait(VenomSystem.teleportCooldown + 0.1)
+        end
+    end)
 end
 
--- Function for internal teleport (for auto system)
-function internalTeleport(position)
-	-- Internal teleport untuk sistem otomatis
-	if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-		local rootPart = player.Character.HumanoidRootPart
-		
-		-- Simpan posisi visual saat ini
-		local visualPosition = rootPart.Position
-		
-		-- Lakukan teleport internal
-		rootPart.CFrame = position
-		
-		-- Tunggu sebentar untuk deteksi checkpoint
-		wait(0.1)
-		
-		-- Kembali ke posisi visual (opsional, tergantung kebutuhan)
-		-- rootPart.CFrame = CFrame.new(visualPosition)
-	end
+-- Stop Auto Teleport
+local function stopAutoTeleport()
+    VenomSystem.isRunning = false
+    
+    local startBtn = VenomSystem.gui:FindFirstChild("StartBtn", true)
+    if startBtn then
+        startBtn.Text = "START"
+        startBtn.BackgroundColor3 = Theme.primary
+    end
 end
 
--- Auto teleport system
-coroutine.wrap(function()
-	while true do
-		if isAutoRunning and #savedPositions > 0 then
-			internalTeleport(savedPositions[currentIndex])
-			
-			currentIndex = currentIndex + 1
-			if currentIndex > #savedPositions then
-				currentIndex = 1
-			end
-			
-			-- Delay untuk menghindari deteksi cheat
-			wait(0.8)
-		else
-			wait(0.1)
-		end
-	end
-end)()
-
--- Button functionalities
-setPosButton.MouseButton1Click:Connect(function()
-	local character = player.Character
-	if character and character:FindFirstChild("HumanoidRootPart") then
-		local position = character.HumanoidRootPart.CFrame
-		table.insert(savedPositions, position)
-		updatePositionsList()
-		
-		-- Visual feedback
-		setPosButton.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
-		wait(0.3)
-		setPosButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-	end
-end)
-
-startButton.MouseButton1Click:Connect(function()
-	if #savedPositions > 0 then
-		isAutoRunning = true
-		startButton.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
-	else
-		-- Visual feedback tanpa notifikasi spam
-		startButton.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
-		wait(0.5)
-		startButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-	end
-end)
-
-stopButton.MouseButton1Click:Connect(function()
-	isAutoRunning = false
-	startButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-	
-	-- Visual feedback
-	stopButton.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
-	wait(0.3)
-	stopButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-end)
-
-loadButton.MouseButton1Click:Connect(function()
-	-- Load functionality - reset dan buat baru
-	savedPositions = {}
-	currentIndex = 1
-	updatePositionsList()
-	
-	-- Visual feedback
-	loadButton.BackgroundColor3 = Color3.fromRGB(0, 100, 100)
-	wait(0.3)
-	loadButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-end)
-
-closeButton.MouseButton1Click:Connect(function()
-	toggleUI()
-end)
-
-miniIcon.MouseButton1Click:Connect(function()
-	toggleUI()
-end)
-
--- Function to toggle UI visibility
-function toggleUI()
-	isUIVisible = not isUIVisible
-	
-	if isUIVisible then
-		mainFrame.Visible = true
-		miniIcon.Visible = false
-	else
-		mainFrame.Visible = false
-		miniIcon.Visible = true
-	end
+-- Direct Teleport (Normal teleport)
+local function directTeleport(index)
+    if VenomSystem.positions[index] then
+        local character = Players.LocalPlayer.Character
+        if character then
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+            if rootPart then
+                rootPart.CFrame = VenomSystem.positions[index]
+            end
+        end
+    end
 end
 
--- Assemble UI
-titleLabel.Parent = titleBar
-closeButton.Parent = titleBar
-titleBar.Parent = mainFrame
-positionsFrame.Parent = mainFrame
-controlsFrame.Parent = mainFrame
-miniIcon.Parent = screenGui
-mainFrame.Parent = screenGui
-screenGui.Parent = player:WaitForChild("PlayerGui")
+-- Add New Position
+local function addPosition()
+    local character = Players.LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local newIndex = #VenomSystem.positions + 1
+        VenomSystem.positions[newIndex] = character.HumanoidRootPart.CFrame
+        VenomSystem:updatePositionsList()
+    end
+end
 
--- Initial update
-updatePositionsList()
+-- Delete Position
+local function deletePosition(index)
+    table.remove(VenomSystem.positions, index)
+    
+    local newPositions = {}
+    for i, pos in ipairs(VenomSystem.positions) do
+        newPositions[i] = pos
+    end
+    VenomSystem.positions = newPositions
+    
+    VenomSystem:updatePositionsList()
+end
 
-print("X-V3N0M Teleport System Loaded - by Nazam Official")
+-- LOAD Button Handler
+local function handleLoadButton()
+    local currentTime = tick()
+    
+    if currentTime - VenomSystem.lastLoadClick < 0.5 then
+        -- Double click: Save current positions
+        savePositions()
+        VenomSystem.lastLoadClick = 0
+    else
+        -- Single click: Load saved positions
+        loadPositions()
+        VenomSystem.lastLoadClick = currentTime
+    end
+end
+
+-- Create Compact GUI with LOAD Button
+function VenomSystem:createGUI()
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "VenomV1_NazamOfficial"
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+    
+    self.gui = screenGui
+    
+    -- Main Frame
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = Sizes.mainFrame
+    mainFrame.Position = UDim2.new(0, 10, 0, 10)
+    mainFrame.BackgroundColor3 = Theme.background
+    mainFrame.BackgroundTransparency = 0.1
+    mainFrame.BorderSizePixel = 0
+    mainFrame.ClipsDescendants = true
+    mainFrame.Name = "MainFrame"
+    mainFrame.Parent = screenGui
+    
+    local mainCorner = Instance.new("UICorner")
+    mainCorner.CornerRadius = UDim.new(0, 6)
+    mainCorner.Parent = mainFrame
+    
+    local mainStroke = Instance.new("UIStroke")
+    mainStroke.Color = Theme.primary
+    mainStroke.Thickness = 1
+    mainStroke.Parent = mainFrame
+    
+    -- Title Bar
+    local titleBar = Instance.new("Frame")
+    titleBar.Size = UDim2.new(1, 0, 0, Sizes.titleHeight)
+    titleBar.Position = UDim2.new(0, 0, 0, 0)
+    titleBar.BackgroundColor3 = Theme.primary
+    titleBar.BorderSizePixel = 0
+    titleBar.Name = "TitleBar"
+    titleBar.Parent = mainFrame
+    
+    local titleCorner = Instance.new("UICorner")
+    titleCorner.CornerRadius = UDim.new(0, 6)
+    titleCorner.Parent = titleBar
+    
+    -- Title Text
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(0.6, 0, 1, 0)
+    titleLabel.Position = UDim2.new(0.05, 0, 0, 0)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.TextColor3 = Theme.secondary
+    titleLabel.Text = "V3N0M"
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 12
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Parent = titleBar
+    
+    -- Close Button (X)
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0, 22, 0, 22)
+    closeBtn.Position = UDim2.new(1, -25, 0.5, -11)
+    closeBtn.BackgroundColor3 = Theme.accent
+    closeBtn.TextColor3 = Theme.secondary
+    closeBtn.Text = "X"
+    closeBtn.Font = Enum.Font.GothamBold
+    closeBtn.TextSize = 10
+    closeBtn.AutoButtonColor = false
+    closeBtn.Name = "CloseBtn"
+    closeBtn.Parent = titleBar
+    
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(0, 4)
+    closeCorner.Parent = closeBtn
+    
+    closeBtn.MouseEnter:Connect(function()
+        closeBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    end)
+    
+    closeBtn.MouseLeave:Connect(function()
+        closeBtn.BackgroundColor3 = Theme.accent
+    end)
+    
+    -- Make Draggable
+    local dragging = false
+    local dragInput, dragStart, startPos
+    
+    titleBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = mainFrame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    titleBar.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            mainFrame.Position = UDim2.new(
+                startPos.X.Scale, 
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale, 
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+    
+    -- Content Area
+    local contentFrame = Instance.new("Frame")
+    contentFrame.Size = UDim2.new(1, 0, 1, -Sizes.titleHeight)
+    contentFrame.Position = UDim2.new(0, 0, 0, Sizes.titleHeight)
+    contentFrame.BackgroundTransparency = 1
+    contentFrame.Parent = mainFrame
+    
+    -- Left Side - Positions List
+    local positionsFrame = Instance.new("ScrollingFrame")
+    positionsFrame.Size = UDim2.new(0.58, 0, 1, -40) -- Space for buttons
+    positionsFrame.Position = UDim2.new(0, 0, 0, 0)
+    positionsFrame.BackgroundTransparency = 1
+    positionsFrame.BorderSizePixel = 0
+    positionsFrame.ScrollBarThickness = 3
+    positionsFrame.ScrollBarImageColor3 = Theme.primary
+    positionsFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    positionsFrame.Name = "PositionsFrame"
+    positionsFrame.Parent = contentFrame
+    
+    -- Right Side - Control Buttons
+    local controlsFrame = Instance.new("Frame")
+    controlsFrame.Size = UDim2.new(0.38, 0, 1, -40) -- Space for LOAD button
+    controlsFrame.Position = UDim2.new(0.6, 0, 0, 0)
+    controlsFrame.BackgroundTransparency = 1
+    controlsFrame.Parent = contentFrame
+    
+    -- Control Buttons (Vertical)
+    local startBtn = Instance.new("TextButton")
+    startBtn.Size = UDim2.new(1, 0, 0, Sizes.buttonHeight)
+    startBtn.Position = UDim2.new(0, 0, 0, Sizes.spacing)
+    startBtn.BackgroundColor3 = Theme.primary
+    startBtn.TextColor3 = Theme.secondary
+    startBtn.Text = "START"
+    startBtn.Font = Enum.Font.GothamBold
+    startBtn.TextSize = 11
+    startBtn.AutoButtonColor = false
+    startBtn.Name = "StartBtn"
+    startBtn.Parent = controlsFrame
+    
+    local startCorner = Instance.new("UICorner")
+    startCorner.CornerRadius = UDim.new(0, 4)
+    startCorner.Parent = startBtn
+    
+    local setPosBtn = Instance.new("TextButton")
+    setPosBtn.Size = UDim2.new(1, 0, 0, Sizes.buttonHeight)
+    setPosBtn.Position = UDim2.new(0, 0, 0, Sizes.buttonHeight + Sizes.spacing * 2)
+    setPosBtn.BackgroundColor3 = Theme.primary
+    setPosBtn.TextColor3 = Theme.secondary
+    setPosBtn.Text = "SET POSISI"
+    setPosBtn.Font = Enum.Font.GothamBold
+    setPosBtn.TextSize = 10
+    setPosBtn.AutoButtonColor = false
+    setPosBtn.Name = "SetPosBtn"
+    setPosBtn.Parent = controlsFrame
+    
+    local setPosCorner = Instance.new("UICorner")
+    setPosCorner.CornerRadius = UDim.new(0, 4)
+    setPosCorner.Parent = setPosBtn
+    
+    local stopBtn = Instance.new("TextButton")
+    stopBtn.Size = UDim2.new(1, 0, 0, Sizes.buttonHeight)
+    stopBtn.Position = UDim2.new(0, 0, 0, Sizes.buttonHeight * 2 + Sizes.spacing * 3)
+    stopBtn.BackgroundColor3 = Theme.accent
+    stopBtn.TextColor3 = Theme.secondary
+    stopBtn.Text = "STOP"
+    stopBtn.Font = Enum.Font.GothamBold
+    stopBtn.TextSize = 11
+    stopBtn.AutoButtonColor = false
+    stopBtn.Name = "StopBtn"
+    stopBtn.Parent = controlsFrame
+    
+    local stopCorner = Instance.new("UICorner")
+    stopCorner.CornerRadius = UDim.new(0, 4)
+    stopCorner.Parent = stopBtn
+    
+    -- LOAD Button at Bottom
+    local loadBtn = Instance.new("TextButton")
+    loadBtn.Size = UDim2.new(0.9, 0, 0, 30)
+    loadBtn.Position = UDim2.new(0.05, 0, 1, -35)
+    loadBtn.BackgroundColor3 = Theme.info
+    loadBtn.TextColor3 = Theme.secondary
+    loadBtn.Text = "LOAD"
+    loadBtn.Font = Enum.Font.GothamBold
+    loadBtn.TextSize = 11
+    loadBtn.AutoButtonColor = false
+    loadBtn.Name = "LoadBtn"
+    loadBtn.Parent = contentFrame
+    
+    local loadCorner = Instance.new("UICorner")
+    loadCorner.CornerRadius = UDim.new(0, 4)
+    loadCorner.Parent = loadBtn
+    
+    loadBtn.MouseEnter:Connect(function()
+        loadBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+    end)
+    
+    loadBtn.MouseLeave:Connect(function()
+        loadBtn.BackgroundColor3 = Theme.info
+    end)
+    
+    -- Mini Icon
+    local miniIcon = Instance.new("TextButton")
+    miniIcon.Size = UDim2.new(0, 30, 0, 30)
+    miniIcon.Position = UDim2.new(0, 10, 0, 10)
+    miniIcon.BackgroundColor3 = Theme.primary
+    miniIcon.TextColor3 = Theme.secondary
+    miniIcon.Text = "V"
+    miniIcon.Font = Enum.Font.GothamBold
+    miniIcon.TextSize = 12
+    miniIcon.AutoButtonColor = true
+    miniIcon.Name = "MiniIcon"
+    miniIcon.Visible = false
+    miniIcon.ZIndex = 10
+    miniIcon.Parent = screenGui
+    
+    local miniCorner = Instance.new("UICorner")
+    miniCorner.CornerRadius = UDim.new(0, 6)
+    miniCorner.Parent = miniIcon
+    
+    local miniStroke = Instance.new("UIStroke")
+    miniStroke.Color = Theme.secondary
+    miniStroke.Thickness = 1
+    miniStroke.Parent = miniIcon
+    
+    -- Make Mini Icon Draggable
+    local miniDragging = false
+    local miniDragInput, miniDragStart, miniStartPos
+    
+    miniIcon.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            miniDragging = true
+            miniDragStart = input.Position
+            miniStartPos = miniIcon.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    miniDragging = false
+                end
+            end)
+        end
+    end)
+    
+    miniIcon.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            miniDragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == miniDragInput and miniDragging then
+            local delta = input.Position - miniDragStart
+            miniIcon.Position = UDim2.new(
+                miniStartPos.X.Scale, 
+                miniStartPos.X.Offset + delta.X,
+                miniStartPos.Y.Scale, 
+                miniStartPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+    
+    return screenGui, mainFrame, miniIcon
+end
+
+-- Update Positions List
+function VenomSystem:updatePositionsList()
+    local positionsFrame = self.gui:FindFirstChild("PositionsFrame", true)
+    if not positionsFrame then return end
+    
+    for _, child in pairs(positionsFrame:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
+        end
+    end
+    
+    positionsFrame.CanvasSize = UDim2.new(0, 0, 0, #self.positions * (Sizes.posItemHeight + Sizes.spacing))
+    
+    for i, position in ipairs(self.positions) do
+        local posFrame = Instance.new("Frame")
+        posFrame.Size = UDim2.new(0.95, 0, 0, Sizes.posItemHeight)
+        posFrame.Position = UDim2.new(0.025, 0, 0, (i - 1) * (Sizes.posItemHeight + Sizes.spacing))
+        posFrame.BackgroundColor3 = Theme.secondary
+        posFrame.BackgroundTransparency = 0.9
+        posFrame.BorderSizePixel = 0
+        posFrame.Parent = positionsFrame
+        
+        local posCorner = Instance.new("UICorner")
+        posCorner.CornerRadius = UDim.new(0, 4)
+        posCorner.Parent = posFrame
+        
+        local posStroke = Instance.new("UIStroke")
+        posStroke.Color = Theme.primary
+        posStroke.Thickness = 1
+        posStroke.Parent = posFrame
+        
+        -- Position Label
+        local posLabel = Instance.new("TextLabel")
+        posLabel.Size = UDim2.new(0.45, 0, 1, 0)
+        posLabel.Position = UDim2.new(0.05, 0, 0, 0)
+        posLabel.BackgroundTransparency = 1
+        posLabel.TextColor3 = Theme.secondary
+        posLabel.Text = "P" .. i
+        posLabel.Font = Enum.Font.GothamSemibold
+        posLabel.TextSize = 10
+        posLabel.TextXAlignment = Enum.TextXAlignment.Left
+        posLabel.Parent = posFrame
+        
+        -- TP Button
+        local tpBtn = Instance.new("TextButton")
+        tpBtn.Size = UDim2.new(0.2, 0, 0.6, 0)
+        tpBtn.Position = UDim2.new(0.5, 0, 0.2, 0)
+        tpBtn.BackgroundColor3 = Theme.primary
+        tpBtn.TextColor3 = Theme.secondary
+        tpBtn.Text = "TP"
+        tpBtn.Font = Enum.Font.GothamBold
+        tpBtn.TextSize = 8
+        tpBtn.AutoButtonColor = false
+        tpBtn.Name = "TPBtn_" .. i
+        tpBtn.Parent = posFrame
+        
+        local tpCorner = Instance.new("UICorner")
+        tpCorner.CornerRadius = UDim.new(0, 3)
+        tpCorner.Parent = tpBtn
+        
+        tpBtn.MouseEnter:Connect(function()
+            tpBtn.BackgroundColor3 = Theme.accent
+        end)
+        
+        tpBtn.MouseLeave:Connect(function()
+            tpBtn.BackgroundColor3 = Theme.primary
+        end)
+        
+        -- Delete Button
+        local delBtn = Instance.new("TextButton")
+        delBtn.Size = UDim2.new(0.2, 0, 0.6, 0)
+        delBtn.Position = UDim2.new(0.75, 0, 0.2, 0)
+        delBtn.BackgroundColor3 = Theme.warning
+        delBtn.TextColor3 = Theme.secondary
+        delBtn.Text = "X"
+        delBtn.Font = Enum.Font.GothamBold
+        delBtn.TextSize = 8
+        delBtn.AutoButtonColor = false
+        delBtn.Name = "DelBtn_" .. i
+        delBtn.Parent = posFrame
+        
+        local delCorner = Instance.new("UICorner")
+        delCorner.CornerRadius = UDim.new(0, 3)
+        delCorner.Parent = delBtn
+        
+        delBtn.MouseEnter:Connect(function()
+            delBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        end)
+        
+        delBtn.MouseLeave:Connect(function()
+            delBtn.BackgroundColor3 = Theme.warning
+        end)
+        
+        -- Button Events
+        tpBtn.MouseButton1Click:Connect(function()
+            directTeleport(i)
+        end)
+        
+        delBtn.MouseButton1Click:Connect(function()
+            deletePosition(i)
+        end)
+    end
+end
+
+-- Toggle Menu Visibility
+function VenomSystem:toggleMenu()
+    self.menuVisible = not self.menuVisible
+    self.mainFrame.Visible = self.menuVisible
+    self.miniIcon.Visible = not self.menuVisible
+end
+
+-- Setup Event Handlers
+function VenomSystem:setupEvents()
+    local closeBtn = self.gui:FindFirstChild("CloseBtn", true)
+    local startBtn = self.gui:FindFirstChild("StartBtn", true)
+    local setPosBtn = self.gui:FindFirstChild("SetPosBtn", true)
+    local stopBtn = self.gui:FindFirstChild("StopBtn", true)
+    local loadBtn = self.gui:FindFirstChild("LoadBtn", true)
+    local miniIcon = self.gui:FindFirstChild("MiniIcon", true)
+    
+    if closeBtn then
+        closeBtn.MouseButton1Click:Connect(function()
+            self:toggleMenu()
+        end)
+    end
+    
+    if startBtn then
+        startBtn.MouseButton1Click:Connect(function()
+            if not self.isRunning then
+                startAutoTeleport()
+            end
+        end)
+    end
+    
+    if setPosBtn then
+        setPosBtn.MouseButton1Click:Connect(function()
+            addPosition()
+        end)
+    end
+    
+    if stopBtn then
+        stopBtn.MouseButton1Click:Connect(function()
+            stopAutoTeleport()
+        end)
+    end
+    
+    if loadBtn then
+        loadBtn.MouseButton1Click:Connect(function()
+            handleLoadButton()
+        end)
+    end
+    
+    if miniIcon then
+        miniIcon.MouseButton1Click:Connect(function()
+            self:toggleMenu()
+        end)
+    end
+end
+
+-- Initialize System
+function VenomSystem:init()
+    local screenGui, mainFrame, miniIcon = self:createGUI()
+    self.gui = screenGui
+    self.mainFrame = mainFrame
+    self.miniIcon = miniIcon
+    
+    self:setupEvents()
+    self:updatePositionsList()
+    
+    print("V3N0M v1.0 - Fixed System Ready")
+    print("START: Checkpoint trigger | LOAD: Save/Load positions")
+    print("Single-click LOAD: Load | Double-click LOAD: Save")
+end
+
+-- Start the System
+VenomSystem:init()
