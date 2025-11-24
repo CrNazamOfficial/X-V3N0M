@@ -1,3 +1,4 @@
+
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -34,12 +35,12 @@ local GUI = {
 }
 
 local Sizes = {
-    mainFrame = UDim2.new(0, 420, 0, 480),
-    titleHeight = 40,
-    posFrameSize = UDim2.new(0.46, 0, 0, 80),
-    buttonHeight = 32,
-    spacing = 8,
-    menuIconSize = 45
+    mainFrame = UDim2.new(0, 280, 0, 360),
+    titleHeight = 32,
+    posFrameSize = UDim2.new(0.46, 0, 0, 62),
+    buttonHeight = 26,
+    spacing = 6,
+    menuIconSize = 40
 }
 
 local function savePositions()
@@ -283,12 +284,12 @@ end
 function TeleportV1:createMenuIcon()
     local menuIcon = Instance.new("TextButton")
     menuIcon.Size = UDim2.new(0, Sizes.menuIconSize, 0, Sizes.menuIconSize)
-    menuIcon.Position = UDim2.new(0, 20, 0, 20)
+    menuIcon.Position = UDim2.new(0, 15, 0, 15)
     menuIcon.BackgroundColor3 = GUI.accentColor
     menuIcon.TextColor3 = GUI.secondaryColor
     menuIcon.Text = "☰"
     menuIcon.Font = Enum.Font.GothamBold
-    menuIcon.TextSize = 18
+    menuIcon.TextSize = 16
     menuIcon.AutoButtonColor = true
     menuIcon.Name = "MenuIcon"
     menuIcon.ZIndex = 10
@@ -296,7 +297,7 @@ function TeleportV1:createMenuIcon()
     menuIcon.Parent = self.gui
     
     local iconCorner = Instance.new("UICorner")
-    iconCorner.CornerRadius = UDim.new(0, 8)
+    iconCorner.CornerRadius = UDim.new(0, 6)
     iconCorner.Parent = menuIcon
     
     local iconStroke = Instance.new("UIStroke")
@@ -348,13 +349,13 @@ function TeleportV1:createMainFrame()
     mainFrame.BackgroundColor3 = GUI.mainColor
     mainFrame.BackgroundTransparency = 0.05
     mainFrame.BorderSizePixel = 0
-    mainFrame.ClipsDescendants = true
+    mainFrame.ClipsDescendants = false
     mainFrame.Visible = true
     mainFrame.Name = "MainFrame"
     mainFrame.Parent = self.gui
     
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
+    corner.CornerRadius = UDim.new(0, 6)
     corner.Parent = mainFrame
     
     local stroke = Instance.new("UIStroke")
@@ -371,41 +372,41 @@ function TeleportV1:createMainFrame()
     titleBar.Parent = mainFrame
     
     local titleCorner = Instance.new("UICorner")
-    titleCorner.CornerRadius = UDim.new(0, 8)
+    titleCorner.CornerRadius = UDim.new(0, 6)
     titleCorner.Parent = titleBar
     
     local bottomFix = Instance.new("Frame")
-    bottomFix.Size = UDim2.new(1, 0, 0, 8)
-    bottomFix.Position = UDim2.new(0, 0, 1, -8)
+    bottomFix.Size = UDim2.new(1, 0, 0, 6)
+    bottomFix.Position = UDim2.new(0, 0, 1, -6)
     bottomFix.BackgroundColor3 = GUI.accentColor
     bottomFix.BorderSizePixel = 0
     bottomFix.Parent = titleBar
     
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(0.7, 0, 1, 0)
+    titleLabel.Size = UDim2.new(0.65, 0, 1, 0)
     titleLabel.Position = UDim2.new(0.05, 0, 0, 0)
     titleLabel.BackgroundTransparency = 1
     titleLabel.TextColor3 = GUI.secondaryColor
-    titleLabel.Text = "TELEPORT V1.0 - Nazam"
+    titleLabel.Text = "TP V1 - Nazam"
     titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 14
+    titleLabel.TextSize = 11
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = titleBar
     
     local minimizeBtn = Instance.new("TextButton")
-    minimizeBtn.Size = UDim2.new(0, 28, 0, 28)
-    minimizeBtn.Position = UDim2.new(1, -35, 0.5, -14)
+    minimizeBtn.Size = UDim2.new(0, 24, 0, 24)
+    minimizeBtn.Position = UDim2.new(1, -28, 0.5, -12)
     minimizeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     minimizeBtn.TextColor3 = GUI.secondaryColor
     minimizeBtn.Text = "−"
     minimizeBtn.Font = Enum.Font.GothamBold
-    minimizeBtn.TextSize = 16
+    minimizeBtn.TextSize = 14
     minimizeBtn.AutoButtonColor = false
     minimizeBtn.Name = "MinimizeBtn"
     minimizeBtn.Parent = titleBar
     
     local minimizeCorner = Instance.new("UICorner")
-    minimizeCorner.CornerRadius = UDim.new(0, 6)
+    minimizeCorner.CornerRadius = UDim.new(0, 4)
     minimizeCorner.Parent = minimizeBtn
     
     minimizeBtn.MouseEnter:Connect(function()
@@ -464,23 +465,22 @@ function TeleportV1:createGUI()
     self.menuIcon = self:createMenuIcon()
     
     local scrollFrame = Instance.new("ScrollingFrame")
-    scrollFrame.Size = UDim2.new(1, 0, 1, -Sizes.titleHeight - 80)
+    scrollFrame.Size = UDim2.new(1, 0, 1, -Sizes.titleHeight - 65)
     scrollFrame.Position = UDim2.new(0, 0, 0, Sizes.titleHeight)
     scrollFrame.BackgroundTransparency = 1
     scrollFrame.BorderSizePixel = 0
-    scrollFrame.ScrollBarThickness = 4
+    scrollFrame.ScrollBarThickness = 3
     scrollFrame.ScrollBarImageColor3 = GUI.accentColor
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 460)
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 360)
     scrollFrame.Name = "ScrollFrame"
     scrollFrame.Parent = self.mainFrame
     
-    -- Grid Layout - 2 kolom
     for i = 1, self.maxPositions do
         local row = math.floor((i - 1) / 2)
         local col = (i - 1) % 2
         
         local xPos = 0.04 + (col * 0.50)
-        local yPos = Sizes.spacing + (row * 88)
+        local yPos = Sizes.spacing + (row * 68)
         
         local posFrame = Instance.new("Frame")
         posFrame.Size = Sizes.posFrameSize
@@ -492,7 +492,7 @@ function TeleportV1:createGUI()
         posFrame.Parent = scrollFrame
         
         local posFrameCorner = Instance.new("UICorner")
-        posFrameCorner.CornerRadius = UDim.new(0, 6)
+        posFrameCorner.CornerRadius = UDim.new(0, 5)
         posFrameCorner.Parent = posFrame
         
         local posFrameStroke = Instance.new("UIStroke")
@@ -501,20 +501,20 @@ function TeleportV1:createGUI()
         posFrameStroke.Parent = posFrame
         
         local posLabel = Instance.new("TextLabel")
-        posLabel.Size = UDim2.new(0.7, 0, 0.25, 0)
+        posLabel.Size = UDim2.new(0.65, 0, 0.22, 0)
         posLabel.Position = UDim2.new(0.05, 0, 0.05, 0)
         posLabel.BackgroundTransparency = 1
         posLabel.TextColor3 = GUI.warningColor
-        posLabel.Text = "POS "..i
+        posLabel.Text = "P"..i
         posLabel.Font = Enum.Font.GothamBold
-        posLabel.TextSize = 11
+        posLabel.TextSize = 9
         posLabel.TextXAlignment = Enum.TextXAlignment.Left
         posLabel.Name = "PosLabel"..i
         posLabel.Parent = posFrame
         
         local statusIndicator = Instance.new("Frame")
-        statusIndicator.Size = UDim2.new(0.7, 0, 0, 2)
-        statusIndicator.Position = UDim2.new(0.05, 0, 0.32, 0)
+        statusIndicator.Size = UDim2.new(0.65, 0, 0, 2)
+        statusIndicator.Position = UDim2.new(0.05, 0, 0.3, 0)
         statusIndicator.BackgroundColor3 = GUI.warningColor
         statusIndicator.BorderSizePixel = 0
         statusIndicator.Name = "StatusIndicator"..i
@@ -522,18 +522,18 @@ function TeleportV1:createGUI()
         
         local teleportBtn = Instance.new("TextButton")
         teleportBtn.Size = UDim2.new(0.9, 0, 0.28, 0)
-        teleportBtn.Position = UDim2.new(0.05, 0, 0.38, 0)
+        teleportBtn.Position = UDim2.new(0.05, 0, 0.37, 0)
         teleportBtn.BackgroundColor3 = GUI.accentColor
         teleportBtn.TextColor3 = GUI.secondaryColor
-        teleportBtn.Text = "TELEPORT"
+        teleportBtn.Text = "TP"
         teleportBtn.Font = Enum.Font.GothamBold
-        teleportBtn.TextSize = 9
+        teleportBtn.TextSize = 8
         teleportBtn.AutoButtonColor = false
         teleportBtn.Name = "TeleportBtn"..i
         teleportBtn.Parent = posFrame
         
         local teleportCorner = Instance.new("UICorner")
-        teleportCorner.CornerRadius = UDim.new(0, 4)
+        teleportCorner.CornerRadius = UDim.new(0, 3)
         teleportCorner.Parent = teleportBtn
         
         teleportBtn.MouseEnter:Connect(function()
@@ -551,13 +551,13 @@ function TeleportV1:createGUI()
         setBtn.TextColor3 = GUI.secondaryColor
         setBtn.Text = "SET"
         setBtn.Font = Enum.Font.GothamBold
-        setBtn.TextSize = 9
+        setBtn.TextSize = 8
         setBtn.AutoButtonColor = false
         setBtn.Name = "SetBtn"..i
         setBtn.Parent = posFrame
         
         local setCorner = Instance.new("UICorner")
-        setCorner.CornerRadius = UDim.new(0, 4)
+        setCorner.CornerRadius = UDim.new(0, 3)
         setCorner.Parent = setBtn
         
         setBtn.MouseEnter:Connect(function()
@@ -569,13 +569,13 @@ function TeleportV1:createGUI()
         end)
         
         local deleteBtn = Instance.new("TextButton")
-        deleteBtn.Size = UDim2.new(0, 20, 0, 20)
-        deleteBtn.Position = UDim2.new(1, -25, 0, 5)
+        deleteBtn.Size = UDim2.new(0, 18, 0, 18)
+        deleteBtn.Position = UDim2.new(1, -22, 0, 4)
         deleteBtn.BackgroundColor3 = GUI.accentColor
         deleteBtn.TextColor3 = GUI.secondaryColor
         deleteBtn.Text = "✕"
         deleteBtn.Font = Enum.Font.GothamBold
-        deleteBtn.TextSize = 11
+        deleteBtn.TextSize = 10
         deleteBtn.AutoButtonColor = false
         deleteBtn.Name = "DeleteBtn"..i
         deleteBtn.Visible = false
@@ -583,7 +583,7 @@ function TeleportV1:createGUI()
         deleteBtn.Parent = posFrame
         
         local deleteCorner = Instance.new("UICorner")
-        deleteCorner.CornerRadius = UDim.new(0, 10)
+        deleteCorner.CornerRadius = UDim.new(0, 9)
         deleteCorner.Parent = deleteBtn
         
         deleteBtn.MouseEnter:Connect(function()
@@ -596,83 +596,83 @@ function TeleportV1:createGUI()
     end
 
     local controlFrame = Instance.new("Frame")
-    controlFrame.Size = UDim2.new(1, 0, 0, 80)
-    controlFrame.Position = UDim2.new(0, 0, 1, -80)
+    controlFrame.Size = UDim2.new(1, 0, 0, 65)
+    controlFrame.Position = UDim2.new(0, 0, 1, -65)
     controlFrame.BackgroundTransparency = 1
     controlFrame.Parent = self.mainFrame
     
     local deleteModeBtn = Instance.new("TextButton")
     deleteModeBtn.Size = UDim2.new(0.22, 0, 0, Sizes.buttonHeight)
-    deleteModeBtn.Position = UDim2.new(0.04, 0, 0.15, 0)
+    deleteModeBtn.Position = UDim2.new(0.04, 0, 0.12, 0)
     deleteModeBtn.BackgroundColor3 = GUI.accentColor
     deleteModeBtn.TextColor3 = GUI.secondaryColor
-    deleteModeBtn.Text = "DELETE"
+    deleteModeBtn.Text = "DEL"
     deleteModeBtn.Font = Enum.Font.GothamBold
-    deleteModeBtn.TextSize = 10
+    deleteModeBtn.TextSize = 9
     deleteModeBtn.AutoButtonColor = false
     deleteModeBtn.Name = "DeleteModeBtn"
     deleteModeBtn.Parent = controlFrame
     
     local deleteModeCorner = Instance.new("UICorner")
-    deleteModeCorner.CornerRadius = UDim.new(0, 6)
+    deleteModeCorner.CornerRadius = UDim.new(0, 5)
     deleteModeCorner.Parent = deleteModeBtn
     
     local saveBtn = Instance.new("TextButton")
     saveBtn.Size = UDim2.new(0.22, 0, 0, Sizes.buttonHeight)
-    saveBtn.Position = UDim2.new(0.28, 0, 0.15, 0)
+    saveBtn.Position = UDim2.new(0.28, 0, 0.12, 0)
     saveBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
     saveBtn.TextColor3 = GUI.secondaryColor
-    saveBtn.Text = "SAVE"
+    saveBtn.Text = "SAV"
     saveBtn.Font = Enum.Font.GothamBold
-    saveBtn.TextSize = 11
+    saveBtn.TextSize = 9
     saveBtn.AutoButtonColor = false
     saveBtn.Name = "SaveBtn"
     saveBtn.Parent = controlFrame
     
     local saveCorner = Instance.new("UICorner")
-    saveCorner.CornerRadius = UDim.new(0, 6)
+    saveCorner.CornerRadius = UDim.new(0, 5)
     saveCorner.Parent = saveBtn
     
     local loadBtn = Instance.new("TextButton")
     loadBtn.Size = UDim2.new(0.22, 0, 0, Sizes.buttonHeight)
-    loadBtn.Position = UDim2.new(0.52, 0, 0.15, 0)
+    loadBtn.Position = UDim2.new(0.52, 0, 0.12, 0)
     loadBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
     loadBtn.TextColor3 = GUI.secondaryColor
-    loadBtn.Text = "LOAD"
+    loadBtn.Text = "LOD"
     loadBtn.Font = Enum.Font.GothamBold
-    loadBtn.TextSize = 11
+    loadBtn.TextSize = 9
     loadBtn.AutoButtonColor = false
     loadBtn.Name = "LoadBtn"
     loadBtn.Parent = controlFrame
     
     local loadCorner = Instance.new("UICorner")
-    loadCorner.CornerRadius = UDim.new(0, 6)
+    loadCorner.CornerRadius = UDim.new(0, 5)
     loadCorner.Parent = loadBtn
     
     local ghostBtn = Instance.new("TextButton")
     ghostBtn.Size = UDim2.new(0.22, 0, 0, Sizes.buttonHeight)
-    ghostBtn.Position = UDim2.new(0.76, 0, 0.15, 0)
+    ghostBtn.Position = UDim2.new(0.76, 0, 0.12, 0)
     ghostBtn.BackgroundColor3 = GUI.ghostColor
     ghostBtn.TextColor3 = GUI.secondaryColor
-    ghostBtn.Text = "GHOST"
+    ghostBtn.Text = "GHO"
     ghostBtn.Font = Enum.Font.GothamBold
-    ghostBtn.TextSize = 10
+    ghostBtn.TextSize = 9
     ghostBtn.AutoButtonColor = false
     ghostBtn.Name = "GhostBtn"
     ghostBtn.Parent = controlFrame
     
     local ghostCorner = Instance.new("UICorner")
-    ghostCorner.CornerRadius = UDim.new(0, 6)
+    ghostCorner.CornerRadius = UDim.new(0, 5)
     ghostCorner.Parent = ghostBtn
     
     local infoLabel = Instance.new("TextLabel")
-    infoLabel.Size = UDim2.new(0.92, 0, 0, 20)
-    infoLabel.Position = UDim2.new(0.04, 0, 0.65, 0)
+    infoLabel.Size = UDim2.new(0.92, 0, 0, 16)
+    infoLabel.Position = UDim2.new(0.04, 0, 0.7, 0)
     infoLabel.BackgroundTransparency = 1
     infoLabel.TextColor3 = GUI.secondaryColor
-    infoLabel.Text = "10 SLOTS + GHOST MODE + AUTO-SAVE"
+    infoLabel.Text = "10 SLOTS + GHOST"
     infoLabel.Font = Enum.Font.GothamSemibold
-    infoLabel.TextSize = 9
+    infoLabel.TextSize = 7
     infoLabel.TextXAlignment = Enum.TextXAlignment.Center
     infoLabel.Parent = controlFrame
     
@@ -756,11 +756,11 @@ function TeleportV1:updateGUI()
         
         if posLabel and statusIndicator then
             if self.positions[i] then
-                posLabel.Text = "POS "..i.." ✓"
+                posLabel.Text = "P"..i.." ✓"
                 posLabel.TextColor3 = GUI.successColor
                 statusIndicator.BackgroundColor3 = GUI.successColor
             else
-                posLabel.Text = "POS "..i
+                posLabel.Text = "P"..i
                 posLabel.TextColor3 = GUI.warningColor
                 statusIndicator.BackgroundColor3 = GUI.warningColor
             end
@@ -810,10 +810,10 @@ function TeleportV1:setupEvents()
             end
             
             if self.deleteMode then
-                deleteModeBtn.Text = "CANCEL"
+                deleteModeBtn.Text = "X"
                 deleteModeBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
             else
-                deleteModeBtn.Text = "DELETE"
+                deleteModeBtn.Text = "DEL"
                 deleteModeBtn.BackgroundColor3 = GUI.accentColor
             end
         end)
@@ -859,7 +859,7 @@ function TeleportV1:init()
     
     print("✅ Teleport V1.0 Loaded - By Nazam Official")
     print("✅ 10 SLOTS + GHOST MODE + AUTO-SAVE")
-    print("✅ GRID LAYOUT 2 KOLOM - DRAGGABLE")
+    print("✅ COMPACT SIZE - DRAGGABLE")
 end
 
 TeleportV1:init()
