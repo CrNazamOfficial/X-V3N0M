@@ -1,5 +1,5 @@
 -- X - V3N0M v1.0 by Nazam Official
--- Advanced Position Keeper System
+-- Compact Stealth System
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -11,27 +11,27 @@ local VenomSystem = {
     isRunning = false,
     currentIndex = 1,
     menuVisible = true,
-    teleportCooldown = 0.8, -- Safe cooldown
+    teleportCooldown = 0.8,
     lastTeleport = 0
 }
 
 -- Color Theme: Red, White, Black
 local Theme = {
-    primary = Color3.fromRGB(200, 0, 0),    -- Red
-    secondary = Color3.fromRGB(255, 255, 255), -- White  
-    background = Color3.fromRGB(20, 20, 20),   -- Black
-    accent = Color3.fromRGB(150, 0, 0),     -- Dark Red
-    success = Color3.fromRGB(0, 180, 0),    -- Green for active
-    warning = Color3.fromRGB(255, 80, 80)   -- Light Red for inactive
+    primary = Color3.fromRGB(200, 0, 0),
+    secondary = Color3.fromRGB(255, 255, 255),
+    background = Color3.fromRGB(15, 15, 15),
+    accent = Color3.fromRGB(150, 0, 0),
+    success = Color3.fromRGB(0, 180, 0),
+    warning = Color3.fromRGB(255, 80, 80)
 }
 
--- 16:9 Aspect Ratio Sizes
+-- Compact Sizes (Smaller)
 local Sizes = {
-    mainFrame = UDim2.new(0, 400, 0, 500),  -- 16:9 ratio
-    titleHeight = 40,
-    buttonHeight = 45,
-    posItemHeight = 50,
-    spacing = 8
+    mainFrame = UDim2.new(0, 220, 0, 280),  -- Much smaller
+    titleHeight = 28,
+    buttonHeight = 32,
+    posItemHeight = 36,
+    spacing = 5
 }
 
 -- Stealth Teleport System
@@ -48,15 +48,9 @@ local function stealthTeleport(cframe)
     local rootPart = character:FindFirstChild("HumanoidRootPart")
     if not rootPart then return false end
     
-    -- Internal teleport (no visual movement)
     pcall(function()
-        -- Store current position for visual stability
         local currentCFrame = rootPart.CFrame
-        
-        -- Internal teleport to target
         rootPart.CFrame = cframe
-        
-        -- Immediate return to original position (invisible to player)
         rootPart.CFrame = currentCFrame
     end)
     
@@ -89,7 +83,7 @@ local function startAutoTeleport()
                 VenomSystem.currentIndex += 1
             end
             
-            wait(VenomSystem.teleportCooldown + 0.1) -- Safe delay
+            wait(VenomSystem.teleportCooldown + 0.1)
         end
     end)
 end
@@ -105,7 +99,7 @@ local function stopAutoTeleport()
     end
 end
 
--- Direct Teleport to Position
+-- Direct Teleport
 local function directTeleport(index)
     if VenomSystem.positions[index] then
         local character = Players.LocalPlayer.Character
@@ -132,7 +126,6 @@ end
 local function deletePosition(index)
     table.remove(VenomSystem.positions, index)
     
-    -- Reindex positions
     local newPositions = {}
     for i, pos in ipairs(VenomSystem.positions) do
         newPositions[i] = pos
@@ -142,7 +135,7 @@ local function deletePosition(index)
     VenomSystem:updatePositionsList()
 end
 
--- Create Draggable GUI
+-- Create Compact GUI
 function VenomSystem:createGUI()
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "VenomV1_NazamOfficial"
@@ -151,23 +144,24 @@ function VenomSystem:createGUI()
     
     self.gui = screenGui
     
-    -- Main Frame (16:9 Ratio)
+    -- Main Frame (Compact)
     local mainFrame = Instance.new("Frame")
     mainFrame.Size = Sizes.mainFrame
-    mainFrame.Position = UDim2.new(0.5, -Sizes.mainFrame.X.Offset/2, 0.5, -Sizes.mainFrame.Y.Offset/2)
+    mainFrame.Position = UDim2.new(0, 10, 0, 10)  -- Position di pojok
     mainFrame.BackgroundColor3 = Theme.background
+    mainFrame.BackgroundTransparency = 0.1
     mainFrame.BorderSizePixel = 0
     mainFrame.ClipsDescendants = true
     mainFrame.Name = "MainFrame"
     mainFrame.Parent = screenGui
     
     local mainCorner = Instance.new("UICorner")
-    mainCorner.CornerRadius = UDim.new(0, 8)
+    mainCorner.CornerRadius = UDim.new(0, 6)
     mainCorner.Parent = mainFrame
     
     local mainStroke = Instance.new("UIStroke")
     mainStroke.Color = Theme.primary
-    mainStroke.Thickness = 2
+    mainStroke.Thickness = 1
     mainStroke.Parent = mainFrame
     
     -- Title Bar
@@ -180,36 +174,36 @@ function VenomSystem:createGUI()
     titleBar.Parent = mainFrame
     
     local titleCorner = Instance.new("UICorner")
-    titleCorner.CornerRadius = UDim.new(0, 8)
+    titleCorner.CornerRadius = UDim.new(0, 6)
     titleCorner.Parent = titleBar
     
     -- Title Text
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(0.7, 0, 1, 0)
+    titleLabel.Size = UDim2.new(0.6, 0, 1, 0)
     titleLabel.Position = UDim2.new(0.05, 0, 0, 0)
     titleLabel.BackgroundTransparency = 1
     titleLabel.TextColor3 = Theme.secondary
-    titleLabel.Text = "X - V3N0M v1.0"
+    titleLabel.Text = "V3N0M"
     titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 16
+    titleLabel.TextSize = 12
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = titleBar
     
     -- Close Button (X)
     local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0, 30, 0, 30)
-    closeBtn.Position = UDim2.new(1, -35, 0.5, -15)
+    closeBtn.Size = UDim2.new(0, 22, 0, 22)
+    closeBtn.Position = UDim2.new(1, -25, 0.5, -11)
     closeBtn.BackgroundColor3 = Theme.accent
     closeBtn.TextColor3 = Theme.secondary
     closeBtn.Text = "X"
     closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.TextSize = 14
+    closeBtn.TextSize = 10
     closeBtn.AutoButtonColor = false
     closeBtn.Name = "CloseBtn"
     closeBtn.Parent = titleBar
     
     local closeCorner = Instance.new("UICorner")
-    closeCorner.CornerRadius = UDim.new(0, 6)
+    closeCorner.CornerRadius = UDim.new(0, 4)
     closeCorner.Parent = closeBtn
     
     closeBtn.MouseEnter:Connect(function()
@@ -220,7 +214,7 @@ function VenomSystem:createGUI()
         closeBtn.BackgroundColor3 = Theme.accent
     end)
     
-    -- Make Main Frame Draggable
+    -- Make Draggable
     local dragging = false
     local dragInput, dragStart, startPos
     
@@ -263,26 +257,26 @@ function VenomSystem:createGUI()
     contentFrame.BackgroundTransparency = 1
     contentFrame.Parent = mainFrame
     
-    -- Left Side - Positions List
+    -- Left Side - Positions List (Compact)
     local positionsFrame = Instance.new("ScrollingFrame")
-    positionsFrame.Size = UDim2.new(0.6, 0, 1, 0)
+    positionsFrame.Size = UDim2.new(0.58, 0, 1, 0)
     positionsFrame.Position = UDim2.new(0, 0, 0, 0)
     positionsFrame.BackgroundTransparency = 1
     positionsFrame.BorderSizePixel = 0
-    positionsFrame.ScrollBarThickness = 4
+    positionsFrame.ScrollBarThickness = 3
     positionsFrame.ScrollBarImageColor3 = Theme.primary
     positionsFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     positionsFrame.Name = "PositionsFrame"
     positionsFrame.Parent = contentFrame
     
-    -- Right Side - Control Buttons
+    -- Right Side - Control Buttons (Compact)
     local controlsFrame = Instance.new("Frame")
-    controlsFrame.Size = UDim2.new(0.35, 0, 1, 0)
-    controlsFrame.Position = UDim2.new(0.62, 0, 0, 0)
+    controlsFrame.Size = UDim2.new(0.38, 0, 1, 0)
+    controlsFrame.Position = UDim2.new(0.6, 0, 0, 0)
     controlsFrame.BackgroundTransparency = 1
     controlsFrame.Parent = contentFrame
     
-    -- Control Buttons (Vertical Layout)
+    -- Control Buttons (Compact Vertical)
     local startBtn = Instance.new("TextButton")
     startBtn.Size = UDim2.new(1, 0, 0, Sizes.buttonHeight)
     startBtn.Position = UDim2.new(0, 0, 0, Sizes.spacing)
@@ -290,13 +284,13 @@ function VenomSystem:createGUI()
     startBtn.TextColor3 = Theme.secondary
     startBtn.Text = "START"
     startBtn.Font = Enum.Font.GothamBold
-    startBtn.TextSize = 14
+    startBtn.TextSize = 11
     startBtn.AutoButtonColor = false
     startBtn.Name = "StartBtn"
     startBtn.Parent = controlsFrame
     
     local startCorner = Instance.new("UICorner")
-    startCorner.CornerRadius = UDim.new(0, 6)
+    startCorner.CornerRadius = UDim.new(0, 4)
     startCorner.Parent = startBtn
     
     local setPosBtn = Instance.new("TextButton")
@@ -306,13 +300,13 @@ function VenomSystem:createGUI()
     setPosBtn.TextColor3 = Theme.secondary
     setPosBtn.Text = "SET POSISI"
     setPosBtn.Font = Enum.Font.GothamBold
-    setPosBtn.TextSize = 14
+    setPosBtn.TextSize = 10
     setPosBtn.AutoButtonColor = false
     setPosBtn.Name = "SetPosBtn"
     setPosBtn.Parent = controlsFrame
     
     local setPosCorner = Instance.new("UICorner")
-    setPosCorner.CornerRadius = UDim.new(0, 6)
+    setPosCorner.CornerRadius = UDim.new(0, 4)
     setPosCorner.Parent = setPosBtn
     
     local stopBtn = Instance.new("TextButton")
@@ -322,24 +316,24 @@ function VenomSystem:createGUI()
     stopBtn.TextColor3 = Theme.secondary
     stopBtn.Text = "STOP"
     stopBtn.Font = Enum.Font.GothamBold
-    stopBtn.TextSize = 14
+    stopBtn.TextSize = 11
     stopBtn.AutoButtonColor = false
     stopBtn.Name = "StopBtn"
     stopBtn.Parent = controlsFrame
     
     local stopCorner = Instance.new("UICorner")
-    stopCorner.CornerRadius = UDim.new(0, 6)
+    stopCorner.CornerRadius = UDim.new(0, 4)
     stopCorner.Parent = stopBtn
     
-    -- Mini Icon (Hidden Initially)
+    -- Mini Icon (Very Small)
     local miniIcon = Instance.new("TextButton")
-    miniIcon.Size = UDim2.new(0, 40, 0, 40)
-    miniIcon.Position = UDim2.new(0, 20, 0, 20)
+    miniIcon.Size = UDim2.new(0, 30, 0, 30)
+    miniIcon.Position = UDim2.new(0, 10, 0, 10)
     miniIcon.BackgroundColor3 = Theme.primary
     miniIcon.TextColor3 = Theme.secondary
-    miniIcon.Text = "X"
+    miniIcon.Text = "V"
     miniIcon.Font = Enum.Font.GothamBold
-    miniIcon.TextSize = 16
+    miniIcon.TextSize = 12
     miniIcon.AutoButtonColor = true
     miniIcon.Name = "MiniIcon"
     miniIcon.Visible = false
@@ -347,12 +341,12 @@ function VenomSystem:createGUI()
     miniIcon.Parent = screenGui
     
     local miniCorner = Instance.new("UICorner")
-    miniCorner.CornerRadius = UDim.new(0, 8)
+    miniCorner.CornerRadius = UDim.new(0, 6)
     miniCorner.Parent = miniIcon
     
     local miniStroke = Instance.new("UIStroke")
     miniStroke.Color = Theme.secondary
-    miniStroke.Thickness = 2
+    miniStroke.Thickness = 1
     miniStroke.Parent = miniIcon
     
     -- Make Mini Icon Draggable
@@ -394,22 +388,19 @@ function VenomSystem:createGUI()
     return screenGui, mainFrame, miniIcon
 end
 
--- Update Positions List Display
+-- Update Positions List (Compact)
 function VenomSystem:updatePositionsList()
     local positionsFrame = self.gui:FindFirstChild("PositionsFrame", true)
     if not positionsFrame then return end
     
-    -- Clear existing positions
     for _, child in pairs(positionsFrame:GetChildren()) do
         if child:IsA("Frame") then
             child:Destroy()
         end
     end
     
-    -- Update canvas size
     positionsFrame.CanvasSize = UDim2.new(0, 0, 0, #self.positions * (Sizes.posItemHeight + Sizes.spacing))
     
-    -- Add positions to list
     for i, position in ipairs(self.positions) do
         local posFrame = Instance.new("Frame")
         posFrame.Size = UDim2.new(0.95, 0, 0, Sizes.posItemHeight)
@@ -420,7 +411,7 @@ function VenomSystem:updatePositionsList()
         posFrame.Parent = positionsFrame
         
         local posCorner = Instance.new("UICorner")
-        posCorner.CornerRadius = UDim.new(0, 6)
+        posCorner.CornerRadius = UDim.new(0, 4)
         posCorner.Parent = posFrame
         
         local posStroke = Instance.new("UIStroke")
@@ -430,31 +421,31 @@ function VenomSystem:updatePositionsList()
         
         -- Position Label
         local posLabel = Instance.new("TextLabel")
-        posLabel.Size = UDim2.new(0.5, 0, 1, 0)
+        posLabel.Size = UDim2.new(0.45, 0, 1, 0)
         posLabel.Position = UDim2.new(0.05, 0, 0, 0)
         posLabel.BackgroundTransparency = 1
         posLabel.TextColor3 = Theme.secondary
-        posLabel.Text = "Set Posisi " .. i
+        posLabel.Text = "P" .. i
         posLabel.Font = Enum.Font.GothamSemibold
-        posLabel.TextSize = 12
+        posLabel.TextSize = 10
         posLabel.TextXAlignment = Enum.TextXAlignment.Left
         posLabel.Parent = posFrame
         
         -- TP Button
         local tpBtn = Instance.new("TextButton")
         tpBtn.Size = UDim2.new(0.2, 0, 0.6, 0)
-        tpBtn.Position = UDim2.new(0.55, 0, 0.2, 0)
+        tpBtn.Position = UDim2.new(0.5, 0, 0.2, 0)
         tpBtn.BackgroundColor3 = Theme.primary
         tpBtn.TextColor3 = Theme.secondary
         tpBtn.Text = "TP"
         tpBtn.Font = Enum.Font.GothamBold
-        tpBtn.TextSize = 10
+        tpBtn.TextSize = 8
         tpBtn.AutoButtonColor = false
         tpBtn.Name = "TPBtn_" .. i
         tpBtn.Parent = posFrame
         
         local tpCorner = Instance.new("UICorner")
-        tpCorner.CornerRadius = UDim.new(0, 4)
+        tpCorner.CornerRadius = UDim.new(0, 3)
         tpCorner.Parent = tpBtn
         
         tpBtn.MouseEnter:Connect(function()
@@ -468,18 +459,18 @@ function VenomSystem:updatePositionsList()
         -- Delete Button
         local delBtn = Instance.new("TextButton")
         delBtn.Size = UDim2.new(0.2, 0, 0.6, 0)
-        delBtn.Position = UDim2.new(0.78, 0, 0.2, 0)
+        delBtn.Position = UDim2.new(0.75, 0, 0.2, 0)
         delBtn.BackgroundColor3 = Theme.warning
         delBtn.TextColor3 = Theme.secondary
-        delBtn.Text = "Hapus"
+        delBtn.Text = "X"
         delBtn.Font = Enum.Font.GothamBold
-        delBtn.TextSize = 9
+        delBtn.TextSize = 8
         delBtn.AutoButtonColor = false
         delBtn.Name = "DelBtn_" .. i
         delBtn.Parent = posFrame
         
         local delCorner = Instance.new("UICorner")
-        delCorner.CornerRadius = UDim.new(0, 4)
+        delCorner.CornerRadius = UDim.new(0, 3)
         delCorner.Parent = delBtn
         
         delBtn.MouseEnter:Connect(function()
@@ -559,8 +550,7 @@ function VenomSystem:init()
     self:setupEvents()
     self:updatePositionsList()
     
-    print("X - V3N0M v1.0 by Nazam Official - Loaded Successfully")
-    print("Features: Unlimited Positions, Auto Teleport, Stealth System")
+    print("V3N0M Compact v1.0 - Ready")
 end
 
 -- Start the System
