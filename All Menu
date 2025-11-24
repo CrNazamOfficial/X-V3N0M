@@ -1,10 +1,11 @@
 -- X - V3N0M v1.0 by Nazam Official
--- Compact Stealth System
+-- Advanced Checkpoint System with Position Save/Load
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
 
 local VenomSystem = {
     positions = {},
@@ -12,7 +13,8 @@ local VenomSystem = {
     currentIndex = 1,
     menuVisible = true,
     teleportCooldown = 0.8,
-    lastTeleport = 0
+    lastTeleport = 0,
+    lastClickTime = 0
 }
 
 -- Color Theme: Red, White, Black
@@ -22,42 +24,118 @@ local Theme = {
     background = Color3.fromRGB(15, 15, 15),
     accent = Color3.fromRGB(150, 0, 0),
     success = Color3.fromRGB(0, 180, 0),
-    warning = Color3.fromRGB(255, 80, 80)
+    warning = Color3.fromRGB(255, 80, 80),
+    info = Color3.fromRGB(0, 120, 200)
 }
 
--- Compact Sizes (Smaller)
+-- Compact Sizes
 local Sizes = {
-    mainFrame = UDim2.new(0, 220, 0, 280),  -- Much smaller
+    mainFrame = UDim2.new(0, 220, 0, 320),  -- Slightly taller for LOAD button
     titleHeight = 28,
     buttonHeight = 32,
     posItemHeight = 36,
     spacing = 5
 }
 
--- Stealth Teleport System
-local function stealthTeleport(cframe)
-    if tick() - VenomSystem.lastTeleport < VenomSystem.teleportCooldown then
-        return false
+-- Save positions to file
+local function savePositions()
+    local saveData = {}
+    for i, pos in ipairs(VenomSystem.positions) do
+        if pos then
+            saveData[i] = {
+                X = pos.X, Y = pos.Y, Z = pos.Z,
+                RightX = pos.RightVector.X, RightY = pos.RightVector.Y, RightZ = pos.RightVector.Z,
+                UpX = pos.UpVector.X, UpY = pos.UpVector.Y, UpZ = pos.UpVector.Z,
+                LookX = pos.LookVector.X, LookY = pos.LookVector.Y, LookZ = pos.LookVector.Z
+            }
+        end
     end
     
-    VenomSystem.lastTeleport = tick()
+    local success = pcall(function()
+        writefile("venom_positions.json", HttpService:JSONEncode(saveData))
+    end)
     
+    return success
+end
+
+-- Load positions from file
+local function loadPositions()
+    local success, data = pcall(function()
+        if isfile("venom_positions.json") then
+            local fileData = readfile("venom_positions.json")
+            return HttpService:JSONDecode(fileData)
+        end
+    end)
+    
+    if success and data then
+        VenomSystem.positions = {}
+        for i, posData in pairs(data) do
+            if posData then
+                VenomSystem.positions[tonumber(i)] = CFrame.new(
+                    posData.X, posData.Y, posData.Z,
+                    posData.RightX, posData.RightY, posData.RightZ,
+                    posData.UpX, posData.UpY, posData.UpZ,
+                    posData.LookX, posData.LookY, posData.LookZ
+                )
+            end
+        end
+        VenomSystem:updatePositionsList()
+        return true
+    end
+    return false
+end
+
+-- Advanced Touch Part System (Checkpoint Detection)
+local function triggerCheckpoint(cframe)
     local character = Players.LocalPlayer.Character
     if not character then return false end
-    
+
     local rootPart = character:FindFirstChild("HumanoidRootPart")
     if not rootPart then return false end
+
+    -- Store original position
+    local originalPosition = rootPart.CFrame
     
+    -- Method 1: Direct part touching simulation
     pcall(function()
-        local currentCFrame = rootPart.CFrame
+        -- Temporarily move to checkpoint position
         rootPart.CFrame = cframe
-        rootPart.CFrame = currentCFrame
+        
+        -- Wait a bit for detection
+        wait(0.05)
+        
+        -- Fire touch events manually if needed
+        local touchInterest = workspace:FindFirstChild("TouchInterest", true)
+        if touchInterest then
+            touchInterest:Fire()
+        end
+        
+        -- Check for proximity prompts
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("ProximityPrompt") and (obj.WorldPosition - cframe.Position).Magnitude < 10 then
+                obj:InputHoldBegin()
+                wait(0.1)
+                obj:InputHoldEnd()
+            end
+        end
+    end)
+    
+    -- Method 2: Network ownership manipulation for better detection
+    pcall(function()
+        rootPart:SetNetworkOwner(nil)
+        wait(0.02)
+        rootPart:SetNetworkOwner(Players.LocalPlayer)
+    end)
+    
+    -- Method 3: Return to original position (stealth)
+    pcall(function()
+        rootPart.CFrame = originalPosition
     end)
     
     return true
 end
 
--- Auto Teleport Loop
+-- Auto Teleport Loop with Checkpoint Detection
 local function startAutoTeleport()
     if #VenomSystem.positions == 0 then return end
     if VenomSystem.isRunning then return end
@@ -79,7 +157,9 @@ local function startAutoTeleport()
             
             local targetCFrame = VenomSystem.positions[VenomSystem.currentIndex]
             if targetCFrame then
-                stealthTeleport(targetCFrame)
+                -- Trigger checkpoint detection
+                triggerCheckpoint(targetCFrame)
+                
                 VenomSystem.currentIndex += 1
             end
             
@@ -99,30 +179,25 @@ local function stopAutoTeleport()
     end
 end
 
--- Direct Teleport
+-- Direct Teleport with Checkpoint
 local function directTeleport(index)
     if VenomSystem.positions[index] then
-        local character = Players.LocalPlayer.Character
-        if character then
-            local rootPart = character:FindFirstChild("HumanoidRootPart")
-            if rootPart then
-                rootPart.CFrame = VenomSystem.positions[index]
-            end
-        end
+        triggerCheckpoint(VenomSystem.positions[index])
     end
 end
 
--- Add New Position
+-- Add New Position with Auto-Save
 local function addPosition()
     local character = Players.LocalPlayer.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
         local newIndex = #VenomSystem.positions + 1
         VenomSystem.positions[newIndex] = character.HumanoidRootPart.CFrame
         VenomSystem:updatePositionsList()
+        savePositions() -- Auto-save when adding new position
     end
 end
 
--- Delete Position
+-- Delete Position with Auto-Save
 local function deletePosition(index)
     table.remove(VenomSystem.positions, index)
     
@@ -133,9 +208,29 @@ local function deletePosition(index)
     VenomSystem.positions = newPositions
     
     VenomSystem:updatePositionsList()
+    savePositions() -- Auto-save when deleting position
 end
 
--- Create Compact GUI
+-- Double Click Handler for LOAD button
+local function handleDoubleClick(button)
+    local currentTime = tick()
+    if currentTime - VenomSystem.lastClickTime < 0.5 then -- Double click within 0.5 seconds
+        -- Double click action: Replace with new positions
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            VenomSystem.positions = {character.HumanoidRootPart.CFrame} -- Replace with current position
+            VenomSystem:updatePositionsList()
+            savePositions()
+        end
+        VenomSystem.lastClickTime = 0 -- Reset
+    else
+        -- Single click action: Load saved positions
+        loadPositions()
+        VenomSystem.lastClickTime = currentTime
+    end
+end
+
+-- Create Compact GUI with LOAD Button
 function VenomSystem:createGUI()
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "VenomV1_NazamOfficial"
@@ -144,10 +239,10 @@ function VenomSystem:createGUI()
     
     self.gui = screenGui
     
-    -- Main Frame (Compact)
+    -- Main Frame
     local mainFrame = Instance.new("Frame")
     mainFrame.Size = Sizes.mainFrame
-    mainFrame.Position = UDim2.new(0, 10, 0, 10)  -- Position di pojok
+    mainFrame.Position = UDim2.new(0, 10, 0, 10)
     mainFrame.BackgroundColor3 = Theme.background
     mainFrame.BackgroundTransparency = 0.1
     mainFrame.BorderSizePixel = 0
@@ -257,9 +352,9 @@ function VenomSystem:createGUI()
     contentFrame.BackgroundTransparency = 1
     contentFrame.Parent = mainFrame
     
-    -- Left Side - Positions List (Compact)
+    -- Left Side - Positions List
     local positionsFrame = Instance.new("ScrollingFrame")
-    positionsFrame.Size = UDim2.new(0.58, 0, 1, 0)
+    positionsFrame.Size = UDim2.new(0.58, 0, 1, -40) -- Space for buttons below
     positionsFrame.Position = UDim2.new(0, 0, 0, 0)
     positionsFrame.BackgroundTransparency = 1
     positionsFrame.BorderSizePixel = 0
@@ -269,14 +364,14 @@ function VenomSystem:createGUI()
     positionsFrame.Name = "PositionsFrame"
     positionsFrame.Parent = contentFrame
     
-    -- Right Side - Control Buttons (Compact)
+    -- Right Side - Control Buttons
     local controlsFrame = Instance.new("Frame")
-    controlsFrame.Size = UDim2.new(0.38, 0, 1, 0)
+    controlsFrame.Size = UDim2.new(0.38, 0, 1, -40) -- Space for LOAD button
     controlsFrame.Position = UDim2.new(0.6, 0, 0, 0)
     controlsFrame.BackgroundTransparency = 1
     controlsFrame.Parent = contentFrame
     
-    -- Control Buttons (Compact Vertical)
+    -- Control Buttons (Vertical)
     local startBtn = Instance.new("TextButton")
     startBtn.Size = UDim2.new(1, 0, 0, Sizes.buttonHeight)
     startBtn.Position = UDim2.new(0, 0, 0, Sizes.spacing)
@@ -325,7 +420,32 @@ function VenomSystem:createGUI()
     stopCorner.CornerRadius = UDim.new(0, 4)
     stopCorner.Parent = stopBtn
     
-    -- Mini Icon (Very Small)
+    -- LOAD Button at Bottom Right
+    local loadBtn = Instance.new("TextButton")
+    loadBtn.Size = UDim2.new(0.38, 0, 0, 30)
+    loadBtn.Position = UDim2.new(0.6, 0, 1, -35)
+    loadBtn.BackgroundColor3 = Theme.info
+    loadBtn.TextColor3 = Theme.secondary
+    loadBtn.Text = "LOAD"
+    loadBtn.Font = Enum.Font.GothamBold
+    loadBtn.TextSize = 11
+    loadBtn.AutoButtonColor = false
+    loadBtn.Name = "LoadBtn"
+    loadBtn.Parent = contentFrame
+    
+    local loadCorner = Instance.new("UICorner")
+    loadCorner.CornerRadius = UDim.new(0, 4)
+    loadCorner.Parent = loadBtn
+    
+    loadBtn.MouseEnter:Connect(function()
+        loadBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+    end)
+    
+    loadBtn.MouseLeave:Connect(function()
+        loadBtn.BackgroundColor3 = Theme.info
+    end)
+    
+    -- Mini Icon
     local miniIcon = Instance.new("TextButton")
     miniIcon.Size = UDim2.new(0, 30, 0, 30)
     miniIcon.Position = UDim2.new(0, 10, 0, 10)
@@ -388,7 +508,7 @@ function VenomSystem:createGUI()
     return screenGui, mainFrame, miniIcon
 end
 
--- Update Positions List (Compact)
+-- Update Positions List
 function VenomSystem:updatePositionsList()
     local positionsFrame = self.gui:FindFirstChild("PositionsFrame", true)
     if not positionsFrame then return end
@@ -492,11 +612,16 @@ function VenomSystem:updatePositionsList()
     end
 end
 
--- Toggle Menu Visibility
+-- Toggle Menu Visibility with Auto-Load
 function VenomSystem:toggleMenu()
     self.menuVisible = not self.menuVisible
     self.mainFrame.Visible = self.menuVisible
     self.miniIcon.Visible = not self.menuVisible
+    
+    -- Auto load positions when opening menu
+    if self.menuVisible then
+        loadPositions()
+    end
 end
 
 -- Setup Event Handlers
@@ -505,6 +630,7 @@ function VenomSystem:setupEvents()
     local startBtn = self.gui:FindFirstChild("StartBtn", true)
     local setPosBtn = self.gui:FindFirstChild("SetPosBtn", true)
     local stopBtn = self.gui:FindFirstChild("StopBtn", true)
+    local loadBtn = self.gui:FindFirstChild("LoadBtn", true)
     local miniIcon = self.gui:FindFirstChild("MiniIcon", true)
     
     if closeBtn then
@@ -533,6 +659,12 @@ function VenomSystem:setupEvents()
         end)
     end
     
+    if loadBtn then
+        loadBtn.MouseButton1Click:Connect(function()
+            handleDoubleClick(loadBtn)
+        end)
+    end
+    
     if miniIcon then
         miniIcon.MouseButton1Click:Connect(function()
             self:toggleMenu()
@@ -540,7 +672,7 @@ function VenomSystem:setupEvents()
     end
 end
 
--- Initialize System
+-- Initialize System with Auto-Load
 function VenomSystem:init()
     local screenGui, mainFrame, miniIcon = self:createGUI()
     self.gui = screenGui
@@ -548,9 +680,10 @@ function VenomSystem:init()
     self.miniIcon = miniIcon
     
     self:setupEvents()
-    self:updatePositionsList()
+    loadPositions() -- Auto-load on startup
     
-    print("V3N0M Compact v1.0 - Ready")
+    print("V3N0M Advanced v1.0 - Ready")
+    print("Features: Checkpoint Detection, Auto-Save/Load, Double-Click LOAD")
 end
 
 -- Start the System
