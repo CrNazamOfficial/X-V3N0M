@@ -1,6 +1,3 @@
--- TELEPORT V1.0 by Nazam Official - FULLY FIXED
--- Hitam Merah Putih Theme - 10 SLOTS EDITION
-
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -18,7 +15,12 @@ local TeleportV1 = {
     menuIcon = nil,
     teleporting = false,
     lastTeleport = 0,
-    cooldown = 0.3
+    cooldown = 0.3,
+    ghostMode = false,
+    ghostPaused = false,
+    ghostConnection = nil,
+    ghostDelay = 0.4,
+    realPosition = nil
 }
 
 local GUI = {
@@ -26,11 +28,13 @@ local GUI = {
     secondaryColor = Color3.fromRGB(255, 255, 255),
     accentColor = Color3.fromRGB(200, 0, 0),
     successColor = Color3.fromRGB(0, 180, 0),
-    warningColor = Color3.fromRGB(255, 50, 50)
+    warningColor = Color3.fromRGB(255, 50, 50),
+    ghostColor = Color3.fromRGB(138, 43, 226),
+    pauseColor = Color3.fromRGB(255, 165, 0)
 }
 
 local Sizes = {
-    mainFrame = UDim2.new(0, 350, 0, 450),
+    mainFrame = UDim2.new(0, 350, 0, 550),
     titleHeight = 45,
     posFrameHeight = 85,
     buttonHeight = 35,
@@ -38,7 +42,51 @@ local Sizes = {
     menuIconSize = 50
 }
 
--- ANTI-CHEAT BYPASS
+local function savePositions()
+    local saveData = {}
+    for i, cframe in pairs(TeleportV1.positions) do
+        if cframe then
+            saveData[tostring(i)] = {
+                x = cframe.X, y = cframe.Y, z = cframe.Z,
+                rx = cframe.RightVector.X, ry = cframe.RightVector.Y, rz = cframe.RightVector.Z,
+                ux = cframe.UpVector.X, uy = cframe.UpVector.Y, uz = cframe.UpVector.Z,
+                lx = -cframe.LookVector.X, ly = -cframe.LookVector.Y, lz = -cframe.LookVector.Z
+            }
+        end
+    end
+    
+    pcall(function()
+        writefile("TeleportV1_Positions.json", game:GetService("HttpService"):JSONEncode(saveData))
+    end)
+    return true
+end
+
+local function loadPositions()
+    local success = pcall(function()
+        if isfile("TeleportV1_Positions.json") then
+            local data = game:GetService("HttpService"):JSONDecode(readfile("TeleportV1_Positions.json"))
+            TeleportV1.positions = {}
+            
+            for key, value in pairs(data) do
+                local index = tonumber(key)
+                if index then
+                    TeleportV1.positions[index] = CFrame.new(
+                        value.x, value.y, value.z,
+                        value.rx, value.ry, value.rz,
+                        value.ux, value.uy, value.uz,
+                        value.lx, value.ly, value.lz
+                    )
+                end
+            end
+            
+            TeleportV1:updateGUI()
+            return true
+        end
+    end)
+    
+    return success
+end
+
 local function bypassAntiCheat()
     if not TeleportV1.antiCheatBypass then return end
     
@@ -66,14 +114,12 @@ local function bypassAntiCheat()
         end
     end)
     
-    -- Extra bypass methods
     pcall(function()
         if not getgenv().indexHooked then
             local oldIndex
             oldIndex = hookmetamethod(game, "__index", function(self, key)
-                if tostring(key):lower():find("position") or 
-                   tostring(key):lower():find("cframe") then
-                    if TeleportV1.teleporting then
+                if tostring(key):lower():find("position") or tostring(key):lower():find("cframe") then
+                    if TeleportV1.teleporting or TeleportV1.ghostMode then
                         return oldIndex(self, key)
                     end
                 end
@@ -84,7 +130,6 @@ local function bypassAntiCheat()
     end)
 end
 
--- CHARACTER STABILIZATION (Anti-Bug)
 local function stabilizeCharacter(character)
     if not character then return end
     
@@ -98,9 +143,7 @@ local function stabilizeCharacter(character)
             rootPart.RotVelocity = Vector3.new(0, 0, 0)
             rootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
             rootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-            
             humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
-            
             wait(0.05)
             rootPart.Anchored = false
             humanoid:ChangeState(Enum.HumanoidStateType.Landed)
@@ -108,36 +151,135 @@ local function stabilizeCharacter(character)
     end)
 end
 
--- SMOOTH TOGGLE FUNCTION
-function TeleportV1:toggleMenu()
-    self.menuVisible = not self.menuVisible
+function TeleportV1:startGhostMode()
+    local validPositions = {}
+    for i = 1, self.maxPositions do
+        if self.positions[i] then
+            table.insert(validPositions, i)
+        end
+    end
     
-    if self.menuVisible then
-        self.mainFrame.Visible = true
-        self.mainFrame.Size = UDim2.new(0, 0, 0, 0)
-        
-        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-        local tween = TweenService:Create(self.mainFrame, tweenInfo, {
-            Size = Sizes.mainFrame
-        })
-        tween:Play()
-        
-        self.menuIcon.Visible = false
-    else
-        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-        local tween = TweenService:Create(self.mainFrame, tweenInfo, {
-            Size = UDim2.new(0, 0, 0, 0)
-        })
-        tween:Play()
-        
-        tween.Completed:Connect(function()
-            self.mainFrame.Visible = false
-            self.menuIcon.Visible = true
-        end)
+    if #validPositions < 2 then
+        return false
+    end
+    
+    self.ghostMode = true
+    self.ghostPaused = false
+    bypassAntiCheat()
+    
+    local player = Players.LocalPlayer
+    local currentIndex = 1
+    
+    local ghostBtn = self.gui:FindFirstChild("GhostBtn", true)
+    if ghostBtn then
+        ghostBtn.Text = "PAUSE GHOST"
+        ghostBtn.BackgroundColor3 = GUI.pauseColor
+    end
+    
+    spawn(function()
+        while self.ghostMode do
+            if not self.ghostPaused then
+                local character = player.Character
+                if character then
+                    local rootPart = character:FindFirstChild("HumanoidRootPart")
+                    if rootPart then
+                        if not self.realPosition then
+                            self.realPosition = rootPart.CFrame
+                        end
+                        
+                        local targetIndex = validPositions[currentIndex]
+                        if self.positions[targetIndex] then
+                            pcall(function()
+                                rootPart.CFrame = self.positions[targetIndex]
+                            end)
+                            
+                            wait(0.15) 
+                            
+                            if self.realPosition then
+                                pcall(function()
+                                    rootPart.CFrame = self.realPosition
+                                end)
+                            end
+                            
+                            currentIndex = currentIndex + 1
+                            if currentIndex > #validPositions then
+                                currentIndex = 1
+                            end
+                        end
+                    end
+                end
+            end
+            
+            wait(self.ghostDelay)
+        end
+    end)
+    
+    spawn(function()
+        while self.ghostMode do
+            wait(0.1)
+            if not self.ghostPaused then
+                local character = player.Character
+                if character then
+                    local rootPart = character:FindFirstChild("HumanoidRootPart")
+                    if rootPart then
+                        local humanoid = character:FindFirstChildOfClass("Humanoid")
+                        if humanoid and humanoid.MoveDirection.Magnitude > 0 then
+                            self.realPosition = rootPart.CFrame
+                        end
+                    end
+                end
+            end
+        end
+    end)
+    
+    return true
+end
+
+function TeleportV1:pauseGhostMode()
+    self.ghostPaused = true
+    
+    local ghostBtn = self.gui:FindFirstChild("GhostBtn", true)
+    if ghostBtn then
+        ghostBtn.Text = "LANJUTKAN GHOST"
+        ghostBtn.BackgroundColor3 = GUI.successColor
     end
 end
 
--- CREATE MENU ICON
+function TeleportV1:resumeGhostMode()
+    self.ghostPaused = false
+    
+    local ghostBtn = self.gui:FindFirstChild("GhostBtn", true)
+    if ghostBtn then
+        ghostBtn.Text = "PAUSE GHOST"
+        ghostBtn.BackgroundColor3 = GUI.pauseColor
+    end
+end
+
+function TeleportV1:stopGhostMode()
+    self.ghostMode = false
+    self.ghostPaused = false
+    
+    if self.realPosition then
+        local player = Players.LocalPlayer
+        local character = player.Character
+        if character then
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+            if rootPart then
+                pcall(function()
+                    rootPart.CFrame = self.realPosition
+                end)
+            end
+        end
+        self.realPosition = nil
+    end
+    
+    local ghostBtn = self.gui:FindFirstChild("GhostBtn", true)
+    if ghostBtn then
+        ghostBtn.Text = "START GHOST"
+        ghostBtn.BackgroundColor3 = GUI.ghostColor
+    end
+end
+
 function TeleportV1:createMenuIcon()
     local menuIcon = Instance.new("TextButton")
     menuIcon.Size = UDim2.new(0, Sizes.menuIconSize, 0, Sizes.menuIconSize)
@@ -188,12 +330,7 @@ function TeleportV1:createMenuIcon()
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
             local delta = input.Position - dragStart
-            menuIcon.Position = UDim2.new(
-                startPos.X.Scale, 
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale, 
-                startPos.Y.Offset + delta.Y
-            )
+            menuIcon.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
     end)
     
@@ -204,7 +341,6 @@ function TeleportV1:createMenuIcon()
     return menuIcon
 end
 
--- CREATE MAIN FRAME
 function TeleportV1:createMainFrame()
     local mainFrame = Instance.new("Frame")
     mainFrame.Size = Sizes.mainFrame
@@ -310,19 +446,13 @@ function TeleportV1:createMainFrame()
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
             local delta = input.Position - dragStart
-            mainFrame.Position = UDim2.new(
-                startPos.X.Scale, 
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale, 
-                startPos.Y.Offset + delta.Y
-            )
+            mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
     end)
     
     return mainFrame
 end
 
--- CREATE GUI
 function TeleportV1:createGUI()
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "TeleportV1_NazamOfficial"
@@ -334,7 +464,7 @@ function TeleportV1:createGUI()
     self.menuIcon = self:createMenuIcon()
     
     local scrollFrame = Instance.new("ScrollingFrame")
-    scrollFrame.Size = UDim2.new(1, 0, 1, -Sizes.titleHeight - 100)
+    scrollFrame.Size = UDim2.new(1, 0, 1, -Sizes.titleHeight - 150)
     scrollFrame.Position = UDim2.new(0, 0, 0, Sizes.titleHeight)
     scrollFrame.BackgroundTransparency = 1
     scrollFrame.BorderSizePixel = 0
@@ -463,21 +593,21 @@ function TeleportV1:createGUI()
             deleteBtn.BackgroundColor3 = GUI.accentColor
         end)
     end
-    
+
     local controlFrame = Instance.new("Frame")
-    controlFrame.Size = UDim2.new(1, 0, 0, 100)
-    controlFrame.Position = UDim2.new(0, 0, 1, -100)
+    controlFrame.Size = UDim2.new(1, 0, 0, 150)
+    controlFrame.Position = UDim2.new(0, 0, 1, -150)
     controlFrame.BackgroundTransparency = 1
     controlFrame.Parent = self.mainFrame
     
     local deleteModeBtn = Instance.new("TextButton")
-    deleteModeBtn.Size = UDim2.new(0.9, 0, 0, Sizes.buttonHeight)
-    deleteModeBtn.Position = UDim2.new(0.05, 0, 0.3, 0)
+    deleteModeBtn.Size = UDim2.new(0.43, 0, 0, Sizes.buttonHeight)
+    deleteModeBtn.Position = UDim2.new(0.05, 0, 0.05, 0)
     deleteModeBtn.BackgroundColor3 = GUI.accentColor
     deleteModeBtn.TextColor3 = GUI.secondaryColor
     deleteModeBtn.Text = "DELETE POSISI"
     deleteModeBtn.Font = Enum.Font.GothamBold
-    deleteModeBtn.TextSize = 14
+    deleteModeBtn.TextSize = 12
     deleteModeBtn.AutoButtonColor = false
     deleteModeBtn.Name = "DeleteModeBtn"
     deleteModeBtn.Parent = controlFrame
@@ -486,18 +616,57 @@ function TeleportV1:createGUI()
     deleteModeCorner.CornerRadius = UDim.new(0, 6)
     deleteModeCorner.Parent = deleteModeBtn
     
-    deleteModeBtn.MouseEnter:Connect(function()
-        deleteModeBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-    end)
+    local saveBtn = Instance.new("TextButton")
+    saveBtn.Size = UDim2.new(0.43, 0, 0, Sizes.buttonHeight)
+    saveBtn.Position = UDim2.new(0.52, 0, 0.05, 0)
+    saveBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
+    saveBtn.TextColor3 = GUI.secondaryColor
+    saveBtn.Text = "SAVE"
+    saveBtn.Font = Enum.Font.GothamBold
+    saveBtn.TextSize = 14
+    saveBtn.AutoButtonColor = false
+    saveBtn.Name = "SaveBtn"
+    saveBtn.Parent = controlFrame
     
-    deleteModeBtn.MouseLeave:Connect(function()
-        deleteModeBtn.BackgroundColor3 = GUI.accentColor
-    end)
+    local saveCorner = Instance.new("UICorner")
+    saveCorner.CornerRadius = UDim.new(0, 6)
+    saveCorner.Parent = saveBtn
+    
+    local loadBtn = Instance.new("TextButton")
+    loadBtn.Size = UDim2.new(0.43, 0, 0, Sizes.buttonHeight)
+    loadBtn.Position = UDim2.new(0.05, 0, 0.38, 0)
+    loadBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+    loadBtn.TextColor3 = GUI.secondaryColor
+    loadBtn.Text = "LOAD"
+    loadBtn.Font = Enum.Font.GothamBold
+    loadBtn.TextSize = 14
+    loadBtn.AutoButtonColor = false
+    loadBtn.Name = "LoadBtn"
+    loadBtn.Parent = controlFrame
+    
+    local loadCorner = Instance.new("UICorner")
+    loadCorner.CornerRadius = UDim.new(0, 6)
+    loadCorner.Parent = loadBtn
+    
+    local ghostBtn = Instance.new("TextButton")
+    ghostBtn.Size = UDim2.new(0.43, 0, 0, Sizes.buttonHeight)
+    ghostBtn.Position = UDim2.new(0.52, 0, 0.38, 0)
+    ghostBtn.BackgroundColor3 = GUI.ghostColor
+    ghostBtn.TextColor3 = GUI.secondaryColor
+    ghostBtn.Text = "START GHOST"
+    ghostBtn.Font = Enum.Font.GothamBold
+    ghostBtn.TextSize = 12
+    ghostBtn.AutoButtonColor = false
+    ghostBtn.Name = "GhostBtn"
+    ghostBtn.Parent = controlFrame
+    
+    local ghostCorner = Instance.new("UICorner")
+    ghostCorner.CornerRadius = UDim.new(0, 6)
+    ghostCorner.Parent = ghostBtn
     
     return screenGui
 end
 
--- SAFE TELEPORT WITH ANTI-BUG
 function TeleportV1:safeTeleport(targetCFrame)
     if not targetCFrame then return false end
     if tick() - self.lastTeleport < self.cooldown then return false end
@@ -528,37 +697,22 @@ function TeleportV1:safeTeleport(targetCFrame)
     end)
     
     wait(0.05)
-    
-    pcall(function()
-        rootPart.CFrame = targetCFrame
-    end)
-    
+    pcall(function() rootPart.CFrame = targetCFrame end)
     wait(0.05)
-    
-    pcall(function()
-        character:SetPrimaryPartCFrame(targetCFrame)
-    end)
-    
+    pcall(function() character:SetPrimaryPartCFrame(targetCFrame) end)
     wait(0.05)
-    
-    pcall(function()
-        rootPart.Position = targetCFrame.Position
-    end)
-    
+    pcall(function() rootPart.Position = targetCFrame.Position end)
     wait(0.1)
     
     stabilizeCharacter(character)
     
     wait(0.05)
-    pcall(function()
-        rootPart.CFrame = targetCFrame
-    end)
+    pcall(function() rootPart.CFrame = targetCFrame end)
     
     self.teleporting = false
     return true
 end
 
--- TELEPORT FUNCTIONS
 function TeleportV1:setPosition(index)
     if index > self.maxPositions then return end
     
@@ -567,12 +721,12 @@ function TeleportV1:setPosition(index)
         self.positions[index] = character.HumanoidRootPart.CFrame
         self.currentSelected = index
         self:updateGUI()
+        savePositions()
     end
 end
 
 function TeleportV1:teleportToPosition(index)
     if not self.positions[index] then return end
-    
     bypassAntiCheat()
     self:safeTeleport(self.positions[index])
 end
@@ -580,6 +734,7 @@ end
 function TeleportV1:deletePosition(index)
     self.positions[index] = nil
     self:updateGUI()
+    savePositions()
 end
 
 function TeleportV1:updateGUI()
@@ -633,9 +788,7 @@ function TeleportV1:setupEvents()
             self.deleteMode = not self.deleteMode
             for i = 1, self.maxPositions do
                 local deleteBtn = self.gui:FindFirstChild("DeleteBtn"..i, true)
-                if deleteBtn then
-                    deleteBtn.Visible = self.deleteMode
-                end
+                if deleteBtn then deleteBtn.Visible = self.deleteMode end
             end
             
             if self.deleteMode then
@@ -647,14 +800,47 @@ function TeleportV1:setupEvents()
             end
         end)
     end
+    
+    local saveBtn = self.gui:FindFirstChild("SaveBtn", true)
+    if saveBtn then
+        saveBtn.MouseButton1Click:Connect(function()
+            savePositions()
+        end)
+    end
+    
+    local loadBtn = self.gui:FindFirstChild("LoadBtn", true)
+    if loadBtn then
+        loadBtn.MouseButton1Click:Connect(function()
+            loadPositions()
+        end)
+    end
+    
+    local ghostBtn = self.gui:FindFirstChild("GhostBtn", true)
+    if ghostBtn then
+        ghostBtn.MouseButton1Click:Connect(function()
+            if not self.ghostMode then
+                self:startGhostMode()
+            elseif self.ghostPaused then
+                self:resumeGhostMode()
+            else
+                if ghostBtn.Text == "PAUSE GHOST" then
+                    self:pauseGhostMode()
+                else
+                    self:stopGhostMode()
+                end
+            end
+        end)
+    end
 end
 
 function TeleportV1:init()
     self.gui = self:createGUI()
     self:setupEvents()
     bypassAntiCheat()
+    loadPositions()
     
     print("✅ Teleport V1.0 Loaded - By Nazam Official")
+    print("✅ 10 SLOTS + GHOST MODE + AUTO-SAVE")
 end
 
 TeleportV1:init()
