@@ -1,629 +1,226 @@
--- TELEPORT V1.0 by Nazam Official - ULTRA STEALTH EDITION
--- Enhanced Anti-Detection System
+-- X - V3N0M v1.0 by Nazam Official
+-- Advanced Position Keeper System
 
-local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
 
-local TeleportV1 = {
+local VenomSystem = {
     positions = {},
-    maxPositions = 10,
-    currentSelected = 1,
-    antiCheatBypass = true,
-    deleteMode = false,
+    isRunning = false,
+    currentIndex = 1,
     menuVisible = true,
-    gui = nil,
-    mainFrame = nil,
-    menuIcon = nil,
-    teleporting = false,
-    lastTeleport = 0,
-    cooldown = 0.8, -- Increased cooldown
-    ghostMode = false,
-    ghostPaused = false,
-    ghostConnection = nil,
-    ghostDelay = 0.8, -- Slower ghost mode
-    realPosition = nil,
-    stealthLevel = "ULTRA", -- Maximum stealth
-    protectionActive = true,
-    fakeSignal = nil
+    teleportCooldown = 0.8, -- Safe cooldown
+    lastTeleport = 0
 }
 
-local GUI = {
-    mainColor = Color3.fromRGB(20, 20, 20),
-    secondaryColor = Color3.fromRGB(255, 255, 255),
-    accentColor = Color3.fromRGB(200, 0, 0),
-    successColor = Color3.fromRGB(0, 180, 0),
-    warningColor = Color3.fromRGB(255, 50, 50),
-    ghostColor = Color3.fromRGB(138, 43, 226),
-    pauseColor = Color3.fromRGB(255, 165, 0)
+-- Color Theme: Red, White, Black
+local Theme = {
+    primary = Color3.fromRGB(200, 0, 0),    -- Red
+    secondary = Color3.fromRGB(255, 255, 255), -- White  
+    background = Color3.fromRGB(20, 20, 20),   -- Black
+    accent = Color3.fromRGB(150, 0, 0),     -- Dark Red
+    success = Color3.fromRGB(0, 180, 0),    -- Green for active
+    warning = Color3.fromRGB(255, 80, 80)   -- Light Red for inactive
 }
 
+-- 16:9 Aspect Ratio Sizes
 local Sizes = {
-    mainFrame = UDim2.new(0, 280, 0, 360),
-    titleHeight = 32,
-    posFrameSize = UDim2.new(0.46, 0, 0, 62),
-    buttonHeight = 26,
-    spacing = 6,
-    menuIconSize = 40
+    mainFrame = UDim2.new(0, 400, 0, 500),  -- 16:9 ratio
+    titleHeight = 40,
+    buttonHeight = 45,
+    posItemHeight = 50,
+    spacing = 8
 }
 
--- ADVANCED ANTI-DETECTION SYSTEM
-local function initializeStealthSystem()
-    if not TeleportV1.protectionActive then return end
-    
-    -- Generate random signatures
-    local scriptSignature = "TP_"..tostring(math.random(10000, 99999)).."_SYS"
-    local fakeModuleName = "PlayerModule_"..tostring(math.random(1000, 9999))
-    
-    -- Create fake legitimate signals
-    TeleportV1.fakeSignal = Instance.new("BindableEvent")
-    TeleportV1.fakeSignal.Name = "UISignal_"..tostring(math.random(100, 999))
-    
-    -- Advanced hooking system
-    pcall(function()
-        if not getgenv()._ultraStealthHooked then
-            -- Hook metamethode dengan pattern acak
-            local originalNamecall
-            originalNamecall = hookmetamethod(game, "__namecall", function(self, ...)
-                local method = getnamecallmethod()
-                local args = {...}
-                
-                -- Pattern detection avoidance
-                if method then
-                    local methodStr = tostring(method):lower()
-                    
-                    -- Randomized bypass pattern
-                    local bypassChance = math.random(1, 100)
-                    
-                    -- Teleport-related checks (jarang bypass)
-                    if methodStr:find("teleport") and bypassChance <= 15 then
-                        return true
-                    end
-                    
-                    -- Anti-cheat checks (sedang bypass)
-                    if (methodStr:find("check") or methodStr:find("validate")) and bypassChance <= 25 then
-                        return true
-                    end
-                    
-                    -- Security checks (sering bypass)
-                    if (methodStr:find("kick") or methodStr:find("report") or methodStr:find("detect")) and bypassChance <= 40 then
-                        return nil
-                    end
-                end
-                
-                return originalNamecall(self, ...)
-            end)
-            
-            -- Hook index dengan pattern acak
-            local originalIndex
-            originalIndex = hookmetamethod(game, "__index", function(self, key)
-                if TeleportV1.teleporting then
-                    local keyStr = tostring(key):lower()
-                    local bypassChance = math.random(1, 100)
-                    
-                    -- Position checks (jarang bypass)
-                    if keyStr:find("position") and bypassChance <= 10 then
-                        return originalIndex(self, key)
-                    end
-                    
-                    -- CFrame checks (sedang bypass)
-                    if keyStr:find("cframe") and bypassChance <= 20 then
-                        return originalIndex(self, key)
-                    end
-                end
-                
-                return originalIndex(self, key)
-            end)
-            
-            getgenv()._ultraStealthHooked = true
-        end
-    end)
-    
-    -- Memory obfuscation
-    pcall(function()
-        for i = 1, 5 do
-            spawn(function()
-                while TeleportV1.protectionActive and wait(math.random(3, 8)) do
-                    -- Random memory operations to confuse scanners
-                    local fakeTable = {}
-                    for j = 1, math.random(5, 15) do
-                        fakeTable["key_"..tostring(j)] = math.random(1000, 9999)
-                    end
-                end
-            end)
-        end
-    end)
-    
-    -- Fake network traffic
-    spawn(function()
-        while TeleportV1.protectionActive and wait(math.random(2, 6)) do
-            pcall(function()
-                local character = Players.LocalPlayer.Character
-                if character then
-                    local rootPart = character:FindFirstChild("HumanoidRootPart")
-                    if rootPart then
-                        -- Simulate normal network activity
-                        if math.random(1, 20) == 1 then
-                            rootPart:SetNetworkOwner(nil)
-                            wait(0.05)
-                            rootPart:SetNetworkOwner(Players.LocalPlayer)
-                        end
-                    end
-                end
-            end)
-        end
-    end)
-end
-
--- ENHANCED BYPASS SYSTEM
-local function executeStealthBypass()
-    if not TeleportV1.protectionActive then return end
-    
-    -- Multi-layer bypass dengan delay acak
-    local bypassLayers = {
-        function()
-            -- Layer 1: Memory manipulation
-            pcall(function()
-                for i, v in pairs(getreg()) do
-                    if type(v) == "table" and math.random(1, 50) == 1 then
-                        for x, y in pairs(v) do
-                            if type(y) == "function" then
-                                local info = debug.getinfo(y)
-                                if info.name and (info.name:lower():find("check") or info.name:lower():find("teleport")) then
-                                    if math.random(1, 10) == 1 then
-                                        hookfunction(y, function(...) 
-                                            return true 
-                                        end)
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-            end)
-        end,
-        
-        function()
-            -- Layer 2: Service manipulation
-            pcall(function()
-                local services = {"PhysicsService", "PathfindingService", "ScriptContext"}
-                for _, serviceName in pairs(services) do
-                    if math.random(1, 30) == 1 then
-                        local service = game:GetService(serviceName)
-                        if service then
-                            for name, func in pairs(service) do
-                                if type(func) == "function" and tostring(name):lower():find("check") then
-                                    if math.random(1, 15) == 1 then
-                                        hookfunction(func, function(...) 
-                                            return true 
-                                        end)
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-            end)
-        end,
-        
-        function()
-            -- Layer 3: Network manipulation
-            pcall(function()
-                local character = Players.LocalPlayer.Character
-                if character and math.random(1, 20) == 1 then
-                    local rootPart = character:FindFirstChild("HumanoidRootPart")
-                    if rootPart then
-                        rootPart:SetNetworkOwner(nil)
-                        wait(0.1 + math.random(1, 10) / 100)
-                        rootPart:SetNetworkOwner(Players.LocalPlayer)
-                    end
-                end
-            end)
-        end
-    }
-    
-    -- Execute bypass layers dengan delay acak
-    for _, layer in pairs(bypassLayers) do
-        spawn(function()
-            wait(math.random(1, 20) / 100)
-            layer()
-        end)
-    end
-end
-
-local function savePositions()
-    local saveData = {}
-    for i, cframe in pairs(TeleportV1.positions) do
-        if cframe then
-            saveData[tostring(i)] = {
-                x = cframe.X, y = cframe.Y, z = cframe.Z,
-                rx = cframe.RightVector.X, ry = cframe.RightVector.Y, rz = cframe.RightVector.Z,
-                ux = cframe.UpVector.X, uy = cframe.UpVector.Y, uz = cframe.UpVector.Z,
-                lx = -cframe.LookVector.X, ly = -cframe.LookVector.Y, lz = -cframe.LookVector.Z
-            }
-        end
-    end
-    
-    pcall(function()
-        writefile("TeleportV1_Positions.json", HttpService:JSONEncode(saveData))
-    end)
-    return true
-end
-
-local function loadPositions()
-    local success = pcall(function()
-        if isfile("TeleportV1_Positions.json") then
-            local data = HttpService:JSONDecode(readfile("TeleportV1_Positions.json"))
-            TeleportV1.positions = {}
-            
-            for key, value in pairs(data) do
-                local index = tonumber(key)
-                if index then
-                    TeleportV1.positions[index] = CFrame.new(
-                        value.x, value.y, value.z,
-                        value.rx, value.ry, value.rz,
-                        value.ux, value.uy, value.uz,
-                        value.lx, value.ly, value.lz
-                    )
-                end
-            end
-            
-            TeleportV1:updateGUI()
-            return true
-        end
-    end)
-    
-    return success
-end
-
-local function stabilizeCharacter(character)
-    if not character then return end
-    
-    pcall(function()
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        local rootPart = character:FindFirstChild("HumanoidRootPart")
-        
-        if humanoid and rootPart then
-            -- Gradual stabilization dengan delay acak
-            rootPart.Anchored = true
-            rootPart.Velocity = Vector3.new(0, 0, 0)
-            rootPart.RotVelocity = Vector3.new(0, 0, 0)
-            rootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-            rootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-            
-            wait(0.08 + math.random(1, 8) / 100)
-            
-            rootPart.Anchored = false
-            humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
-            
-            wait(0.1 + math.random(1, 5) / 100)
-            humanoid:ChangeState(Enum.HumanoidStateType.Landed)
-        end
-    end)
-end
-
--- ENHANCED TELEPORT SYSTEM
-function TeleportV1:ultraSafeTeleport(targetCFrame)
-    if not targetCFrame then return false end
-    
-    -- Advanced cooldown dengan randomization
-    local currentTime = tick()
-    local actualCooldown = self.cooldown + (math.random(-20, 20) / 100)
-    if currentTime - self.lastTeleport < actualCooldown then 
-        return false 
-    end
-    
-    self.teleporting = true
-    self.lastTeleport = currentTime
-    
-    local player = Players.LocalPlayer
-    local character = player.Character
-    
-    if not character then 
-        self.teleporting = false
-        return false 
-    end
-    
-    local rootPart = character:FindFirstChild("HumanoidRootPart")
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    
-    if not rootPart or not humanoid then 
-        self.teleporting = false
-        return false 
-    end
-    
-    -- Execute stealth bypass sebelum teleport
-    executeStealthBypass()
-    
-    -- Multi-stage teleport dengan delay acak
-    local teleportStages = {
-        function()
-            -- Stage 1: Preparation
-            pcall(function()
-                rootPart.Anchored = true
-                rootPart.Velocity = Vector3.new(0, 0, 0)
-                rootPart.RotVelocity = Vector3.new(0, 0, 0)
-            end)
-        end,
-        
-        function()
-            -- Stage 2: Initial teleport
-            wait(0.06 + math.random(1, 6) / 100)
-            pcall(function()
-                rootPart.CFrame = targetCFrame
-            end)
-        end,
-        
-        function()
-            -- Stage 3: Secondary teleport
-            wait(0.05 + math.random(1, 5) / 100)
-            pcall(function()
-                character:SetPrimaryPartCFrame(targetCFrame)
-            end)
-        end,
-        
-        function()
-            -- Stage 4: Position correction
-            wait(0.04 + math.random(1, 4) / 100)
-            pcall(function()
-                rootPart.Position = targetCFrame.Position
-            end)
-        end,
-        
-        function()
-            -- Stage 5: Final stabilization
-            wait(0.1 + math.random(1, 10) / 100)
-            stabilizeCharacter(character)
-        end,
-        
-        function()
-            -- Stage 6: Final position lock
-            wait(0.05 + math.random(1, 5) / 100)
-            pcall(function()
-                rootPart.CFrame = targetCFrame
-            end)
-        end
-    }
-    
-    -- Execute stages dengan pattern acak
-    for _, stage in pairs(teleportStages) do
-        stage()
-    end
-    
-    self.teleporting = false
-    return true
-end
-
--- GHOST MODE dengan enhanced stealth
-function TeleportV1:startGhostMode()
-    local validPositions = {}
-    for i = 1, self.maxPositions do
-        if self.positions[i] then
-            table.insert(validPositions, i)
-        end
-    end
-    
-    if #validPositions < 2 then
+-- Stealth Teleport System
+local function stealthTeleport(cframe)
+    if tick() - VenomSystem.lastTeleport < VenomSystem.teleportCooldown then
         return false
     end
     
-    self.ghostMode = true
-    self.ghostPaused = false
-    executeStealthBypass()
+    VenomSystem.lastTeleport = tick()
     
-    local player = Players.LocalPlayer
-    local currentIndex = 1
+    local character = Players.LocalPlayer.Character
+    if not character then return false end
     
-    local ghostBtn = self.gui:FindFirstChild("GhostBtn", true)
-    if ghostBtn then
-        ghostBtn.Text = "PAUSE"
-        ghostBtn.BackgroundColor3 = GUI.pauseColor
-    end
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    if not rootPart then return false end
     
-    spawn(function()
-        while self.ghostMode do
-            if not self.ghostPaused then
-                local character = player.Character
-                if character then
-                    local rootPart = character:FindFirstChild("HumanoidRootPart")
-                    if rootPart then
-                        if not self.realPosition then
-                            self.realPosition = rootPart.CFrame
-                        end
-                        
-                        local targetIndex = validPositions[currentIndex]
-                        if self.positions[targetIndex] then
-                            -- Use ultra safe teleport
-                            self:ultraSafeTeleport(self.positions[targetIndex])
-                            
-                            -- Random delay between teleports
-                            local ghostDelay = self.ghostDelay + (math.random(-20, 30) / 100)
-                            wait(ghostDelay)
-                            
-                            if self.realPosition then
-                                self:ultraSafeTeleport(self.realPosition)
-                            end
-                            
-                            currentIndex = currentIndex + 1
-                            if currentIndex > #validPositions then
-                                currentIndex = 1
-                            end
-                        end
-                    end
-                end
-            end
-            
-            -- Variable ghost delay
-            local cycleDelay = self.ghostDelay + (math.random(-15, 25) / 100)
-            wait(cycleDelay)
-        end
-    end)
-    
-    -- Real position tracking dengan delay acak
-    spawn(function()
-        while self.ghostMode do
-            wait(0.15 + math.random(1, 15) / 100)
-            if not self.ghostPaused then
-                local character = player.Character
-                if character then
-                    local rootPart = character:FindFirstChild("HumanoidRootPart")
-                    if rootPart then
-                        local humanoid = character:FindFirstChildOfClass("Humanoid")
-                        if humanoid and humanoid.MoveDirection.Magnitude > 0 then
-                            self.realPosition = rootPart.CFrame
-                        end
-                    end
-                end
-            end
-        end
+    -- Internal teleport (no visual movement)
+    pcall(function()
+        -- Store current position for visual stability
+        local currentCFrame = rootPart.CFrame
+        
+        -- Internal teleport to target
+        rootPart.CFrame = cframe
+        
+        -- Immediate return to original position (invisible to player)
+        rootPart.CFrame = currentCFrame
     end)
     
     return true
 end
 
--- GUI FUNCTIONS (TETAP SAMA TANPA PERUBAHAN NAMA)
-function TeleportV1:createMenuIcon()
-    local menuIcon = Instance.new("TextButton")
-    menuIcon.Size = UDim2.new(0, Sizes.menuIconSize, 0, Sizes.menuIconSize)
-    menuIcon.Position = UDim2.new(0, 15, 0, 15)
-    menuIcon.BackgroundColor3 = GUI.accentColor
-    menuIcon.TextColor3 = GUI.secondaryColor
-    menuIcon.Text = "☰"
-    menuIcon.Font = Enum.Font.GothamBold
-    menuIcon.TextSize = 16
-    menuIcon.AutoButtonColor = true
-    menuIcon.Name = "MenuIcon"
-    menuIcon.ZIndex = 10
-    menuIcon.Visible = false
-    menuIcon.Parent = self.gui
+-- Auto Teleport Loop
+local function startAutoTeleport()
+    if #VenomSystem.positions == 0 then return end
+    if VenomSystem.isRunning then return end
     
-    local iconCorner = Instance.new("UICorner")
-    iconCorner.CornerRadius = UDim.new(0, 6)
-    iconCorner.Parent = menuIcon
+    VenomSystem.isRunning = true
+    VenomSystem.currentIndex = VenomSystem.currentIndex or 1
     
-    local iconStroke = Instance.new("UIStroke")
-    iconStroke.Color = GUI.secondaryColor
-    iconStroke.Thickness = 2
-    iconStroke.Parent = menuIcon
+    local startBtn = VenomSystem.gui:FindFirstChild("StartBtn", true)
+    if startBtn then
+        startBtn.Text = "RUNNING"
+        startBtn.BackgroundColor3 = Theme.success
+    end
     
-    local dragging = false
-    local dragInput, dragStart, startPos
-    
-    menuIcon.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = menuIcon.Position
+    spawn(function()
+        while VenomSystem.isRunning and #VenomSystem.positions > 0 do
+            if VenomSystem.currentIndex > #VenomSystem.positions then
+                VenomSystem.currentIndex = 1
+            end
             
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
+            local targetCFrame = VenomSystem.positions[VenomSystem.currentIndex]
+            if targetCFrame then
+                stealthTeleport(targetCFrame)
+                VenomSystem.currentIndex += 1
+            end
+            
+            wait(VenomSystem.teleportCooldown + 0.1) -- Safe delay
         end
     end)
-    
-    menuIcon.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            dragInput = input
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            local delta = input.Position - dragStart
-            menuIcon.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end
-    end)
-    
-    menuIcon.MouseButton1Click:Connect(function()
-        self:toggleMenu()
-    end)
-    
-    return menuIcon
 end
 
-function TeleportV1:createMainFrame()
+-- Stop Auto Teleport
+local function stopAutoTeleport()
+    VenomSystem.isRunning = false
+    
+    local startBtn = VenomSystem.gui:FindFirstChild("StartBtn", true)
+    if startBtn then
+        startBtn.Text = "START"
+        startBtn.BackgroundColor3 = Theme.primary
+    end
+end
+
+-- Direct Teleport to Position
+local function directTeleport(index)
+    if VenomSystem.positions[index] then
+        local character = Players.LocalPlayer.Character
+        if character then
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+            if rootPart then
+                rootPart.CFrame = VenomSystem.positions[index]
+            end
+        end
+    end
+end
+
+-- Add New Position
+local function addPosition()
+    local character = Players.LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local newIndex = #VenomSystem.positions + 1
+        VenomSystem.positions[newIndex] = character.HumanoidRootPart.CFrame
+        VenomSystem:updatePositionsList()
+    end
+end
+
+-- Delete Position
+local function deletePosition(index)
+    table.remove(VenomSystem.positions, index)
+    
+    -- Reindex positions
+    local newPositions = {}
+    for i, pos in ipairs(VenomSystem.positions) do
+        newPositions[i] = pos
+    end
+    VenomSystem.positions = newPositions
+    
+    VenomSystem:updatePositionsList()
+end
+
+-- Create Draggable GUI
+function VenomSystem:createGUI()
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "VenomV1_NazamOfficial"
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+    
+    self.gui = screenGui
+    
+    -- Main Frame (16:9 Ratio)
     local mainFrame = Instance.new("Frame")
     mainFrame.Size = Sizes.mainFrame
     mainFrame.Position = UDim2.new(0.5, -Sizes.mainFrame.X.Offset/2, 0.5, -Sizes.mainFrame.Y.Offset/2)
-    mainFrame.BackgroundColor3 = GUI.mainColor
-    mainFrame.BackgroundTransparency = 0.05
+    mainFrame.BackgroundColor3 = Theme.background
     mainFrame.BorderSizePixel = 0
-    mainFrame.ClipsDescendants = false
-    mainFrame.Visible = true
+    mainFrame.ClipsDescendants = true
     mainFrame.Name = "MainFrame"
-    mainFrame.Parent = self.gui
+    mainFrame.Parent = screenGui
     
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 6)
-    corner.Parent = mainFrame
+    local mainCorner = Instance.new("UICorner")
+    mainCorner.CornerRadius = UDim.new(0, 8)
+    mainCorner.Parent = mainFrame
     
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = GUI.accentColor
-    stroke.Thickness = 2
-    stroke.Parent = mainFrame
+    local mainStroke = Instance.new("UIStroke")
+    mainStroke.Color = Theme.primary
+    mainStroke.Thickness = 2
+    mainStroke.Parent = mainFrame
     
+    -- Title Bar
     local titleBar = Instance.new("Frame")
     titleBar.Size = UDim2.new(1, 0, 0, Sizes.titleHeight)
     titleBar.Position = UDim2.new(0, 0, 0, 0)
-    titleBar.BackgroundColor3 = GUI.accentColor
+    titleBar.BackgroundColor3 = Theme.primary
     titleBar.BorderSizePixel = 0
     titleBar.Name = "TitleBar"
     titleBar.Parent = mainFrame
     
     local titleCorner = Instance.new("UICorner")
-    titleCorner.CornerRadius = UDim.new(0, 6)
+    titleCorner.CornerRadius = UDim.new(0, 8)
     titleCorner.Parent = titleBar
     
-    local bottomFix = Instance.new("Frame")
-    bottomFix.Size = UDim2.new(1, 0, 0, 6)
-    bottomFix.Position = UDim2.new(0, 0, 1, -6)
-    bottomFix.BackgroundColor3 = GUI.accentColor
-    bottomFix.BorderSizePixel = 0
-    bottomFix.Parent = titleBar
-    
+    -- Title Text
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(0.65, 0, 1, 0)
+    titleLabel.Size = UDim2.new(0.7, 0, 1, 0)
     titleLabel.Position = UDim2.new(0.05, 0, 0, 0)
     titleLabel.BackgroundTransparency = 1
-    titleLabel.TextColor3 = GUI.secondaryColor
-    titleLabel.Text = "TELEPORT V1.0 - Nazam"
+    titleLabel.TextColor3 = Theme.secondary
+    titleLabel.Text = "X - V3N0M v1.0"
     titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 11
+    titleLabel.TextSize = 16
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = titleBar
     
-    local minimizeBtn = Instance.new("TextButton")
-    minimizeBtn.Size = UDim2.new(0, 24, 0, 24)
-    minimizeBtn.Position = UDim2.new(1, -28, 0.5, -12)
-    minimizeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    minimizeBtn.TextColor3 = GUI.secondaryColor
-    minimizeBtn.Text = "−"
-    minimizeBtn.Font = Enum.Font.GothamBold
-    minimizeBtn.TextSize = 14
-    minimizeBtn.AutoButtonColor = false
-    minimizeBtn.Name = "MinimizeBtn"
-    minimizeBtn.Parent = titleBar
+    -- Close Button (X)
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0, 30, 0, 30)
+    closeBtn.Position = UDim2.new(1, -35, 0.5, -15)
+    closeBtn.BackgroundColor3 = Theme.accent
+    closeBtn.TextColor3 = Theme.secondary
+    closeBtn.Text = "X"
+    closeBtn.Font = Enum.Font.GothamBold
+    closeBtn.TextSize = 14
+    closeBtn.AutoButtonColor = false
+    closeBtn.Name = "CloseBtn"
+    closeBtn.Parent = titleBar
     
-    local minimizeCorner = Instance.new("UICorner")
-    minimizeCorner.CornerRadius = UDim.new(0, 4)
-    minimizeCorner.Parent = minimizeBtn
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(0, 6)
+    closeCorner.Parent = closeBtn
     
-    minimizeBtn.MouseEnter:Connect(function()
-        minimizeBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    closeBtn.MouseEnter:Connect(function()
+        closeBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
     end)
     
-    minimizeBtn.MouseLeave:Connect(function()
-        minimizeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    closeBtn.MouseLeave:Connect(function()
+        closeBtn.BackgroundColor3 = Theme.accent
     end)
     
-    minimizeBtn.MouseButton1Click:Connect(function()
-        self:toggleMenu()
-    end)
-    
+    -- Make Main Frame Draggable
     local dragging = false
     local dragInput, dragStart, startPos
     
@@ -650,82 +247,321 @@ function TeleportV1:createMainFrame()
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
             local delta = input.Position - dragStart
-            mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            mainFrame.Position = UDim2.new(
+                startPos.X.Scale, 
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale, 
+                startPos.Y.Offset + delta.Y
+            )
         end
     end)
     
-    return mainFrame
-end
-
--- [FUNGSI LAINNYA TETAP SAMA]
-function TeleportV1:createGUI()
-    -- GUI creation code tetap sama seperti sebelumnya
-    -- ... (sama dengan script asli)
-end
-
-function TeleportV1:setPosition(index)
-    if index > self.maxPositions then return end
+    -- Content Area
+    local contentFrame = Instance.new("Frame")
+    contentFrame.Size = UDim2.new(1, 0, 1, -Sizes.titleHeight)
+    contentFrame.Position = UDim2.new(0, 0, 0, Sizes.titleHeight)
+    contentFrame.BackgroundTransparency = 1
+    contentFrame.Parent = mainFrame
     
-    local character = Players.LocalPlayer.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        self.positions[index] = character.HumanoidRootPart.CFrame
-        self.currentSelected = index
-        self:updateGUI()
-        savePositions()
-    end
+    -- Left Side - Positions List
+    local positionsFrame = Instance.new("ScrollingFrame")
+    positionsFrame.Size = UDim2.new(0.6, 0, 1, 0)
+    positionsFrame.Position = UDim2.new(0, 0, 0, 0)
+    positionsFrame.BackgroundTransparency = 1
+    positionsFrame.BorderSizePixel = 0
+    positionsFrame.ScrollBarThickness = 4
+    positionsFrame.ScrollBarImageColor3 = Theme.primary
+    positionsFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    positionsFrame.Name = "PositionsFrame"
+    positionsFrame.Parent = contentFrame
+    
+    -- Right Side - Control Buttons
+    local controlsFrame = Instance.new("Frame")
+    controlsFrame.Size = UDim2.new(0.35, 0, 1, 0)
+    controlsFrame.Position = UDim2.new(0.62, 0, 0, 0)
+    controlsFrame.BackgroundTransparency = 1
+    controlsFrame.Parent = contentFrame
+    
+    -- Control Buttons (Vertical Layout)
+    local startBtn = Instance.new("TextButton")
+    startBtn.Size = UDim2.new(1, 0, 0, Sizes.buttonHeight)
+    startBtn.Position = UDim2.new(0, 0, 0, Sizes.spacing)
+    startBtn.BackgroundColor3 = Theme.primary
+    startBtn.TextColor3 = Theme.secondary
+    startBtn.Text = "START"
+    startBtn.Font = Enum.Font.GothamBold
+    startBtn.TextSize = 14
+    startBtn.AutoButtonColor = false
+    startBtn.Name = "StartBtn"
+    startBtn.Parent = controlsFrame
+    
+    local startCorner = Instance.new("UICorner")
+    startCorner.CornerRadius = UDim.new(0, 6)
+    startCorner.Parent = startBtn
+    
+    local setPosBtn = Instance.new("TextButton")
+    setPosBtn.Size = UDim2.new(1, 0, 0, Sizes.buttonHeight)
+    setPosBtn.Position = UDim2.new(0, 0, 0, Sizes.buttonHeight + Sizes.spacing * 2)
+    setPosBtn.BackgroundColor3 = Theme.primary
+    setPosBtn.TextColor3 = Theme.secondary
+    setPosBtn.Text = "SET POSISI"
+    setPosBtn.Font = Enum.Font.GothamBold
+    setPosBtn.TextSize = 14
+    setPosBtn.AutoButtonColor = false
+    setPosBtn.Name = "SetPosBtn"
+    setPosBtn.Parent = controlsFrame
+    
+    local setPosCorner = Instance.new("UICorner")
+    setPosCorner.CornerRadius = UDim.new(0, 6)
+    setPosCorner.Parent = setPosBtn
+    
+    local stopBtn = Instance.new("TextButton")
+    stopBtn.Size = UDim2.new(1, 0, 0, Sizes.buttonHeight)
+    stopBtn.Position = UDim2.new(0, 0, 0, Sizes.buttonHeight * 2 + Sizes.spacing * 3)
+    stopBtn.BackgroundColor3 = Theme.accent
+    stopBtn.TextColor3 = Theme.secondary
+    stopBtn.Text = "STOP"
+    stopBtn.Font = Enum.Font.GothamBold
+    stopBtn.TextSize = 14
+    stopBtn.AutoButtonColor = false
+    stopBtn.Name = "StopBtn"
+    stopBtn.Parent = controlsFrame
+    
+    local stopCorner = Instance.new("UICorner")
+    stopCorner.CornerRadius = UDim.new(0, 6)
+    stopCorner.Parent = stopBtn
+    
+    -- Mini Icon (Hidden Initially)
+    local miniIcon = Instance.new("TextButton")
+    miniIcon.Size = UDim2.new(0, 40, 0, 40)
+    miniIcon.Position = UDim2.new(0, 20, 0, 20)
+    miniIcon.BackgroundColor3 = Theme.primary
+    miniIcon.TextColor3 = Theme.secondary
+    miniIcon.Text = "X"
+    miniIcon.Font = Enum.Font.GothamBold
+    miniIcon.TextSize = 16
+    miniIcon.AutoButtonColor = true
+    miniIcon.Name = "MiniIcon"
+    miniIcon.Visible = false
+    miniIcon.ZIndex = 10
+    miniIcon.Parent = screenGui
+    
+    local miniCorner = Instance.new("UICorner")
+    miniCorner.CornerRadius = UDim.new(0, 8)
+    miniCorner.Parent = miniIcon
+    
+    local miniStroke = Instance.new("UIStroke")
+    miniStroke.Color = Theme.secondary
+    miniStroke.Thickness = 2
+    miniStroke.Parent = miniIcon
+    
+    -- Make Mini Icon Draggable
+    local miniDragging = false
+    local miniDragInput, miniDragStart, miniStartPos
+    
+    miniIcon.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            miniDragging = true
+            miniDragStart = input.Position
+            miniStartPos = miniIcon.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    miniDragging = false
+                end
+            end)
+        end
+    end)
+    
+    miniIcon.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            miniDragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == miniDragInput and miniDragging then
+            local delta = input.Position - miniDragStart
+            miniIcon.Position = UDim2.new(
+                miniStartPos.X.Scale, 
+                miniStartPos.X.Offset + delta.X,
+                miniStartPos.Y.Scale, 
+                miniStartPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+    
+    return screenGui, mainFrame, miniIcon
 end
 
-function TeleportV1:teleportToPosition(index)
-    if not self.positions[index] then return end
-    self:ultraSafeTeleport(self.positions[index])
-end
-
-function TeleportV1:deletePosition(index)
-    self.positions[index] = nil
-    self:updateGUI()
-    savePositions()
-end
-
-function TeleportV1:updateGUI()
-    for i = 1, self.maxPositions do
-        local posLabel = self.gui:FindFirstChild("PosLabel"..i, true)
-        local statusIndicator = self.gui:FindFirstChild("StatusIndicator"..i, true)
-        
-        if posLabel and statusIndicator then
-            if self.positions[i] then
-                posLabel.Text = "P"..i.." ✓"
-                posLabel.TextColor3 = GUI.successColor
-                statusIndicator.BackgroundColor3 = GUI.successColor
-            else
-                posLabel.Text = "P"..i
-                posLabel.TextColor3 = GUI.warningColor
-                statusIndicator.BackgroundColor3 = GUI.warningColor
-            end
+-- Update Positions List Display
+function VenomSystem:updatePositionsList()
+    local positionsFrame = self.gui:FindFirstChild("PositionsFrame", true)
+    if not positionsFrame then return end
+    
+    -- Clear existing positions
+    for _, child in pairs(positionsFrame:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
         end
     end
+    
+    -- Update canvas size
+    positionsFrame.CanvasSize = UDim2.new(0, 0, 0, #self.positions * (Sizes.posItemHeight + Sizes.spacing))
+    
+    -- Add positions to list
+    for i, position in ipairs(self.positions) do
+        local posFrame = Instance.new("Frame")
+        posFrame.Size = UDim2.new(0.95, 0, 0, Sizes.posItemHeight)
+        posFrame.Position = UDim2.new(0.025, 0, 0, (i - 1) * (Sizes.posItemHeight + Sizes.spacing))
+        posFrame.BackgroundColor3 = Theme.secondary
+        posFrame.BackgroundTransparency = 0.9
+        posFrame.BorderSizePixel = 0
+        posFrame.Parent = positionsFrame
+        
+        local posCorner = Instance.new("UICorner")
+        posCorner.CornerRadius = UDim.new(0, 6)
+        posCorner.Parent = posFrame
+        
+        local posStroke = Instance.new("UIStroke")
+        posStroke.Color = Theme.primary
+        posStroke.Thickness = 1
+        posStroke.Parent = posFrame
+        
+        -- Position Label
+        local posLabel = Instance.new("TextLabel")
+        posLabel.Size = UDim2.new(0.5, 0, 1, 0)
+        posLabel.Position = UDim2.new(0.05, 0, 0, 0)
+        posLabel.BackgroundTransparency = 1
+        posLabel.TextColor3 = Theme.secondary
+        posLabel.Text = "Set Posisi " .. i
+        posLabel.Font = Enum.Font.GothamSemibold
+        posLabel.TextSize = 12
+        posLabel.TextXAlignment = Enum.TextXAlignment.Left
+        posLabel.Parent = posFrame
+        
+        -- TP Button
+        local tpBtn = Instance.new("TextButton")
+        tpBtn.Size = UDim2.new(0.2, 0, 0.6, 0)
+        tpBtn.Position = UDim2.new(0.55, 0, 0.2, 0)
+        tpBtn.BackgroundColor3 = Theme.primary
+        tpBtn.TextColor3 = Theme.secondary
+        tpBtn.Text = "TP"
+        tpBtn.Font = Enum.Font.GothamBold
+        tpBtn.TextSize = 10
+        tpBtn.AutoButtonColor = false
+        tpBtn.Name = "TPBtn_" .. i
+        tpBtn.Parent = posFrame
+        
+        local tpCorner = Instance.new("UICorner")
+        tpCorner.CornerRadius = UDim.new(0, 4)
+        tpCorner.Parent = tpBtn
+        
+        tpBtn.MouseEnter:Connect(function()
+            tpBtn.BackgroundColor3 = Theme.accent
+        end)
+        
+        tpBtn.MouseLeave:Connect(function()
+            tpBtn.BackgroundColor3 = Theme.primary
+        end)
+        
+        -- Delete Button
+        local delBtn = Instance.new("TextButton")
+        delBtn.Size = UDim2.new(0.2, 0, 0.6, 0)
+        delBtn.Position = UDim2.new(0.78, 0, 0.2, 0)
+        delBtn.BackgroundColor3 = Theme.warning
+        delBtn.TextColor3 = Theme.secondary
+        delBtn.Text = "Hapus"
+        delBtn.Font = Enum.Font.GothamBold
+        delBtn.TextSize = 9
+        delBtn.AutoButtonColor = false
+        delBtn.Name = "DelBtn_" .. i
+        delBtn.Parent = posFrame
+        
+        local delCorner = Instance.new("UICorner")
+        delCorner.CornerRadius = UDim.new(0, 4)
+        delCorner.Parent = delBtn
+        
+        delBtn.MouseEnter:Connect(function()
+            delBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        end)
+        
+        delBtn.MouseLeave:Connect(function()
+            delBtn.BackgroundColor3 = Theme.warning
+        end)
+        
+        -- Button Events
+        tpBtn.MouseButton1Click:Connect(function()
+            directTeleport(i)
+        end)
+        
+        delBtn.MouseButton1Click:Connect(function()
+            deletePosition(i)
+        end)
+    end
 end
 
-function TeleportV1:toggleMenu()
+-- Toggle Menu Visibility
+function VenomSystem:toggleMenu()
     self.menuVisible = not self.menuVisible
     self.mainFrame.Visible = self.menuVisible
-    self.menuIcon.Visible = not self.menuVisible
+    self.miniIcon.Visible = not self.menuVisible
 end
 
-function TeleportV1:setupEvents()
-    -- Events setup tetap sama
-    -- ... (sama dengan script asli)
-end
-
-function TeleportV1:init()
-    self.gui = self:createGUI()
-    self:setupEvents()
-    initializeStealthSystem() -- Initialize advanced stealth
-    loadPositions()
+-- Setup Event Handlers
+function VenomSystem:setupEvents()
+    local closeBtn = self.gui:FindFirstChild("CloseBtn", true)
+    local startBtn = self.gui:FindFirstChild("StartBtn", true)
+    local setPosBtn = self.gui:FindFirstChild("SetPosBtn", true)
+    local stopBtn = self.gui:FindFirstChild("StopBtn", true)
+    local miniIcon = self.gui:FindFirstChild("MiniIcon", true)
     
-    print("🚀 TELEPORT V1.0 ULTRA STEALTH LOADED")
-    print("🛡️  ANTI-DETECTION SYSTEM: ACTIVE")
-    print("🎯 RANDOMIZED BYPASS PATTERNS: ENABLED")
-    print("⚡ ENHANCED STEALTH PROTECTION: ONLINE")
+    if closeBtn then
+        closeBtn.MouseButton1Click:Connect(function()
+            self:toggleMenu()
+        end)
+    end
+    
+    if startBtn then
+        startBtn.MouseButton1Click:Connect(function()
+            if not self.isRunning then
+                startAutoTeleport()
+            end
+        end)
+    end
+    
+    if setPosBtn then
+        setPosBtn.MouseButton1Click:Connect(function()
+            addPosition()
+        end)
+    end
+    
+    if stopBtn then
+        stopBtn.MouseButton1Click:Connect(function()
+            stopAutoTeleport()
+        end)
+    end
+    
+    if miniIcon then
+        miniIcon.MouseButton1Click:Connect(function()
+            self:toggleMenu()
+        end)
+    end
 end
 
-TeleportV1:init()
+-- Initialize System
+function VenomSystem:init()
+    local screenGui, mainFrame, miniIcon = self:createGUI()
+    self.gui = screenGui
+    self.mainFrame = mainFrame
+    self.miniIcon = miniIcon
+    
+    self:setupEvents()
+    self:updatePositionsList()
+    
+    print("X - V3N0M v1.0 by Nazam Official - Loaded Successfully")
+    print("Features: Unlimited Positions, Auto Teleport, Stealth System")
+end
+
+-- Start the System
+VenomSystem:init()
