@@ -1,0 +1,258 @@
+-- Script Executor by Nazam Official
+local NazamOfficial = "Nazam Official"
+
+-- Coordinates list
+local coordinates = {
+    Vector3.new(-68.36, 486.15, -102.70),
+    Vector3.new(166.26, 658.12, -257.46),
+    Vector3.new(447.09, 762.15, -163.27),
+    Vector3.new(586.60, 878.15, 174.87),
+    Vector3.new(540.15, 1022.15, 471.52),
+    Vector3.new(320.32, 1198.15, 674.05),
+    Vector3.new(23.77, 1298.15, 564.45),
+    Vector3.new(-124.37, 1413.00, 227.67),
+    Vector3.new(-245.89, 1434.07, 65.26),
+    Vector3.new(287.82, 279.66, -15.42)
+}
+
+-- UI Creation
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "NazamExecutor"
+ScreenGui.ResetOnSpawn = false
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 220, 0, 280)
+MainFrame.Position = UDim2.new(0.5, -110, 0.5, -140)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.fromRGB(0, 100, 255)
+MainFrame.Parent = ScreenGui
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundColor3 = Color3.fromRGB(0, 50, 150)
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Text = "Nazam Executor v1.0"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 14
+Title.Parent = MainFrame
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 25, 0, 25)
+CloseButton.Position = UDim2.new(1, -25, 0, 0)
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Text = "X"
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.TextSize = 12
+CloseButton.Parent = MainFrame
+
+local MiniIcon = Instance.new("TextButton")
+MiniIcon.Size = UDim2.new(0, 30, 0, 30)
+MiniIcon.Position = UDim2.new(0, 10, 0, 10)
+MiniIcon.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
+MiniIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+MiniIcon.Text = "N"
+MiniIcon.Font = Enum.Font.GothamBold
+MiniIcon.TextSize = 14
+MiniIcon.Visible = false
+MiniIcon.Parent = ScreenGui
+
+-- Buttons
+local ButtonLayout = Instance.new("UIListLayout")
+ButtonLayout.Padding = UDim.new(0, 5)
+ButtonLayout.Parent = MainFrame
+
+local AutoSummit = Instance.new("TextButton")
+AutoSummit.Size = UDim2.new(0.9, 0, 0, 35)
+AutoSummit.Position = UDim2.new(0.05, 0, 0, 40)
+AutoSummit.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
+AutoSummit.TextColor3 = Color3.fromRGB(255, 255, 255)
+AutoSummit.Text = "Auto Summit: OFF"
+AutoSummit.Font = Enum.Font.Gotham
+AutoSummit.TextSize = 12
+AutoSummit.Parent = MainFrame
+
+local Glitch = Instance.new("TextButton")
+Glitch.Size = UDim2.new(0.9, 0, 0, 35)
+Glitch.Position = UDim2.new(0.05, 0, 0, 80)
+Glitch.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Glitch.TextColor3 = Color3.fromRGB(255, 255, 255)
+Glitch.Text = "Glitch: OFF"
+Glitch.Font = Enum.Font.Gotham
+Glitch.TextSize = 12
+Glitch.Parent = MainFrame
+
+local Teleport = Instance.new("TextButton")
+Teleport.Size = UDim2.new(0.9, 0, 0, 35)
+Teleport.Position = UDim2.new(0.05, 0, 0, 120)
+Teleport.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Teleport.TextColor3 = Color3.fromRGB(255, 255, 255)
+Teleport.Text = "Teleport: OFF"
+Teleport.Font = Enum.Font.Gotham
+Teleport.TextSize = 12
+Teleport.Parent = MainFrame
+
+local Reset = Instance.new("TextButton")
+Reset.Size = UDim2.new(0.9, 0, 0, 35)
+Reset.Position = UDim2.new(0.05, 0, 0, 160)
+Reset.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+Reset.TextColor3 = Color3.fromRGB(255, 255, 255)
+Reset.Text = "Reset System"
+Reset.Font = Enum.Font.Gotham
+Reset.TextSize = 12
+Reset.Parent = MainFrame
+
+local Status = Instance.new("TextLabel")
+Status.Size = UDim2.new(0.9, 0, 0, 50)
+Status.Position = UDim2.new(0.05, 0, 0, 210)
+Status.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Status.TextColor3 = Color3.fromRGB(255, 255, 255)
+Status.Text = "Status: Ready"
+Status.Font = Enum.Font.Gotham
+Status.TextSize = 11
+Status.TextWrapped = true
+Status.Parent = MainFrame
+
+-- Variables
+local isAutoSummitActive = false
+local isGlitchActive = false
+local isTeleportActive = false
+local currentTeleportIndex = 1
+local teleportConnection
+
+-- Functions
+local function updateStatus(message)
+    Status.Text = "Status: " .. message
+end
+
+local function resetSystem()
+    isAutoSummitActive = false
+    isGlitchActive = false
+    isTeleportActive = false
+    
+    if teleportConnection then
+        teleportConnection:Disconnect()
+        teleportConnection = nil
+    end
+    
+    AutoSummit.Text = "Auto Summit: OFF"
+    AutoSummit.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
+    Glitch.Text = "Glitch: OFF"
+    Glitch.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Teleport.Text = "Teleport: OFF"
+    Teleport.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    
+    currentTeleportIndex = 1
+    updateStatus("System Reset")
+end
+
+local function performTeleport()
+    if not isAutoSummitActive then return end
+    
+    if currentTeleportIndex > #coordinates then
+        currentTeleportIndex = 1
+    end
+    
+    local targetPos = coordinates[currentTeleportIndex]
+    
+    if isGlitchActive then
+        -- Glitch teleport (character only)
+        LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(targetPos))
+        updateStatus("Glitch Teleport: " .. currentTeleportIndex)
+    elseif isTeleportActive then
+        -- Normal teleport (with avatar)
+        LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(targetPos))
+        updateStatus("Teleport: " .. currentTeleportIndex)
+    end
+    
+    currentTeleportIndex = currentTeleportIndex + 1
+end
+
+-- Button Events
+AutoSummit.MouseButton1Click:Connect(function()
+    if not isAutoSummitActive and (isGlitchActive or isTeleportActive) then
+        isAutoSummitActive = true
+        AutoSummit.Text = "Auto Summit: ON"
+        AutoSummit.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+        
+        teleportConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            performTeleport()
+            wait(1.03) -- 1 second 30 ms delay
+        end)
+        
+        updateStatus("Auto Summit Started")
+    elseif isAutoSummitActive then
+        isAutoSummitActive = false
+        AutoSummit.Text = "Auto Summit: OFF"
+        AutoSummit.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
+        updateStatus("Auto Summit Stopped")
+    else
+        updateStatus("Enable Glitch or Teleport first")
+    end
+end)
+
+Glitch.MouseButton1Click:Connect(function()
+    if not isAutoSummitActive then
+        isGlitchActive = not isGlitchActive
+        isTeleportActive = false
+        
+        if isGlitchActive then
+            Glitch.Text = "Glitch: ON"
+            Glitch.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+            Teleport.Text = "Teleport: OFF"
+            Teleport.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            updateStatus("Glitch Mode Ready")
+        else
+            Glitch.Text = "Glitch: OFF"
+            Glitch.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            updateStatus("Glitch Disabled")
+        end
+    else
+        updateStatus("Stop Auto Summit first")
+    end
+end)
+
+Teleport.MouseButton1Click:Connect(function()
+    if not isAutoSummitActive then
+        isTeleportActive = not isTeleportActive
+        isGlitchActive = false
+        
+        if isTeleportActive then
+            Teleport.Text = "Teleport: ON"
+            Teleport.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+            Glitch.Text = "Glitch: OFF"
+            Glitch.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            updateStatus("Teleport Mode Ready")
+        else
+            Teleport.Text = "Teleport: OFF"
+            Teleport.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            updateStatus("Teleport Disabled")
+        end
+    else
+        updateStatus("Stop Auto Summit first")
+    end
+end)
+
+Reset.MouseButton1Click:Connect(function()
+    resetSystem()
+end)
+
+-- Close Button Functionality
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    MiniIcon.Visible = true
+end)
+
+MiniIcon.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    MiniIcon.Visible = false
+end)
+
+ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+updateStatus("Nazam Official - Ready")
