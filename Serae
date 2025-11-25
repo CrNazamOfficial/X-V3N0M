@@ -3,16 +3,14 @@ local NazamOfficial = "Nazam Official"
 
 -- Coordinates list
 local coordinates = {
-    Vector3.new(-68.36, 486.15, -102.70),
-    Vector3.new(166.26, 658.12, -257.46),
-    Vector3.new(447.09, 762.15, -163.27),
-    Vector3.new(586.60, 878.15, 174.87),
-    Vector3.new(540.15, 1022.15, 471.52),
-    Vector3.new(320.32, 1198.15, 674.05),
-    Vector3.new(23.77, 1298.15, 564.45),
-    Vector3.new(-124.37, 1413.00, 227.67),
-    Vector3.new(-245.89, 1434.07, 65.26),
-    Vector3.new(287.82, 279.66, -15.42)
+    Vector3.new(-421.25, 249.15, 775.53),
+    Vector3.new(-328.07, 388.15, 563.91),
+    Vector3.new(402.82, 390.15, 374.76),
+    Vector3.new(448.78, 374.15, 117.87),
+    Vector3.new(48.72, 250.15, 112.34),
+    Vector3.new(212.32, 314.15, -202.23),
+    Vector3.new(-623.14, 842.15, -462.97),
+    Vector3.new(-945.91, 170.15, 880.35)
 }
 
 -- UI Creation
