@@ -2,6 +2,7 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
@@ -16,257 +17,143 @@ if player.PlayerGui:FindFirstChild("ReverseShiftLockGUI") then
     player.PlayerGui:FindFirstChild("ReverseShiftLockGUI"):Destroy()
 end
 
--- ==================== GUI MODERN CREATION ====================
-
+-- Buat GUI sederhana
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "ReverseShiftLockGUI"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = player.PlayerGui
 
--- Main Frame (Modern & Draggable)
 local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 280, 0, 140)
-MainFrame.Position = UDim2.new(0.5, -140, 0.5, -70)
-MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-MainFrame.BackgroundTransparency = 0.1
+MainFrame.Size = UDim2.new(0, 220, 0, 80)
+MainFrame.Position = UDim2.new(0, 10, 0, 10)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.BackgroundTransparency = 0.3
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
-local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 12)
-MainCorner.Parent = MainFrame
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
 
--- Gradient Background
-local UIGradient = Instance.new("UIGradient")
-UIGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 20)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 10, 10))
-}
-UIGradient.Rotation = 45
-UIGradient.Parent = MainFrame
-
--- Border Accent (Orange)
-local Border = Instance.new("Frame")
-Border.Size = UDim2.new(1, 4, 1, 4)
-Border.Position = UDim2.new(0, -2, 0, -2)
-Border.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
-Border.BorderSizePixel = 0
-Border.ZIndex = 0
-Border.Parent = MainFrame
-
-local BorderCorner = Instance.new("UICorner")
-BorderCorner.CornerRadius = UDim.new(0, 14)
-BorderCorner.Parent = Border
-
--- Title Bar
-local TitleBar = Instance.new("Frame")
-TitleBar.Size = UDim2.new(1, 0, 0, 35)
-TitleBar.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
-TitleBar.BorderSizePixel = 0
-TitleBar.Parent = MainFrame
-
-local TitleBarCorner = Instance.new("UICorner")
-TitleBarCorner.CornerRadius = UDim.new(0, 12)
-TitleBarCorner.Parent = TitleBar
-
--- Cover bottom corners of title bar
-local TitleBarCover = Instance.new("Frame")
-TitleBarCover.Size = UDim2.new(1, 0, 0, 12)
-TitleBarCover.Position = UDim2.new(0, 0, 1, -12)
-TitleBarCover.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
-TitleBarCover.BorderSizePixel = 0
-TitleBarCover.Parent = TitleBar
-
--- Title Text
-local TitleText = Instance.new("TextLabel")
-TitleText.Size = UDim2.new(1, -80, 1, 0)
-TitleText.Position = UDim2.new(0, 15, 0, 0)
-TitleText.BackgroundTransparency = 1
-TitleText.Text = "👑  X - V3N0M"
-TitleText.TextColor3 = Color3.fromRGB(0, 0, 0)
-TitleText.TextSize = 15
-TitleText.Font = Enum.Font.GothamBold
-TitleText.TextXAlignment = Enum.TextXAlignment.Left
-TitleText.Parent = TitleBar
-
--- Minimize Button
-local MinimizeButton = Instance.new("TextButton")
-MinimizeButton.Size = UDim2.new(0, 28, 0, 28)
-MinimizeButton.Position = UDim2.new(1, -63, 0, 3.5)
-MinimizeButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-MinimizeButton.BorderSizePixel = 0
-MinimizeButton.Text = "—"
-MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-MinimizeButton.TextSize = 16
-MinimizeButton.Font = Enum.Font.GothamBold
-MinimizeButton.Parent = TitleBar
-
-local MinimizeCorner = Instance.new("UICorner")
-MinimizeCorner.CornerRadius = UDim.new(0, 7)
-MinimizeCorner.Parent = MinimizeButton
-
--- Close Button
+-- Tombol X (Close)
 local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 28, 0, 28)
-CloseButton.Position = UDim2.new(1, -33, 0, 3.5)
-CloseButton.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+CloseButton.Size = UDim2.new(0, 25, 0, 25)
+CloseButton.Position = UDim2.new(1, -30, 0, 5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
 CloseButton.BorderSizePixel = 0
 CloseButton.Text = "X"
 CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 CloseButton.TextSize = 14
 CloseButton.Font = Enum.Font.GothamBold
-CloseButton.Parent = TitleBar
+CloseButton.Parent = MainFrame
 
 local CloseCorner = Instance.new("UICorner")
-CloseCorner.CornerRadius = UDim.new(0, 7)
+CloseCorner.CornerRadius = UDim.new(0, 6)
 CloseCorner.Parent = CloseButton
 
--- Minimize Icon (Gambar, bukan emoji/text)
-local MinimizeIcon = Instance.new("ImageButton")
-MinimizeIcon.Name = "MinimizeIcon"
-MinimizeIcon.Size = UDim2.new(0, 50, 0, 50)
-MinimizeIcon.Position = UDim2.new(0, 10, 0, 10)
-MinimizeIcon.BackgroundTransparency = 1  -- Transparan (no background)
-MinimizeIcon.BorderSizePixel = 0
-MinimizeIcon.Active = true
-MinimizeIcon.Draggable = true
-MinimizeIcon.Visible = false
-MinimizeIcon.Image = "rbxassetid://110225912398772"  -- ID GAMBAR ANDA
-MinimizeIcon.ScaleType = Enum.ScaleType.Fit
-MinimizeIcon.Parent = ScreenGui
-
-local IconCorner = Instance.new("UICorner")
-IconCorner.CornerRadius = UDim.new(0, 10)
-IconCorner.Parent = MinimizeIcon
-
--- Content Container
-local ContentFrame = Instance.new("Frame")
-ContentFrame.Size = UDim2.new(1, -20, 1, -50)
-ContentFrame.Position = UDim2.new(0, 10, 0, 42)
-ContentFrame.BackgroundTransparency = 1
-ContentFrame.Parent = MainFrame
-
--- Status Label
-local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Size = UDim2.new(1, 0, 0, 18)
-StatusLabel.Position = UDim2.new(0, 0, 0, 5)
-StatusLabel.BackgroundTransparency = 1
-StatusLabel.Text = "📊 Status: Ready"
-StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-StatusLabel.TextSize = 11
-StatusLabel.Font = Enum.Font.Gotham
-StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
-StatusLabel.Parent = ContentFrame
-
--- Main Button (Freestyle)
 local LockButton = Instance.new("TextButton")
-LockButton.Size = UDim2.new(1, 0, 0, 50)
-LockButton.Position = UDim2.new(0, 0, 0, 30)
+LockButton.Size = UDim2.new(0.9, 0, 0, 40)
+LockButton.Position = UDim2.new(0.05, 0, 0.2, 0)
 LockButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 LockButton.BorderSizePixel = 0
-LockButton.Text = "🔄 FREESTYLE"
+LockButton.Text = "🔄 Freestyle"
 LockButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-LockButton.TextSize = 14
+LockButton.TextSize = 12
 LockButton.Font = Enum.Font.GothamBold
-LockButton.Parent = ContentFrame
+LockButton.Parent = MainFrame
 
 local ButtonCorner = Instance.new("UICorner")
-ButtonCorner.CornerRadius = UDim.new(0, 10)
+ButtonCorner.CornerRadius = UDim.new(0, 8)
 ButtonCorner.Parent = LockButton
 
--- Button Gradient
-local ButtonGradient = Instance.new("UIGradient")
-ButtonGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 40)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 20))
-}
-ButtonGradient.Rotation = 90
-ButtonGradient.Parent = LockButton
+-- Mini Icon (Minimized State)
+local MiniIcon = Instance.new("TextButton")
+MiniIcon.Name = "MiniIcon"
+MiniIcon.Size = UDim2.new(0, 40, 0, 40)
+MiniIcon.Position = UDim2.new(0, 10, 0, 10)
+MiniIcon.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MiniIcon.BackgroundTransparency = 0.3
+MiniIcon.BorderSizePixel = 0
+MiniIcon.Text = "V"
+MiniIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+MiniIcon.TextSize = 20
+MiniIcon.Font = Enum.Font.GothamBold
+MiniIcon.Active = true
+MiniIcon.Draggable = true
+MiniIcon.Visible = false
+MiniIcon.Parent = ScreenGui
 
--- Status Indicator (bulat kecil)
-local StatusIndicator = Instance.new("Frame")
-StatusIndicator.Size = UDim2.new(0, 10, 0, 10)
-StatusIndicator.Position = UDim2.new(0, 12, 0.5, -5)
-StatusIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-StatusIndicator.BorderSizePixel = 0
-StatusIndicator.Parent = LockButton
+local MiniCorner = Instance.new("UICorner")
+MiniCorner.CornerRadius = UDim.new(0, 10)
+MiniCorner.Parent = MiniIcon
 
-local IndicatorCorner = Instance.new("UICorner")
-IndicatorCorner.CornerRadius = UDim.new(1, 0)
-IndicatorCorner.Parent = StatusIndicator
-
--- ==================== BUTTON HANDLERS ====================
-
--- Minimize Handler
-MinimizeButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = false
-    MinimizeIcon.Visible = true
-end)
-
-MinimizeButton.MouseEnter:Connect(function()
-    MinimizeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-end)
-
-MinimizeButton.MouseLeave:Connect(function()
-    MinimizeButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-end)
-
--- Close Handler
+-- Close Button Logic
 CloseButton.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
+    MainFrame.Visible = false
+    MiniIcon.Visible = true
 end)
 
+-- Mini Icon Logic
+MiniIcon.MouseButton1Click:Connect(function()
+    MiniIcon.Visible = false
+    MainFrame.Visible = true
+end)
+
+-- Hover Effects untuk Close Button
 CloseButton.MouseEnter:Connect(function()
-    CloseButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+    TweenService:Create(CloseButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 50, 50)}):Play()
 end)
 
 CloseButton.MouseLeave:Connect(function()
-    CloseButton.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+    TweenService:Create(CloseButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(200, 0, 0)}):Play()
 end)
 
--- Minimize Icon Handler (buka lagi dengan gambar)
-MinimizeIcon.MouseButton1Click:Connect(function()
-    MainFrame.Visible = true
-    MinimizeIcon.Visible = false
+-- Hover Effects untuk Mini Icon
+MiniIcon.MouseEnter:Connect(function()
+    TweenService:Create(MiniIcon, TweenInfo.new(0.2), {Size = UDim2.new(0, 45, 0, 45)}):Play()
 end)
 
-MinimizeIcon.MouseEnter:Connect(function()
-    MinimizeIcon.Size = UDim2.new(0, 55, 0, 55)
-    MinimizeIcon.ImageTransparency = 0.3  -- Efek glow saat hover
+MiniIcon.MouseLeave:Connect(function()
+    TweenService:Create(MiniIcon, TweenInfo.new(0.2), {Size = UDim2.new(0, 40, 0, 40)}):Play()
 end)
-
-MinimizeIcon.MouseLeave:Connect(function()
-    MinimizeIcon.Size = UDim2.new(0, 50, 0, 50)
-    MinimizeIcon.ImageTransparency = 0  -- Kembali normal
-end)
-
--- ==================== FREESTYLE FUNCTIONS ====================
 
 -- Simpan orientasi asli
 local originalAutoRotate = humanoid.AutoRotate
 
+-- Fungsi untuk reverse shift lock
 local function enableReverseShiftLock()
     if not rootPart then return end
+    
+    -- Nonaktifkan auto rotate
     humanoid.AutoRotate = false
+    
+    -- Putar karakter 180 derajat
     rootPart.CFrame = CFrame.lookAt(rootPart.Position, rootPart.Position - rootPart.CFrame.LookVector)
 end
 
+-- Fungsi untuk disable reverse
 local function disableReverseShiftLock()
     if not rootPart then return end
+    
+    -- Kembalikan auto rotate ke settingan asli
     humanoid.AutoRotate = originalAutoRotate
 end
 
+-- Fungsi untuk maintain reverse orientation dengan smooth
 local function maintainReverseOrientation()
     if not rootPart or not isReverseMode then return end
     
+    -- Dapatkan arah camera
     local camera = workspace.CurrentCamera
     local cameraCFrame = camera.CFrame
     local cameraLookVector = cameraCFrame.LookVector
+    
+    -- Reverse arah camera (180 derajat)
     local reverseLookVector = -cameraLookVector
     
+    -- Terapkan orientasi reverse ke karakter
     rootPart.CFrame = CFrame.lookAt(rootPart.Position, rootPart.Position + Vector3.new(reverseLookVector.X, 0, reverseLookVector.Z))
 end
 
@@ -275,19 +162,13 @@ LockButton.MouseButton1Click:Connect(function()
     isReverseMode = not isReverseMode
     
     if isReverseMode then
-        -- AKTIFKAN
-        LockButton.Text = "🔒 FREESTYLE AKTIF"
-        LockButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        ButtonGradient.Color = ColorSequence.new{
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 80, 80)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 30, 30))
-        }
-        StatusIndicator.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
-        StatusLabel.Text = "📊 Status: Active (Reverse Mode)"
-        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+        -- AKTIFKAN REVERSE MODE
+        LockButton.Text = "🔒 Freestyle AKTIF"
+        LockButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
         
         enableReverseShiftLock()
         
+        -- Jalankan maintain orientation dengan smooth
         connection = RunService.Heartbeat:Connect(function()
             maintainReverseOrientation()
         end)
@@ -295,16 +176,9 @@ LockButton.MouseButton1Click:Connect(function()
         print("🔒 Freestyle: AKTIF")
         
     else
-        -- NONAKTIFKAN
-        LockButton.Text = "🔄 FREESTYLE"
+        -- NONAKTIFKAN REVERSE MODE
+        LockButton.Text = "🔄 Freestyle"
         LockButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-        ButtonGradient.Color = ColorSequence.new{
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 40)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 20))
-        }
-        StatusIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-        StatusLabel.Text = "📊 Status: Ready"
-        StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
         
         disableReverseShiftLock()
         
@@ -317,50 +191,30 @@ LockButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Hover effect
-LockButton.MouseEnter:Connect(function()
-    if not isReverseMode then
-        LockButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    end
-end)
-
-LockButton.MouseLeave:Connect(function()
-    if not isReverseMode then
-        LockButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    end
-end)
-
--- ==================== INPUT HANDLER ====================
-
+-- Handle input untuk prevent conflict dengan shift lock original
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     
     if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
-        wait(0.1)
+        -- Biarkan shift lock original bekerja
+        wait(0.1) -- Kasih delay sedikit
         if isReverseMode then
             maintainReverseOrientation()
         end
     end
 end)
 
--- ==================== CHARACTER RESPAWN ====================
-
+-- Handle character change
 player.CharacterAdded:Connect(function(newChar)
     character = newChar
     humanoid = newChar:WaitForChild("Humanoid")
     rootPart = newChar:WaitForChild("HumanoidRootPart")
     originalAutoRotate = humanoid.AutoRotate
     
+    -- Reset state ketika ganti karakter
     isReverseMode = false
-    LockButton.Text = "🔄 FREESTYLE"
+    LockButton.Text = "🔄 Freestyle"
     LockButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    ButtonGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 40)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 20))
-    }
-    StatusIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-    StatusLabel.Text = "📊 Status: Ready"
-    StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
     
     if connection then
         connection:Disconnect()
@@ -368,13 +222,6 @@ player.CharacterAdded:Connect(function(newChar)
     end
 end)
 
--- ==================== LOAD MESSAGE ====================
-
-print("============================================")
-print("👑 X - V3N0M | Freestyle LOADED!")
-print("============================================")
-print("✓ Modern UI with Minimize")
-print("✓ Draggable Frame")
-print("✓ Image Icon (ID: 110225912398772)")
-print("✓ Reverse Shift Lock System")
-print("============================================")
+print("🔄 Freestyle LOADED!")
+print("Fitur: Shift Lock versi berlawanan arah")
+print("Tekan tombol untuk mengaktifkan/menonaktifkan")
