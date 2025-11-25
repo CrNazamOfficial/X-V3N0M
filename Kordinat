@@ -1,0 +1,120 @@
+-- Coordinate Finder by Nazam Official
+local NazamOfficial = "Nazam Official"
+
+-- UI Creation
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "NazamCoordFinder"
+ScreenGui.ResetOnSpawn = false
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 220, 0, 280)
+MainFrame.Position = UDim2.new(0.5, -110, 0.5, -140)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.fromRGB(0, 100, 255)
+MainFrame.Parent = ScreenGui
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundColor3 = Color3.fromRGB(0, 50, 150)
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Text = "Coordinate Finder v1.0"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 14
+Title.Parent = MainFrame
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 25, 0, 25)
+CloseButton.Position = UDim2.new(1, -25, 0, 0)
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Text = "X"
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.TextSize = 12
+CloseButton.Parent = MainFrame
+
+local MiniIcon = Instance.new("TextButton")
+MiniIcon.Size = UDim2.new(0, 30, 0, 30)
+MiniIcon.Position = UDim2.new(0, 10, 0, 10)
+MiniIcon.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
+MiniIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+MiniIcon.Text = "C"
+MiniIcon.Font = Enum.Font.GothamBold
+MiniIcon.TextSize = 14
+MiniIcon.Visible = false
+MiniIcon.Parent = ScreenGui
+
+-- Main Content
+local CheckCoord = Instance.new("TextButton")
+CheckCoord.Size = UDim2.new(0.9, 0, 0, 50)
+CheckCoord.Position = UDim2.new(0.05, 0, 0, 50)
+CheckCoord.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
+CheckCoord.TextColor3 = Color3.fromRGB(255, 255, 255)
+CheckCoord.Text = "Cek Kordinat"
+CheckCoord.Font = Enum.Font.GothamBold
+CheckCoord.TextSize = 14
+CheckCoord.Parent = MainFrame
+
+local CoordDisplay = Instance.new("TextLabel")
+CoordDisplay.Size = UDim2.new(0.9, 0, 0, 120)
+CoordDisplay.Position = UDim2.new(0.05, 0, 0, 120)
+CoordDisplay.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+CoordDisplay.TextColor3 = Color3.fromRGB(255, 255, 255)
+CoordDisplay.Text = "Koordinat akan muncul di sini"
+CoordDisplay.Font = Enum.Font.Gotham
+CoordDisplay.TextSize = 12
+CoordDisplay.TextWrapped = true
+CoordDisplay.Parent = MainFrame
+
+local Instructions = Instance.new("TextLabel")
+Instructions.Size = UDim2.new(0.9, 0, 0, 50)
+Instructions.Position = UDim2.new(0.05, 0, 0, 250)
+Instructions.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Instructions.TextColor3 = Color3.fromRGB(200, 200, 200)
+Instructions.Text = "Klik 'Cek Kordinat' untuk update posisi"
+Instructions.Font = Enum.Font.Gotham
+Instructions.TextSize = 10
+Instructions.TextWrapped = true
+Instructions.Parent = MainFrame
+
+-- Functions
+local function getCurrentCoordinates()
+    local character = LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local position = character.HumanoidRootPart.Position
+        return string.format("X: %.2f\nY: %.2f\nZ: %.2f", position.X, position.Y, position.Z)
+    else
+        return "Karakter tidak ditemukan"
+    end
+end
+
+local function updateCoordinateDisplay()
+    local coords = getCurrentCoordinates()
+    CoordDisplay.Text = "Koordinat Terkini:\n\n" .. coords
+end
+
+-- Button Events
+CheckCoord.MouseButton1Click:Connect(function()
+    updateCoordinateDisplay()
+end)
+
+-- Close Button Functionality
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    MiniIcon.Visible = true
+end)
+
+MiniIcon.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    MiniIcon.Visible = false
+    updateCoordinateDisplay()
+end)
+
+ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Initial display
+updateCoordinateDisplay()
