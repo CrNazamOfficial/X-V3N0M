@@ -1,132 +1,243 @@
--- Script Executor by Nazam Official
+-- Nazam Executor Modern by Nazam Official
 local NazamOfficial = "Nazam Official"
 
--- Coordinates list
+-- Coordinates list untuk checkpoint
 local coordinates = {
-    Vector3.new(-421.25, 249.15, 775.53),
-    Vector3.new(-328.07, 388.15, 563.91),
-    Vector3.new(402.82, 390.15, 374.76),
-    Vector3.new(448.78, 374.15, 117.87),
-    Vector3.new(48.72, 250.15, 112.34),
-    Vector3.new(212.32, 314.15, -202.23),
-    Vector3.new(-623.14, 842.15, -462.97),
-    Vector3.new(-945.91, 170.15, 880.35)
+    Vector3.new(13.89, 683.20, -2094.74), -- Satu
+    Vector3.new(217.39, 682.10, -2789.23),
+    Vector3.new(1799.94, 866.15, -2531.11),
+    Vector3.new(575.74, 945.15, -2358.16),
+    Vector3.new(-494.43, 1042.15, -2546.75),
+    Vector3.new(-359.71, 862.15, -3472.70),
+    Vector3.new(981.17, 706.15, -3904.80), 
+    Vector3.new(2418.68, 690.15, -4036.14), 
+    Vector3.new(1533.47, 938.15, -5087.62), 
+    Vector3.new(605.06, 1242.15, -5802.85),
+    Vector3.new(440.30, 1570.15, -6575.83),
+    Vector3.new(2564.61, 1449.10, -6271.82),
+    Vector3.new(1174.35, 986.07, -7085.88),
+    Vector3.new(325.09, 1319.26, -7992.47),
+    Vector3.new(-661.01, 1651.26, -7639.30),
+    Vector3.new(-1092.14, 1815.26, -8878.07),
+    Vector3.new(-1391.60, 2578.15, -9756.66), 
+    Vector3.new(-1194.65, 2534.10, -10381.85), 
+    Vector3.new(-448.09, 2374.97, -9728.99), 
+    Vector3.new(599.56, 2274.02, -9484.71),
+    Vector3.new(1842.75, 2751.26, -9767.70),
+    Vector3.new(1062.83, 1922.35, -11086.66),
+    Vector3.new(238.47, 2263.26, -12125.78),
+    Vector3.new(-57.01, 2603.03, -11046.55),
+    Vector3.new(1708.82, 2711.26, -12269.44),
+    Vector3.new(1057.72, 2727.26, -13020.41),
+    Vector3.new(708.38, 2919.26, -14053.67), 
+    Vector3.new(551.58, 3015.26, -14760.22), 
+    Vector3.new(280.88, 3494.95, -14310.27),
+    Vector3.new(1239.69, 3486.95, -14461.88),
+    Vector3.new(-585.35, 3511.26, -15158.59),
+    Vector3.new(-1812.50, 3727.27, -15519.25),
+    Vector3.new(-2209.05, 3511.26, -16548.75),
+    Vector3.new(-958.28, 3747.37, -16881.18),
+    Vector3.new(233.47, 3247.26, -17321.91),
+    Vector3.new(1126.93, 3511.26, -16505.27),
+    Vector3.new(1210.86, 3752.21, -18150.62), 
+    Vector3.new(420.60, 3682.26, -19430.00), 
+    Vector3.new(-1581.84, 3574.65, -19348.51), 
+    Vector3.new(-1511.52, 3887.26, 18118.16), 
+    Vector3.new(-444.91, 2812.75, -18726.19),
+    Vector3.new(1188.17, 3482.91, -20705.21),
+    Vector3.new(603.00, 3735.16, -21429.74),
+    Vector3.new(-450.88, 4013.07, -20524.09),
+    Vector3.new(-1128.82, 4119.24, -21512.95),
+    Vector3.new(72.59, 3943.26, -22653.44),
+    Vector3.new(646.59, 4170.15, -23168.99), 
+    Vector3.new(-1102.45, 4138.87, -23379.79), 
+    Vector3.new(79.20, 3943.36, -24442.38), 
+    Vector3.new(1239.62, 4307.36, -24354.60), 
+    Vector3.new(-236.64, 4137.37, -26188.16), 
+    Vector3.new(-169.50, 4226.04, -27276.40)
 }
 
 -- UI Creation
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "NazamExecutor"
+ScreenGui.Name = "NazamExecutorModern"
 ScreenGui.ResetOnSpawn = false
 
+-- Modern Main Frame
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 220, 0, 280)
-MainFrame.Position = UDim2.new(0.5, -110, 0.5, -140)
-MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-MainFrame.BorderSizePixel = 2
-MainFrame.BorderColor3 = Color3.fromRGB(0, 100, 255)
+MainFrame.Size = UDim2.new(0, 250, 0, 320)
+MainFrame.Position = UDim2.new(0.5, -125, 0.5, -160)
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
+MainFrame.BackgroundTransparency = 0.1
+MainFrame.BorderSizePixel = 0
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = MainFrame
+
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Color = Color3.fromRGB(0, 100, 255)
+UIStroke.Thickness = 2
+UIStroke.Parent = MainFrame
+
 MainFrame.Parent = ScreenGui
 
+-- Header
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 40)
+Header.Position = UDim2.new(0, 0, 0, 0)
+Header.BackgroundColor3 = Color3.fromRGB(0, 50, 150)
+Header.BorderSizePixel = 0
+
+local HeaderCorner = Instance.new("UICorner")
+HeaderCorner.CornerRadius = UDim.new(0, 12)
+HeaderCorner.Parent = Header
+
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 30)
-Title.Position = UDim2.new(0, 0, 0, 0)
-Title.BackgroundColor3 = Color3.fromRGB(0, 50, 150)
+Title.Size = UDim2.new(1, -40, 1, 0)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.BackgroundTransparency = 1
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.Text = "Nazam Executor v1.0"
+Title.Text = "NAZAM EXECUTOR"
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 14
-Title.Parent = MainFrame
+Title.TextSize = 16
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Header
 
 local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 25, 0, 25)
-CloseButton.Position = UDim2.new(1, -25, 0, 0)
-CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
 CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 CloseButton.Text = "X"
 CloseButton.Font = Enum.Font.GothamBold
-CloseButton.TextSize = 12
-CloseButton.Parent = MainFrame
+CloseButton.TextSize = 14
+CloseButton.BorderSizePixel = 0
 
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 6)
+CloseCorner.Parent = CloseButton
+
+CloseButton.Parent = Header
+Header.Parent = MainFrame
+
+-- Mini Icon
 local MiniIcon = Instance.new("TextButton")
-MiniIcon.Size = UDim2.new(0, 30, 0, 30)
+MiniIcon.Size = UDim2.new(0, 40, 0, 40)
 MiniIcon.Position = UDim2.new(0, 10, 0, 10)
 MiniIcon.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
 MiniIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
 MiniIcon.Text = "N"
 MiniIcon.Font = Enum.Font.GothamBold
-MiniIcon.TextSize = 14
+MiniIcon.TextSize = 18
 MiniIcon.Visible = false
+MiniIcon.BorderSizePixel = 0
+
+local MiniCorner = Instance.new("UICorner")
+MiniCorner.CornerRadius = UDim.new(0, 8)
+MiniCorner.Parent = MiniIcon
+
 MiniIcon.Parent = ScreenGui
 
--- Buttons
-local ButtonLayout = Instance.new("UIListLayout")
-ButtonLayout.Padding = UDim.new(0, 5)
-ButtonLayout.Parent = MainFrame
+-- Content Area
+local Content = Instance.new("Frame")
+Content.Size = UDim2.new(1, -20, 1, -60)
+Content.Position = UDim2.new(0, 10, 0, 50)
+Content.BackgroundTransparency = 1
+Content.Parent = MainFrame
 
-local AutoSummit = Instance.new("TextButton")
-AutoSummit.Size = UDim2.new(0.9, 0, 0, 35)
-AutoSummit.Position = UDim2.new(0.05, 0, 0, 40)
-AutoSummit.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
-AutoSummit.TextColor3 = Color3.fromRGB(255, 255, 255)
-AutoSummit.Text = "Auto Summit: OFF"
-AutoSummit.Font = Enum.Font.Gotham
-AutoSummit.TextSize = 12
-AutoSummit.Parent = MainFrame
+-- Modern Button Function
+local function createModernButton(text, color, yPosition)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, 0, 0, 45)
+    button.Position = UDim2.new(0, 0, 0, yPosition)
+    button.BackgroundColor3 = color
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Text = text
+    button.Font = Enum.Font.GothamSemibold
+    button.TextSize = 13
+    button.BorderSizePixel = 0
+    button.AutoButtonColor = false
+    
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 8)
+    buttonCorner.Parent = button
+    
+    local buttonStroke = Instance.new("UIStroke")
+    buttonStroke.Color = Color3.fromRGB(255, 255, 255)
+    buttonStroke.Thickness = 1
+    buttonStroke.Transparency = 0.8
+    buttonStroke.Parent = button
+    
+    button.MouseEnter:Connect(function()
+        if button.BackgroundColor3 ~= Color3.fromRGB(0, 150, 0) then
+            button.BackgroundColor3 = Color3.fromRGB(
+                math.min(color.R * 255 + 20, 255),
+                math.min(color.G * 255 + 20, 255), 
+                math.min(color.B * 255 + 20, 255)
+            ) / 255
+        end
+    end)
+    
+    button.MouseLeave:Connect(function()
+        if button.BackgroundColor3 ~= Color3.fromRGB(0, 150, 0) then
+            button.BackgroundColor3 = color
+        end
+    end)
+    
+    button.Parent = Content
+    return button
+end
 
-local Glitch = Instance.new("TextButton")
-Glitch.Size = UDim2.new(0.9, 0, 0, 35)
-Glitch.Position = UDim2.new(0.05, 0, 0, 80)
-Glitch.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-Glitch.TextColor3 = Color3.fromRGB(255, 255, 255)
-Glitch.Text = "Glitch: OFF"
-Glitch.Font = Enum.Font.Gotham
-Glitch.TextSize = 12
-Glitch.Parent = MainFrame
+-- Create Buttons
+local AutoSummit = createModernButton("AUTO SUMMIT: OFF", Color3.fromRGB(0, 100, 255), 0)
+local Glitch = createModernButton("GLITCH MODE: OFF", Color3.fromRGB(100, 0, 150), 55)
+local Teleport = createModernButton("NORMAL MODE: OFF", Color3.fromRGB(0, 120, 80), 110)
+local Reset = createModernButton("RESET SYSTEM", Color3.fromRGB(150, 0, 0), 165)
 
-local Teleport = Instance.new("TextButton")
-Teleport.Size = UDim2.new(0.9, 0, 0, 35)
-Teleport.Position = UDim2.new(0.05, 0, 0, 120)
-Teleport.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-Teleport.TextColor3 = Color3.fromRGB(255, 255, 255)
-Teleport.Text = "Teleport: OFF"
-Teleport.Font = Enum.Font.Gotham
-Teleport.TextSize = 12
-Teleport.Parent = MainFrame
+-- Status Display
+local StatusFrame = Instance.new("Frame")
+StatusFrame.Size = UDim2.new(1, 0, 0, 70)
+StatusFrame.Position = UDim2.new(0, 0, 0, 220)
+StatusFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+StatusFrame.BorderSizePixel = 0
 
-local Reset = Instance.new("TextButton")
-Reset.Size = UDim2.new(0.9, 0, 0, 35)
-Reset.Position = UDim2.new(0.05, 0, 0, 160)
-Reset.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-Reset.TextColor3 = Color3.fromRGB(255, 255, 255)
-Reset.Text = "Reset System"
-Reset.Font = Enum.Font.Gotham
-Reset.TextSize = 12
-Reset.Parent = MainFrame
+local StatusCorner = Instance.new("UICorner")
+StatusCorner.CornerRadius = UDim.new(0, 8)
+StatusCorner.Parent = StatusFrame
 
-local Status = Instance.new("TextLabel")
-Status.Size = UDim2.new(0.9, 0, 0, 50)
-Status.Position = UDim2.new(0.05, 0, 0, 210)
-Status.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-Status.TextColor3 = Color3.fromRGB(255, 255, 255)
-Status.Text = "Status: Ready"
-Status.Font = Enum.Font.Gotham
-Status.TextSize = 11
-Status.TextWrapped = true
-Status.Parent = MainFrame
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(1, -10, 1, -10)
+StatusLabel.Position = UDim2.new(0, 5, 0, 5)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+StatusLabel.Text = "Status: Ready\nCheckpoint: 0/" .. #coordinates .. "\nTotal Summit: 0"
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.TextSize = 11
+StatusLabel.TextWrapped = true
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+StatusLabel.Parent = StatusFrame
+
+StatusFrame.Parent = Content
 
 -- Variables
 local isAutoSummitActive = false
 local isGlitchActive = false
 local isTeleportActive = false
-local currentTeleportIndex = 1
+local currentCheckpoint = 1
+local totalSummits = 0
 local teleportConnection
 
 -- Functions
 local function updateStatus(message)
-    Status.Text = "Status: " .. message
+    local totalCheckpoints = #coordinates
+    StatusLabel.Text = "Status: " .. message .. 
+                      "\nCheckpoint: " .. currentCheckpoint .. "/" .. totalCheckpoints ..
+                      "\nTotal Summit: " .. totalSummits
 end
 
 local function resetSystem()
@@ -139,59 +250,102 @@ local function resetSystem()
         teleportConnection = nil
     end
     
-    AutoSummit.Text = "Auto Summit: OFF"
+    AutoSummit.Text = "AUTO SUMMIT: OFF"
     AutoSummit.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
-    Glitch.Text = "Glitch: OFF"
-    Glitch.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    Teleport.Text = "Teleport: OFF"
-    Teleport.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Glitch.Text = "GLITCH MODE: OFF" 
+    Glitch.BackgroundColor3 = Color3.fromRGB(100, 0, 150)
+    Teleport.Text = "NORMAL MODE: OFF"
+    Teleport.BackgroundColor3 = Color3.fromRGB(0, 120, 80)
     
-    currentTeleportIndex = 1
+    currentCheckpoint = 1
     updateStatus("System Reset")
+end
+
+local function performGlitchTeleport(targetPos)
+    -- METHOD 1: FireTouchInterest (Paling efektif untuk trigger checkpoint)
+    local character = LocalPlayer.Character
+    if not character then return end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+    
+    -- Cari part checkpoint di workspace (adjust sesuai game)
+    local checkpoints = workspace:FindFirstChild("Checkpoints") or workspace
+    for _, part in pairs(checkpoints:GetDescendants()) do
+        if part:IsA("Part") or part:IsA("MeshPart") then
+            if part.Position == targetPos or (part.Position - targetPos).Magnitude < 10 then
+                -- Trigger checkpoint tanpa pindah karakter
+                firetouchinterest(humanoidRootPart, part, 0) -- Touch
+                firetouchinterest(humanoidRootPart, part, 1) -- Untouch
+                break
+            end
+        end
+    end
+    
+    -- METHOD 2: Remote Event simulation (Backup method)
+    local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("RemoteEvents")
+    if remotes then
+        for _, remote in pairs(remotes:GetChildren()) do
+            if remote:IsA("RemoteEvent") then
+                pcall(function()
+                    remote:FireServer("Checkpoint", targetPos)
+                end)
+            end
+        end
+    end
+end
+
+local function performNormalTeleport(targetPos)
+    local character = LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
+    end
 end
 
 local function performTeleport()
     if not isAutoSummitActive then return end
     
-    if currentTeleportIndex > #coordinates then
-        currentTeleportIndex = 1
+    local totalCheckpoints = #coordinates
+    
+    if currentCheckpoint > totalCheckpoints then
+        currentCheckpoint = 1
+        totalSummits = totalSummits + 1
+        updateStatus("Summit Completed! Restarting...")
     end
     
-    local targetPos = coordinates[currentTeleportIndex]
+    local targetPos = coordinates[currentCheckpoint]
     
     if isGlitchActive then
-        -- Glitch teleport (character only)
-        LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(targetPos))
-        updateStatus("Glitch Teleport: " .. currentTeleportIndex)
+        performGlitchTeleport(targetPos)
+        updateStatus("Glitch Active - System Detected")
     elseif isTeleportActive then
-        -- Normal teleport (with avatar)
-        LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(targetPos))
-        updateStatus("Teleport: " .. currentTeleportIndex)
+        performNormalTeleport(targetPos)
+        updateStatus("Normal Teleporting...")
     end
     
-    currentTeleportIndex = currentTeleportIndex + 1
+    currentCheckpoint = currentCheckpoint + 1
 end
 
 -- Button Events
 AutoSummit.MouseButton1Click:Connect(function()
     if not isAutoSummitActive and (isGlitchActive or isTeleportActive) then
         isAutoSummitActive = true
-        AutoSummit.Text = "Auto Summit: ON"
+        AutoSummit.Text = "AUTO SUMMIT: ON"
         AutoSummit.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
         
-        teleportConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        teleportConnection = RunService.Heartbeat:Connect(function()
             performTeleport()
-            wait(1.03) -- 1 second 30 ms delay
+            wait(3) -- Delay 3 detik
         end)
         
         updateStatus("Auto Summit Started")
     elseif isAutoSummitActive then
         isAutoSummitActive = false
-        AutoSummit.Text = "Auto Summit: OFF"
+        AutoSummit.Text = "AUTO SUMMIT: OFF"
         AutoSummit.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
         updateStatus("Auto Summit Stopped")
     else
-        updateStatus("Enable Glitch or Teleport first")
+        updateStatus("Enable Glitch or Normal Mode first")
     end
 end)
 
@@ -201,14 +355,14 @@ Glitch.MouseButton1Click:Connect(function()
         isTeleportActive = false
         
         if isGlitchActive then
-            Glitch.Text = "Glitch: ON"
+            Glitch.Text = "GLITCH MODE: ON"
             Glitch.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-            Teleport.Text = "Teleport: OFF"
-            Teleport.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-            updateStatus("Glitch Mode Ready")
+            Teleport.Text = "NORMAL MODE: OFF"
+            Teleport.BackgroundColor3 = Color3.fromRGB(0, 120, 80)
+            updateStatus("Glitch Ready - No Movement")
         else
-            Glitch.Text = "Glitch: OFF"
-            Glitch.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            Glitch.Text = "GLITCH MODE: OFF"
+            Glitch.BackgroundColor3 = Color3.fromRGB(100, 0, 150)
             updateStatus("Glitch Disabled")
         end
     else
@@ -222,15 +376,15 @@ Teleport.MouseButton1Click:Connect(function()
         isGlitchActive = false
         
         if isTeleportActive then
-            Teleport.Text = "Teleport: ON"
+            Teleport.Text = "NORMAL MODE: ON"
             Teleport.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-            Glitch.Text = "Glitch: OFF"
-            Glitch.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-            updateStatus("Teleport Mode Ready")
+            Glitch.Text = "GLITCH MODE: OFF"
+            Glitch.BackgroundColor3 = Color3.fromRGB(100, 0, 150)
+            updateStatus("Normal Mode Ready")
         else
-            Teleport.Text = "Teleport: OFF"
-            Teleport.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-            updateStatus("Teleport Disabled")
+            Teleport.Text = "NORMAL MODE: OFF"
+            Teleport.BackgroundColor3 = Color3.fromRGB(0, 120, 80)
+            updateStatus("Normal Mode Disabled")
         end
     else
         updateStatus("Stop Auto Summit first")
@@ -239,6 +393,7 @@ end)
 
 Reset.MouseButton1Click:Connect(function()
     resetSystem()
+    totalSummits = 0
 end)
 
 -- Close Button Functionality
