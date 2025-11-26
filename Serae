@@ -231,6 +231,7 @@ local isTeleportActive = false
 local currentCheckpoint = 1
 local totalSummits = 0
 local teleportConnection
+local lastTeleportTime = 0
 
 -- Functions
 local function updateStatus(message)
@@ -317,10 +318,10 @@ local function performTeleport()
     
     if isGlitchActive then
         performGlitchTeleport(targetPos)
-        updateStatus("Glitch Active - System Detected")
+        updateStatus("Glitch Active - Checkpoint " .. currentCheckpoint)
     elseif isTeleportActive then
         performNormalTeleport(targetPos)
-        updateStatus("Normal Teleporting...")
+        updateStatus("Normal Teleport - Checkpoint " .. currentCheckpoint)
     end
     
     currentCheckpoint = currentCheckpoint + 1
@@ -333,12 +334,16 @@ AutoSummit.MouseButton1Click:Connect(function()
         AutoSummit.Text = "AUTO SUMMIT: ON"
         AutoSummit.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
         
+        -- FIX: Gunakan while loop dengan wait(3) yang benar
         teleportConnection = RunService.Heartbeat:Connect(function()
-            performTeleport()
-            wait(3) -- Delay 3 detik
+            local currentTime = tick()
+            if currentTime - lastTeleportTime >= 3 then  -- Cek jika sudah 3 detik
+                performTeleport()
+                lastTeleportTime = currentTime
+            end
         end)
         
-        updateStatus("Auto Summit Started")
+        updateStatus("Auto Summit Started - 3s Delay")
     elseif isAutoSummitActive then
         isAutoSummitActive = false
         AutoSummit.Text = "AUTO SUMMIT: OFF"
@@ -394,6 +399,7 @@ end)
 Reset.MouseButton1Click:Connect(function()
     resetSystem()
     totalSummits = 0
+    lastTeleportTime = 0
 end)
 
 -- Close Button Functionality
