@@ -1,9 +1,4 @@
 
-
-
--- BN XITERZ - PAT 1 OF 4 (IMPROVED VERSION)
--- Paste bagian ini terlebih dahulu
-
 local NazamOfficial = "Nazam Official"
 
 -- Services
@@ -20,7 +15,7 @@ local dragStart, mainStartPos, iconStartPos
 local isMenuOpen = true
 local aimEnabled = false
 local aimMode = "Head"
-local aimRange = 100
+local aimRange = 67
 local aimSmoothness = 0.2
 local teleportPoints = {}
 local spectatingPlayer = nil
@@ -46,7 +41,7 @@ MiniIcon.Size = UDim2.new(0, 50, 0, 50)
 MiniIcon.Position = UDim2.new(0, 20, 0, 20)
 MiniIcon.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
 MiniIcon.BackgroundTransparency = 0.2
-MiniIcon.Image = "rbxassetid://96516505713471"
+MiniIcon.Image = "http://www.roblox.com/asset/?id=9651650571"  -- Fixed image ID format
 MiniIcon.Visible = false
 MiniIcon.ZIndex = 10
 MiniIcon.Parent = ScreenGui
@@ -78,12 +73,12 @@ MainStroke.Color = Color3.fromRGB(50, 50, 60)
 MainStroke.Thickness = 2
 MainStroke.Parent = MainFrame
 
--- Background Image
+-- Background Image (FIXED - Using different image ID format)
 local Background = Instance.new("ImageLabel")
 Background.Size = UDim2.new(1, 0, 1, 0)
 Background.BackgroundTransparency = 1
-Background.Image = "rbxassetid://122705514409944"
-Background.ImageTransparency = 0.9
+Background.Image = "http://www.roblox.com/asset/?id=1227055144"  -- Fixed image ID
+Background.ImageTransparency = 0.2  -- Reduced transparency to be more visible
 Background.ScaleType = Enum.ScaleType.Crop
 Background.Parent = MainFrame
 
@@ -311,11 +306,7 @@ end
 -- END OF PART 1
 -- Lanjutkan dengan PART 2
 
-
-
-
 -- BN XITERZ - PART 2 OF 4
--- Paste bagian ini setelah PART 1
 
 -- Function to create tab button
 local function createTabButton(text, index)
@@ -575,7 +566,7 @@ end
 -- Lanjutkan dengan PART 3
 
 -- BN XITERZ - PART 3 OF 4
--- Paste bagian ini setelah PART 2
+-- SISTEM TELEPORT YANG DIPERBAIKI
 
 -- Teleport Tab
 local TeleportTab = Instance.new("ScrollingFrame")
@@ -589,7 +580,7 @@ TeleportTab.BorderSizePixel = 0
 TeleportTab.Parent = TabContents
 
 -- ========================================
--- ISI KOORDINAT TELEPORT DI SINI
+-- KOORDINAT TELEPORT YANG DIPERBAIKI
 -- ========================================
 teleportPoints[1] = Vector3.new(-459.97, 3.74, 342.52)
 teleportPoints[2] = Vector3.new(1174.82, 3.36, -26.25)
@@ -604,6 +595,69 @@ local teleportNames = {
     "DS 🚘",
     "APARTEMEN 🏢"
 }
+
+-- FUNGSI TELEPORT BARU YANG SMOOTH
+local function smoothTeleport(position)
+    local character = LocalPlayer.Character
+    if not character then return false end
+    
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    local humanoid = character:FindFirstChild("Humanoid")
+    
+    if not hrp or not humanoid or humanoid.Health <= 0 then
+        warn("❌ Character tidak siap untuk teleport!")
+        return false
+    end
+    
+    -- SMOOTH TELEPORT EFFECT: Gerak seperti jalan tapi cepat
+    local startPos = hrp.Position
+    local endPos = position
+    local distance = (endPos - startPos).Magnitude
+    
+    -- Jika jarak sangat jauh, gunakan teleport langsung
+    if distance > 1000 then
+        hrp.CFrame = CFrame.new(position)
+        return true
+    end
+    
+    -- Smooth teleport: bergerak dengan kecepatan tinggi
+    local steps = math.max(10, math.floor(distance / 20))
+    local stepVector = (endPos - startPos) / steps
+    
+    task.spawn(function()
+        -- Nonaktifkan collision sementara untuk mencegah stuck
+        hrp.CanCollide = false
+        
+        for i = 1, steps do
+            if not character or not hrp then break end
+            
+            local nextPos = startPos + (stepVector * i)
+            hrp.CFrame = CFrame.new(nextPos)
+            
+            -- Efek visual kecil
+            local effect = Instance.new("Part")
+            effect.Size = Vector3.new(1, 1, 1)
+            effect.Position = hrp.Position
+            effect.Transparency = 0.7
+            effect.BrickColor = BrickColor.new("Bright blue")
+            effect.Anchored = true
+            effect.CanCollide = false
+            effect.Parent = Workspace
+            
+            game:GetService("Debris"):AddItem(effect, 0.1)
+            
+            task.wait(0.01) -- Kecepatan teleport (dapat diatur)
+        end
+        
+        -- Pastikan posisi akhir tepat
+        hrp.CFrame = CFrame.new(endPos)
+        hrp.CanCollide = true
+        
+        print("✅ Smooth teleport selesai!")
+    end)
+    
+    return true
+end
 
 local function createTeleportButton(index, yPosition)
     local button = Instance.new("TextButton")
@@ -663,27 +717,23 @@ local function createTeleportButton(index, yPosition)
     end)
     
     button.MouseButton1Click:Connect(function()
+        print("🚀 Memulai smooth teleport ke:", teleportNames[index])
+        
+        -- Animasi tombol
+        button.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
+        
         task.spawn(function()
-            local character = LocalPlayer.Character
-            if character then
-                local hrp = character:FindFirstChild("HumanoidRootPart")
-                local humanoid = character:FindFirstChild("Humanoid")
-                
-                if hrp and humanoid and humanoid.Health > 0 then
-                    hrp.CFrame = CFrame.new(teleportPoints[index])
-                    task.wait(0.1)
-                    
-                    print("✅ Teleported to:", teleportNames[index])
-                    
-                    button.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
-                    task.wait(0.3)
-                    button.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-                else
-                    warn("❌ Character components not ready!")
-                end
+            local success = smoothTeleport(teleportPoints[index])
+            
+            if success then
+                print("✅ Smooth teleport berhasil ke:", teleportNames[index])
             else
-                warn("❌ Character not found!")
+                warn("❌ Gagal teleport!")
+                button.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
             end
+            
+            task.wait(0.5)
+            button.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
         end)
     end)
     
@@ -789,7 +839,7 @@ TeleportToPlayerButton.MouseButton1Click:Connect(function()
     
     local targetPos = spectatingPlayer.Character:FindFirstChild("HumanoidRootPart")
     if targetPos and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        LocalPlayer.Character.HumanoidRootPart.CFrame = targetPos.CFrame * CFrame.new(0, 0, 3)
+        smoothTeleport(targetPos.Position + Vector3.new(0, 0, 3))
         print("Teleported to player:", spectatingPlayer.Name)
         SpectateStatus.Text = "Status: Teleported to " .. spectatingPlayer.Name
     end
@@ -816,10 +866,7 @@ BuyText.Parent = BuyTab
 -- END OF PART 3
 -- Lanjutkan dengan PART 4
 
-
-
 -- BN XITERZ - PART 4 OF 4 (FINAL)
--- Paste bagian ini setelah PART 3
 
 -- Tab switching system
 local tabButtons = {}
@@ -877,6 +924,7 @@ CloseButton.MouseButton1Click:Connect(function()
     if isMenuOpen then
         MainFrame.Visible = true
         MiniIcon.Visible = false
+        MainFrame.Size = UDim2.new(0, 480, 0, 270)
     else
         local tween = TweenService:Create(MainFrame, tweenInfo, {Size = UDim2.new(0, 0, 0, 0)})
         tween:Play()
@@ -1027,6 +1075,7 @@ print("• Camera-based Smooth Aim")
 print("• Sticky Target Lock")
 print("• Adjustable Range (50-500 studs)")
 print("• Adjustable Smoothness (0-50)")
+print("• SMOOTH TELEPORT SYSTEM (jalan tapi cepat)")
 print("• Works with FPS and TPS view")
 print("")
 print("💡 CARA PAKAI AIM:")
@@ -1035,6 +1084,12 @@ print("2. Enable Aim Assist")
 print("3. Pilih HEAD atau BODY")
 print("4. Atur Range dan Smoothness")
 print("5. Aim otomatis mengikuti musuh terdekat!")
+print("")
+print("🚀 CARA PAKAI TELEPORT:")
+print("1. Buka tab 'Teleport'")
+print("2. Pilih lokasi yang diinginkan")
+print("3. Sistem akan teleport dengan efek smooth")
+print("4. Tidak akan kembali ke tempat awal!")
 
 -- END OF PART 4 (SCRIPT COMPLETE)
 -- Script selesai! Semua fitur sudah aktif dengan sistem aim yang diperbaiki!
