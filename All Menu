@@ -1,7 +1,8 @@
 
--- BN XITERZ - PART 1 OF 4
--- Paste bagian ini terlebih dahulu
 
+
+-- BN XITERZ - PAT 1 OF 4 (IMPROVED VERSION)
+-- Paste bagian ini terlebih dahulu
 
 local NazamOfficial = "Nazam Official"
 
@@ -19,9 +20,13 @@ local dragStart, mainStartPos, iconStartPos
 local isMenuOpen = true
 local aimEnabled = false
 local aimMode = "Head"
+local aimRange = 350
+local aimSmoothness = 0.2
 local teleportPoints = {}
 local spectatingPlayer = nil
 local isSpectating = false
+local currentTarget = nil
+local lastTargetTime = 0
 
 -- Koordinat teleport default (5 slot)
 for i = 1, 5 do
@@ -213,14 +218,104 @@ local function createToggleSwitch(text, yPosition, defaultValue, callback)
     return frame
 end
 
+-- Function to create slider
+local function createSlider(text, yPosition, minValue, maxValue, defaultValue, callback)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, 0, 0, 50)
+    frame.Position = UDim2.new(0, 0, 0, yPosition)
+    frame.BackgroundTransparency = 1
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.7, 0, 0, 20)
+    label.Position = UDim2.new(0, 0, 0, 0)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.Text = text
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 12
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+    
+    local valueLabel = Instance.new("TextLabel")
+    valueLabel.Size = UDim2.new(0.3, 0, 0, 20)
+    valueLabel.Position = UDim2.new(0.7, 0, 0, 0)
+    valueLabel.BackgroundTransparency = 1
+    valueLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
+    valueLabel.Text = tostring(defaultValue)
+    valueLabel.Font = Enum.Font.GothamBold
+    valueLabel.TextSize = 12
+    valueLabel.TextXAlignment = Enum.TextXAlignment.Right
+    valueLabel.Parent = frame
+    
+    local sliderBack = Instance.new("Frame")
+    sliderBack.Size = UDim2.new(1, 0, 0, 6)
+    sliderBack.Position = UDim2.new(0, 0, 0, 28)
+    sliderBack.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    sliderBack.BorderSizePixel = 0
+    sliderBack.Parent = frame
+    
+    local sliderBackCorner = Instance.new("UICorner")
+    sliderBackCorner.CornerRadius = UDim.new(1, 0)
+    sliderBackCorner.Parent = sliderBack
+    
+    local sliderFill = Instance.new("Frame")
+    sliderFill.Size = UDim2.new((defaultValue - minValue) / (maxValue - minValue), 0, 1, 0)
+    sliderFill.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+    sliderFill.BorderSizePixel = 0
+    sliderFill.Parent = sliderBack
+    
+    local sliderFillCorner = Instance.new("UICorner")
+    sliderFillCorner.CornerRadius = UDim.new(1, 0)
+    sliderFillCorner.Parent = sliderFill
+    
+    local sliderButton = Instance.new("TextButton")
+    sliderButton.Size = UDim2.new(1, 0, 1, 14)
+    sliderButton.Position = UDim2.new(0, 0, 0, -7)
+    sliderButton.BackgroundTransparency = 1
+    sliderButton.Text = ""
+    sliderButton.Parent = sliderBack
+    
+    local dragging = false
+    
+    sliderButton.MouseButton1Down:Connect(function()
+        dragging = true
+    end)
+    
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local mousePos = UserInputService:GetMouseLocation().X
+            local sliderPos = sliderBack.AbsolutePosition.X
+            local sliderSize = sliderBack.AbsoluteSize.X
+            
+            local percent = math.clamp((mousePos - sliderPos) / sliderSize, 0, 1)
+            local value = math.floor(minValue + (maxValue - minValue) * percent)
+            
+            sliderFill.Size = UDim2.new(percent, 0, 1, 0)
+            valueLabel.Text = tostring(value)
+            
+            if callback then
+                callback(value)
+            end
+        end
+    end)
+    
+    return frame
+end
 
 -- END OF PART 1
 -- Lanjutkan dengan PART 2
 
 
+
+
 -- BN XITERZ - PART 2 OF 4
 -- Paste bagian ini setelah PART 1
-
 
 -- Function to create tab button
 local function createTabButton(text, index)
@@ -261,52 +356,65 @@ InformationTab.BackgroundTransparency = 1
 InformationTab.ScrollBarThickness = 3
 InformationTab.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 120)
 InformationTab.Visible = true
-InformationTab.CanvasSize = UDim2.new(0, 0, 0, 250)
+InformationTab.CanvasSize = UDim2.new(0, 0, 0, 280)
 InformationTab.BorderSizePixel = 0
 InformationTab.Parent = TabContents
 
 local InfoText = Instance.new("TextLabel")
-InfoText.Size = UDim2.new(1, -16, 0, 240)
+InfoText.Size = UDim2.new(1, -16, 0, 270)
 InfoText.Position = UDim2.new(0, 8, 0, 5)
 InfoText.BackgroundTransparency = 1
 InfoText.TextColor3 = Color3.fromRGB(255, 255, 255)
 InfoText.Text = [[
-BN XITERZ
-Version: 1.0
+BN XITERZ - ENHANCED VERSION
+Version: 2.0
 Developer: Nazam Official
 Co-Developer: Birul
 
 FEATURES:
-• Advanced Aim System
+• Advanced Camera Aim System
+• Smooth Sticky Aim (Lengket)
+• Adjustable Range (50-500 studs)
+• Adjustable Smoothness
+• Target: Head atau Body
 • Teleport System (5 Locations)
 • Player Spectate
 • Smooth UI Design (16:9)
 
-INSTRUCTIONS:
-1. Use tabs to navigate features
-2. Toggle switches to enable/disable
-3. Drag header to reposition UI
-4. Click X to minimize
+CARA PENGGUNAAN AIM:
+1. Aktifkan "Enable Aim Assist"
+2. Pilih Mode (HEAD/BODY)
+3. Atur Range (jarak deteksi)
+4. Atur Smoothness (kelengketan):
+   - 0-10 = Sangat Lengket
+   - 20-30 = Smooth Normal
+   - 40-50 = Soft Aim
+5. Aim otomatis mengikuti target!
 
-Note: Use responsibly
+Note: Aim bekerja dengan kamera
 ]]
 InfoText.Font = Enum.Font.Gotham
-InfoText.TextSize = 11
+InfoText.TextSize = 10
 InfoText.TextWrapped = true
 InfoText.TextXAlignment = Enum.TextXAlignment.Left
 InfoText.TextYAlignment = Enum.TextYAlignment.Top
 InfoText.Parent = InformationTab
 
 -- Aim Tab
-local AimTab = Instance.new("Frame")
+local AimTab = Instance.new("ScrollingFrame")
 AimTab.Size = UDim2.new(1, 0, 1, 0)
 AimTab.BackgroundTransparency = 1
+AimTab.ScrollBarThickness = 3
+AimTab.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 120)
 AimTab.Visible = false
+AimTab.CanvasSize = UDim2.new(0, 0, 0, 240)
+AimTab.BorderSizePixel = 0
 AimTab.Parent = TabContents
 
 local AimToggle = createToggleSwitch("Enable Aim Assist", 5, false, function(state)
     aimEnabled = state
-    print("Aim Assist:", state and "ON" or "OFF")
+    currentTarget = nil
+    print("🎯 Aim Assist:", state and "ON" or "OFF")
 end)
 AimToggle.Parent = AimTab
 
@@ -351,7 +459,8 @@ local function createModeButton(text, xPos, mode)
             btn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
         end
         button.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
-        print("Aim Mode set to:", mode)
+        currentTarget = nil
+        print("🎯 Aim Mode:", mode)
     end)
     
     button.Parent = AimModeFrame
@@ -362,45 +471,65 @@ end
 createModeButton("HEAD", 0, "Head")
 createModeButton("BODY", 0.5, "Body")
 
--- Aim Assist Function
-local function aimAtTarget(targetPart)
-    if not aimEnabled or not targetPart then return end
-    
-    local character = LocalPlayer.Character
-    if not character then return end
-    
-    local humanoid = character:FindFirstChild("Humanoid")
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-    
-    if humanoid and humanoidRootPart and humanoid.Health > 0 then
-        local targetCFrame = targetPart.CFrame
-        humanoidRootPart.CFrame = CFrame.new(humanoidRootPart.Position, Vector3.new(targetCFrame.X, humanoidRootPart.Position.Y, targetCFrame.Z))
+-- Range Slider
+local RangeSlider = createSlider("Aim Range (studs):", 112, 50, 500, 100, function(value)
+    aimRange = value
+    print("🎯 Range:", value, "studs")
+end)
+RangeSlider.Parent = AimTab
+
+-- Smoothness Slider
+local SmoothnessSlider = createSlider("Smoothness (0-50):", 167, 0, 50, 20, function(value)
+    aimSmoothness = value / 100
+    print("🎯 Smoothness:", aimSmoothness)
+end)
+SmoothnessSlider.Parent = AimTab
+
+-- IMPROVED AIM FUNCTIONS
+local function getTargetPart(character)
+    if aimMode == "Head" then
+        return character:FindFirstChild("Head") or character:FindFirstChild("HumanoidRootPart")
+    else
+        return character:FindFirstChild("HumanoidRootPart")
     end
 end
 
--- Find nearest enemy
+local function isPlayerVisible(targetPart)
+    local camera = Workspace.CurrentCamera
+    if not camera then return false end
+    
+    local ray = Ray.new(camera.CFrame.Position, (targetPart.Position - camera.CFrame.Position).Unit * aimRange)
+    local hit, pos = Workspace:FindPartOnRayWithIgnoreList(ray, {LocalPlayer.Character})
+    
+    if hit and hit:IsDescendantOf(targetPart.Parent) then
+        return true
+    end
+    
+    return false
+end
+
 local function findNearestEnemy()
     local closestDistance = math.huge
     local targetPart = nil
+    local camera = Workspace.CurrentCamera
+    
+    if not camera then return nil end
     
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and player.Character then
             local character = player.Character
             local humanoid = character:FindFirstChild("Humanoid")
-            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
             
-            if humanoid and humanoidRootPart and humanoid.Health > 0 then
-                local myChar = LocalPlayer.Character
-                if myChar and myChar:FindFirstChild("HumanoidRootPart") then
-                    local distance = (humanoidRootPart.Position - myChar.HumanoidRootPart.Position).Magnitude
+            if humanoid and humanoid.Health > 0 then
+                local part = getTargetPart(character)
+                
+                if part then
+                    local distance = (part.Position - camera.CFrame.Position).Magnitude
                     
-                    if distance < 100 and distance < closestDistance then
-                        closestDistance = distance
-                        
-                        if aimMode == "Head" then
-                            targetPart = character:FindFirstChild("Head") or humanoidRootPart
-                        else
-                            targetPart = humanoidRootPart
+                    if distance <= aimRange and distance < closestDistance then
+                        if isPlayerVisible(part) then
+                            closestDistance = distance
+                            targetPart = part
                         end
                     end
                 end
@@ -411,14 +540,42 @@ local function findNearestEnemy()
     return targetPart
 end
 
+local function smoothAimAt(targetPart)
+    if not aimEnabled or not targetPart then 
+        currentTarget = nil
+        return 
+    end
+    
+    local camera = Workspace.CurrentCamera
+    if not camera then return end
+    
+    -- Sticky aim: keep same target for a bit
+    if currentTarget and currentTarget ~= targetPart then
+        local timeSinceLastTarget = tick() - lastTargetTime
+        if timeSinceLastTarget < 0.5 then
+            targetPart = currentTarget
+        else
+            currentTarget = targetPart
+            lastTargetTime = tick()
+        end
+    else
+        currentTarget = targetPart
+        lastTargetTime = tick()
+    end
+    
+    local targetPos = targetPart.Position
+    local currentCFrame = camera.CFrame
+    local targetCFrame = CFrame.new(currentCFrame.Position, targetPos)
+    
+    -- Smooth interpolation untuk aim lengket
+    camera.CFrame = currentCFrame:Lerp(targetCFrame, aimSmoothness)
+end
 
 -- END OF PART 2
 -- Lanjutkan dengan PART 3
 
-
 -- BN XITERZ - PART 3 OF 4
 -- Paste bagian ini setelah PART 2
-
 
 -- Teleport Tab
 local TeleportTab = Instance.new("ScrollingFrame")
@@ -656,14 +813,13 @@ BuyText.TextSize = 16
 BuyText.TextWrapped = true
 BuyText.Parent = BuyTab
 
-
 -- END OF PART 3
 -- Lanjutkan dengan PART 4
 
 
+
 -- BN XITERZ - PART 4 OF 4 (FINAL)
 -- Paste bagian ini setelah PART 3
-
 
 -- Tab switching system
 local tabButtons = {}
@@ -813,12 +969,14 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Aim Assist Loop
+-- IMPROVED AIM ASSIST LOOP (Sticky Camera Aim)
 RunService.RenderStepped:Connect(function()
     if aimEnabled then
         local target = findNearestEnemy()
         if target then
-            aimAtTarget(target)
+            smoothAimAt(target)
+        else
+            currentTarget = nil
         end
     end
 end)
@@ -834,7 +992,10 @@ Players.PlayerRemoving:Connect(function(player)
         if TeleportToPlayerButton then
             TeleportToPlayerButton.Visible = false
         end
-        Workspace.CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChild("Humanoid")
+        
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            Workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.Humanoid
+        end
     end
 end)
 
@@ -844,9 +1005,10 @@ LocalPlayer.CharacterAdded:Connect(function(character)
         local humanoid = character:WaitForChild("Humanoid")
         Workspace.CurrentCamera.CameraSubject = humanoid
     end
+    currentTarget = nil
 end)
 
--- Anti-AFK (optional)
+-- Anti-AFK
 local VirtualUser = game:GetService("VirtualUser")
 LocalPlayer.Idled:Connect(function()
     VirtualUser:CaptureController()
@@ -854,12 +1016,25 @@ LocalPlayer.Idled:Connect(function()
 end)
 
 -- Success message
-print("✅ BN XITERZ Loaded Successfully!")
+print("✅ BN XITERZ V2.0 Loaded Successfully!")
 print("👤 Developer: Nazam Official")
 print("👥 Co-Developer: Birul")
-print("📱 Version: 1.0")
+print("📱 Version: 2.0 - Enhanced Aim System")
 print("📐 UI Ratio: 16:9")
-
+print("")
+print("🎯 FITUR BARU:")
+print("• Camera-based Smooth Aim")
+print("• Sticky Target Lock")
+print("• Adjustable Range (50-500 studs)")
+print("• Adjustable Smoothness (0-50)")
+print("• Works with FPS and TPS view")
+print("")
+print("💡 CARA PAKAI AIM:")
+print("1. Buka tab 'Aim'")
+print("2. Enable Aim Assist")
+print("3. Pilih HEAD atau BODY")
+print("4. Atur Range dan Smoothness")
+print("5. Aim otomatis mengikuti musuh terdekat!")
 
 -- END OF PART 4 (SCRIPT COMPLETE)
--- Script selesai! Semua fitur sudah aktif
+-- Script selesai! Semua fitur sudah aktif dengan sistem aim yang diperbaiki!
