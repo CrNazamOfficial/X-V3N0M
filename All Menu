@@ -20,7 +20,7 @@ local dragStart, mainStartPos, iconStartPos
 local isMenuOpen = true
 local aimEnabled = false
 local aimMode = "Head"
-local aimRange = 350
+local aimRange = 100
 local aimSmoothness = 0.2
 local teleportPoints = {}
 local spectatingPlayer = nil
