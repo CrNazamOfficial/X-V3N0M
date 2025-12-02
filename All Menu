@@ -1,4 +1,3 @@
-
 local NazamOfficial = "Nazam Official"
 
 -- Services
@@ -14,7 +13,7 @@ local isDragging = false
 local dragStart, mainStartPos, iconStartPos
 local isMenuOpen = true
 local aimEnabled = false
-local aimMode = "Head" -- "Head" or "Body"
+local aimMode = "Head"
 local teleportPoints = {}
 local spectatingPlayer = nil
 local isSpectating = false
@@ -36,7 +35,7 @@ MiniIcon.Size = UDim2.new(0, 50, 0, 50)
 MiniIcon.Position = UDim2.new(0, 20, 0, 20)
 MiniIcon.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
 MiniIcon.BackgroundTransparency = 0.2
-MiniIcon.Image = "rbxassetid://96516505713471" -- Kosong, nanti bisa diisi gambar
+MiniIcon.Image = "rbxassetid://96516505713471"
 MiniIcon.Visible = false
 MiniIcon.ZIndex = 10
 
@@ -49,10 +48,10 @@ MiniIconStroke.Color = Color3.fromRGB(100, 100, 120)
 MiniIconStroke.Thickness = 2
 MiniIconStroke.Parent = MiniIcon
 
--- Main Frame
+-- Main Frame (16:9 ratio - 480x270)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 350, 0, 500)
-MainFrame.Position = UDim2.new(0.5, -175, 0.5, -250)
+MainFrame.Size = UDim2.new(0, 480, 0, 270)
+MainFrame.Position = UDim2.new(0.5, -240, 0.5, -135)
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 MainFrame.BackgroundTransparency = 0.05
 MainFrame.ClipsDescendants = true
@@ -66,7 +65,7 @@ MainStroke.Color = Color3.fromRGB(50, 50, 60)
 MainStroke.Thickness = 2
 MainStroke.Parent = MainFrame
 
--- Background Image (placeholder)
+-- Background Image
 local Background = Instance.new("ImageLabel")
 Background.Size = UDim2.new(1, 0, 1, 0)
 Background.BackgroundTransparency = 1
@@ -77,7 +76,7 @@ Background.Parent = MainFrame
 
 -- Header
 local Header = Instance.new("Frame")
-Header.Size = UDim2.new(1, 0, 0, 50)
+Header.Size = UDim2.new(1, 0, 0, 40)
 Header.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 Header.BackgroundTransparency = 0.3
 Header.BorderSizePixel = 0
@@ -87,24 +86,24 @@ HeaderCorner.CornerRadius = UDim.new(0, 16)
 HeaderCorner.Parent = Header
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -60, 1, 0)
-Title.Position = UDim2.new(0, 15, 0, 0)
+Title.Size = UDim2.new(1, -50, 1, 0)
+Title.Position = UDim2.new(0, 12, 0, 0)
 Title.BackgroundTransparency = 1
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.Text = "BN XITERZ"
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 18
+Title.TextSize = 16
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = Header
 
 local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Position = UDim2.new(1, -40, 0, 10)
+CloseButton.Size = UDim2.new(0, 28, 0, 28)
+CloseButton.Position = UDim2.new(1, -34, 0, 6)
 CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 CloseButton.Text = "X"
 CloseButton.Font = Enum.Font.GothamBold
-CloseButton.TextSize = 14
+CloseButton.TextSize = 13
 CloseButton.ZIndex = 5
 
 local CloseCorner = Instance.new("UICorner")
@@ -113,14 +112,14 @@ CloseCorner.Parent = CloseButton
 
 -- Content Area
 local Content = Instance.new("Frame")
-Content.Size = UDim2.new(1, -20, 1, -80)
-Content.Position = UDim2.new(0, 10, 0, 60)
+Content.Size = UDim2.new(1, -16, 1, -52)
+Content.Position = UDim2.new(0, 8, 0, 46)
 Content.BackgroundTransparency = 1
 Content.Parent = MainFrame
 
 -- Tab Buttons
 local TabButtons = Instance.new("Frame")
-TabButtons.Size = UDim2.new(1, 0, 0, 40)
+TabButtons.Size = UDim2.new(1, 0, 0, 32)
 TabButtons.BackgroundTransparency = 1
 TabButtons.Parent = Content
 
@@ -135,11 +134,11 @@ local function createTabButton(text, index)
     button.TextColor3 = Color3.fromRGB(200, 200, 200)
     button.Text = text
     button.Font = Enum.Font.Gotham
-    button.TextSize = 12
+    button.TextSize = 11
     button.BorderSizePixel = 0
     
     local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 8)
+    buttonCorner.CornerRadius = UDim.new(0, 6)
     buttonCorner.Parent = button
     
     button.MouseEnter:Connect(function()
@@ -160,15 +159,15 @@ end
 
 -- Tab Contents
 local TabContents = Instance.new("Frame")
-TabContents.Size = UDim2.new(1, 0, 1, -50)
-TabContents.Position = UDim2.new(0, 0, 0, 50)
+TabContents.Size = UDim2.new(1, 0, 1, -38)
+TabContents.Position = UDim2.new(0, 0, 0, 38)
 TabContents.BackgroundTransparency = 1
 TabContents.Parent = Content
 
 -- Function to create modern toggle switch
 local function createToggleSwitch(text, yPosition, defaultValue, callback)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, 0, 0, 40)
+    frame.Size = UDim2.new(1, 0, 0, 32)
     frame.Position = UDim2.new(0, 0, 0, yPosition)
     frame.BackgroundTransparency = 1
     
@@ -179,13 +178,13 @@ local function createToggleSwitch(text, yPosition, defaultValue, callback)
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.Text = text
     label.Font = Enum.Font.Gotham
-    label.TextSize = 14
+    label.TextSize = 12
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
     
     local toggleFrame = Instance.new("Frame")
-    toggleFrame.Size = UDim2.new(0, 50, 0, 25)
-    toggleFrame.Position = UDim2.new(1, -60, 0.5, -12.5)
+    toggleFrame.Size = UDim2.new(0, 44, 0, 22)
+    toggleFrame.Position = UDim2.new(1, -50, 0.5, -11)
     toggleFrame.BackgroundColor3 = defaultValue and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(80, 80, 80)
     toggleFrame.BorderSizePixel = 0
     
@@ -194,8 +193,8 @@ local function createToggleSwitch(text, yPosition, defaultValue, callback)
     toggleCorner.Parent = toggleFrame
     
     local toggleCircle = Instance.new("Frame")
-    toggleCircle.Size = UDim2.new(0, 21, 0, 21)
-    toggleCircle.Position = defaultValue and UDim2.new(1, -23, 0.5, -10.5) or UDim2.new(0, 2, 0.5, -10.5)
+    toggleCircle.Size = UDim2.new(0, 18, 0, 18)
+    toggleCircle.Position = defaultValue and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)
     toggleCircle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     toggleCircle.BorderSizePixel = 0
     
@@ -217,12 +216,12 @@ local function createToggleSwitch(text, yPosition, defaultValue, callback)
             
             if isToggled then
                 local tween = TweenService:Create(toggleFrame, tweenInfo, {BackgroundColor3 = Color3.fromRGB(0, 150, 0)})
-                local circleTween = TweenService:Create(toggleCircle, tweenInfo, {Position = UDim2.new(1, -23, 0.5, -10.5)})
+                local circleTween = TweenService:Create(toggleCircle, tweenInfo, {Position = UDim2.new(1, -20, 0.5, -9)})
                 tween:Play()
                 circleTween:Play()
             else
                 local tween = TweenService:Create(toggleFrame, tweenInfo, {BackgroundColor3 = Color3.fromRGB(80, 80, 80)})
-                local circleTween = TweenService:Create(toggleCircle, tweenInfo, {Position = UDim2.new(0, 2, 0.5, -10.5)})
+                local circleTween = TweenService:Create(toggleCircle, tweenInfo, {Position = UDim2.new(0, 2, 0.5, -9)})
                 tween:Play()
                 circleTween:Play()
             end
@@ -240,14 +239,14 @@ end
 local InformationTab = Instance.new("ScrollingFrame")
 InformationTab.Size = UDim2.new(1, 0, 1, 0)
 InformationTab.BackgroundTransparency = 1
-InformationTab.ScrollBarThickness = 4
+InformationTab.ScrollBarThickness = 3
 InformationTab.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 120)
 InformationTab.Visible = false
 InformationTab.Parent = TabContents
 
 local InfoText = Instance.new("TextLabel")
-InfoText.Size = UDim2.new(1, -20, 0, 300)
-InfoText.Position = UDim2.new(0, 10, 0, 10)
+InfoText.Size = UDim2.new(1, -16, 0, 200)
+InfoText.Position = UDim2.new(0, 8, 0, 5)
 InfoText.BackgroundTransparency = 1
 InfoText.TextColor3 = Color3.fromRGB(255, 255, 255)
 InfoText.Text = [[
@@ -271,9 +270,10 @@ INSTRUCTIONS:
 Note: Use responsibly
 ]]
 InfoText.Font = Enum.Font.Gotham
-InfoText.TextSize = 13
+InfoText.TextSize = 11
 InfoText.TextWrapped = true
 InfoText.TextXAlignment = Enum.TextXAlignment.Left
+InfoText.TextYAlignment = Enum.TextYAlignment.Top
 InfoText.Parent = InformationTab
 
 -- Aim Tab
@@ -283,42 +283,42 @@ AimTab.BackgroundTransparency = 1
 AimTab.Visible = false
 AimTab.Parent = TabContents
 
-local AimToggle = createToggleSwitch("Enable Aim Assist", 10, false, function(state)
+local AimToggle = createToggleSwitch("Enable Aim Assist", 5, false, function(state)
     aimEnabled = state
     print("Aim Assist:", state and "ON" or "OFF")
 end)
 
 -- Aim Mode Selection
 local AimModeFrame = Instance.new("Frame")
-AimModeFrame.Size = UDim2.new(1, 0, 0, 80)
-AimModeFrame.Position = UDim2.new(0, 0, 0, 60)
+AimModeFrame.Size = UDim2.new(1, 0, 0, 65)
+AimModeFrame.Position = UDim2.new(0, 0, 0, 42)
 AimModeFrame.BackgroundTransparency = 1
 AimModeFrame.Parent = AimTab
 
 local ModeLabel = Instance.new("TextLabel")
-ModeLabel.Size = UDim2.new(1, 0, 0, 30)
+ModeLabel.Size = UDim2.new(1, 0, 0, 24)
 ModeLabel.Position = UDim2.new(0, 0, 0, 0)
 ModeLabel.BackgroundTransparency = 1
 ModeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 ModeLabel.Text = "Aim Mode:"
 ModeLabel.Font = Enum.Font.Gotham
-ModeLabel.TextSize = 14
+ModeLabel.TextSize = 12
 ModeLabel.TextXAlignment = Enum.TextXAlignment.Left
 ModeLabel.Parent = AimModeFrame
 
 local function createModeButton(text, xPos, mode)
     local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0.45, 0, 0, 40)
-    button.Position = UDim2.new(xPos, 5, 0, 35)
+    button.Size = UDim2.new(0.45, 0, 0, 32)
+    button.Position = UDim2.new(xPos, 5, 0, 28)
     button.BackgroundColor3 = aimMode == mode and Color3.fromRGB(0, 100, 200) or Color3.fromRGB(60, 60, 70)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.Text = text
     button.Font = Enum.Font.GothamSemibold
-    button.TextSize = 13
+    button.TextSize = 11
     button.BorderSizePixel = 0
     
     local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 8)
+    buttonCorner.CornerRadius = UDim.new(0, 6)
     buttonCorner.Parent = button
     
     button.MouseButton1Click:Connect(function()
@@ -370,7 +370,7 @@ local function findNearestEnemy()
             if humanoid and humanoidRootPart and humanoid.Health > 0 then
                 local distance = (humanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
                 
-                if distance < 100 and distance < closestDistance then -- Range 100 studs
+                if distance < 100 and distance < closestDistance then
                     closestDistance = distance
                     closestPlayer = player
                     
@@ -391,66 +391,62 @@ end
 local TeleportTab = Instance.new("ScrollingFrame")
 TeleportTab.Size = UDim2.new(1, 0, 1, 0)
 TeleportTab.BackgroundTransparency = 1
-TeleportTab.ScrollBarThickness = 4
+TeleportTab.ScrollBarThickness = 3
 TeleportTab.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 120)
 TeleportTab.Visible = false
-TeleportTab.CanvasSize = UDim2.new(0, 0, 0, 400)
+TeleportTab.CanvasSize = UDim2.new(0, 0, 0, 300)
 TeleportTab.Parent = TabContents
 
 -- ========================================
 -- ISI KOORDINAT TELEPORT DI SINI
--- Format: Vector3.new(X, Y, Z)
 -- ========================================
-teleportPoints[1] = Vector3.new(-459.97, 3.74, 342.52)      -- TELEPORT 1 - Ganti koordinat sesuai keinginan
-teleportPoints[2] = Vector3.new(1174.82, 3.36, -26.25)      -- TELEPORT 2 - Ganti koordinat sesuai keinginan
-teleportPoints[3] = Vector3.new(521.43, 3.58, 592.97)      -- TELEPORT 3 - Ganti koordinat sesuai keinginan
-teleportPoints[4] = Vector3.new(731.95, 3.82, 416.19)       -- TELEPORT 4 - Ganti koordinat sesuai keinginan
-teleportPoints[5] = Vector3.new(915.70, 3.36, 81.71)    -- TELEPORT 5 - Ganti koordinat sesuai keinginan
+teleportPoints[1] = Vector3.new(-459.97, 3.74, 342.52)
+teleportPoints[2] = Vector3.new(1174.82, 3.36, -26.25)
+teleportPoints[3] = Vector3.new(521.43, 3.58, 592.97)
+teleportPoints[4] = Vector3.new(731.95, 3.82, 416.19)
+teleportPoints[5] = Vector3.new(915.70, 3.36, 81.71)
 
--- Nama untuk setiap teleport point
 local teleportNames = {
-    "SENJATA 🔫",      -- Nama Teleport 1
-    "KASINO ♣",        -- Nama Teleport 2
-    "BAHAN MS ☕",      -- Nama Teleport 3
-    "DS 🚘",    -- Nama Teleport 4
-    "APARTEMEN 🏢"       -- Nama Teleport 5
+    "SENJATA 🔫",
+    "KASINO ♣",
+    "BAHAN MS ☕",
+    "DS 🚘",
+    "APARTEMEN 🏢"
 }
 
 local function createTeleportButton(index, yPosition)
     local button = Instance.new("TextButton")
-    button.Size = UDim2.new(1, -10, 0, 60)
-    button.Position = UDim2.new(0, 5, 0, yPosition)
+    button.Size = UDim2.new(1, -8, 0, 48)
+    button.Position = UDim2.new(0, 4, 0, yPosition)
     button.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
     button.BackgroundTransparency = 0.2
     button.BorderSizePixel = 0
     button.AutoButtonColor = false
     
     local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 10)
+    buttonCorner.CornerRadius = UDim.new(0, 8)
     buttonCorner.Parent = button
     
     local buttonStroke = Instance.new("UIStroke")
     buttonStroke.Color = Color3.fromRGB(0, 100, 200)
-    buttonStroke.Thickness = 2
+    buttonStroke.Thickness = 1.5
     buttonStroke.Transparency = 0.5
     buttonStroke.Parent = button
     
-    -- Title
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, -20, 0, 25)
-    title.Position = UDim2.new(0, 10, 0, 5)
+    title.Size = UDim2.new(1, -16, 0, 20)
+    title.Position = UDim2.new(0, 8, 0, 4)
     title.BackgroundTransparency = 1
     title.TextColor3 = Color3.fromRGB(255, 200, 100)
     title.Text = "TELEPORT " .. index .. " - " .. teleportNames[index]
     title.Font = Enum.Font.GothamBold
-    title.TextSize = 14
+    title.TextSize = 11
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = button
     
-    -- Coordinates
     local coords = Instance.new("TextLabel")
-    coords.Size = UDim2.new(1, -20, 0, 20)
-    coords.Position = UDim2.new(0, 10, 0, 32)
+    coords.Size = UDim2.new(1, -16, 0, 16)
+    coords.Position = UDim2.new(0, 8, 0, 26)
     coords.BackgroundTransparency = 1
     coords.TextColor3 = Color3.fromRGB(180, 180, 180)
     coords.Text = string.format("X: %.0f  |  Y: %.0f  |  Z: %.0f", 
@@ -458,37 +454,53 @@ local function createTeleportButton(index, yPosition)
         teleportPoints[index].Y, 
         teleportPoints[index].Z)
     coords.Font = Enum.Font.Gotham
-    coords.TextSize = 12
+    coords.TextSize = 10
     coords.TextXAlignment = Enum.TextXAlignment.Left
     coords.Parent = button
     
-    -- Hover effect
     button.MouseEnter:Connect(function()
         button.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-        buttonStroke.Thickness = 3
+        buttonStroke.Thickness = 2
         buttonStroke.Transparency = 0
     end)
     
     button.MouseLeave:Connect(function()
         button.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-        buttonStroke.Thickness = 2
+        buttonStroke.Thickness = 1.5
         buttonStroke.Transparency = 0.5
     end)
     
-    -- Teleport action
+    -- FIX TELEPORT BUG: Gunakan task.wait() dan pastikan character ada
     button.MouseButton1Click:Connect(function()
-        local character = LocalPlayer.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(teleportPoints[index])
-            print("✅ Teleported to:", teleportNames[index])
-            
-            -- Visual feedback
-            button.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
-            wait(0.3)
-            button.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-        else
-            warn("❌ Character not found!")
-        end
+        task.spawn(function()
+            local character = LocalPlayer.Character
+            if character then
+                local hrp = character:FindFirstChild("HumanoidRootPart")
+                local humanoid = character:FindFirstChild("Humanoid")
+                
+                if hrp and humanoid then
+                    -- Disable physics sebentar untuk mencegah bouncing back
+                    local originalCFrame = hrp.CFrame
+                    
+                    -- Set CFrame dengan orientasi yang benar
+                    hrp.CFrame = CFrame.new(teleportPoints[index]) * CFrame.Angles(0, 0, 0)
+                    
+                    -- Wait sedikit untuk memastikan teleport sukses
+                    task.wait(0.1)
+                    
+                    print("✅ Teleported to:", teleportNames[index])
+                    
+                    -- Visual feedback
+                    button.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
+                    task.wait(0.3)
+                    button.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+                else
+                    warn("❌ HumanoidRootPart or Humanoid not found!")
+                end
+            else
+                warn("❌ Character not found!")
+            end
+        end)
     end)
     
     button.Parent = TeleportTab
@@ -497,7 +509,7 @@ end
 
 -- Create 5 teleport buttons
 for i = 1, 5 do
-    createTeleportButton(i, (i-1) * 70)
+    createTeleportButton(i, (i-1) * 54)
 end
 
 -- Spectate Tab
@@ -508,59 +520,59 @@ SpectateTab.Visible = false
 SpectateTab.Parent = TabContents
 
 local UsernameBox = Instance.new("TextBox")
-UsernameBox.Size = UDim2.new(1, -100, 0, 40)
-UsernameBox.Position = UDim2.new(0, 0, 0, 10)
+UsernameBox.Size = UDim2.new(1, -70, 0, 32)
+UsernameBox.Position = UDim2.new(0, 0, 0, 5)
 UsernameBox.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
 UsernameBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 UsernameBox.PlaceholderText = "Enter Username..."
 UsernameBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
 UsernameBox.Text = ""
 UsernameBox.Font = Enum.Font.Gotham
-UsernameBox.TextSize = 14
+UsernameBox.TextSize = 12
 UsernameBox.ClearTextOnFocus = false
 
 local TextBoxCorner = Instance.new("UICorner")
-TextBoxCorner.CornerRadius = UDim.new(0, 8)
+TextBoxCorner.CornerRadius = UDim.new(0, 6)
 TextBoxCorner.Parent = UsernameBox
 
 local SpectateButton = Instance.new("TextButton")
-SpectateButton.Size = UDim2.new(0, 80, 0, 40)
-SpectateButton.Position = UDim2.new(1, -80, 0, 10)
+SpectateButton.Size = UDim2.new(0, 64, 0, 32)
+SpectateButton.Position = UDim2.new(1, -64, 0, 5)
 SpectateButton.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
 SpectateButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpectateButton.Text = "SPECTATE"
+SpectateButton.Text = "VIEW"
 SpectateButton.Font = Enum.Font.GothamBold
-SpectateButton.TextSize = 12
+SpectateButton.TextSize = 11
 SpectateButton.BorderSizePixel = 0
 
 local SpectateCorner = Instance.new("UICorner")
-SpectateCorner.CornerRadius = UDim.new(0, 8)
+SpectateCorner.CornerRadius = UDim.new(0, 6)
 SpectateCorner.Parent = SpectateButton
 
 local SpectateStatus = Instance.new("TextLabel")
-SpectateStatus.Size = UDim2.new(1, 0, 0, 30)
-SpectateStatus.Position = UDim2.new(0, 0, 0, 70)
+SpectateStatus.Size = UDim2.new(1, 0, 0, 24)
+SpectateStatus.Position = UDim2.new(0, 0, 0, 45)
 SpectateStatus.BackgroundTransparency = 1
 SpectateStatus.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpectateStatus.Text = "Status: Not Spectating"
 SpectateStatus.Font = Enum.Font.Gotham
-SpectateStatus.TextSize = 13
+SpectateStatus.TextSize = 11
 SpectateStatus.TextXAlignment = Enum.TextXAlignment.Left
 SpectateStatus.Parent = SpectateTab
 
 local TeleportToPlayerButton = Instance.new("TextButton")
-TeleportToPlayerButton.Size = UDim2.new(1, 0, 0, 40)
-TeleportToPlayerButton.Position = UDim2.new(0, 0, 0, 110)
+TeleportToPlayerButton.Size = UDim2.new(1, 0, 0, 32)
+TeleportToPlayerButton.Position = UDim2.new(0, 0, 0, 75)
 TeleportToPlayerButton.BackgroundColor3 = Color3.fromRGB(100, 0, 150)
 TeleportToPlayerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 TeleportToPlayerButton.Text = "TELEPORT TO PLAYER"
 TeleportToPlayerButton.Font = Enum.Font.GothamBold
-TeleportToPlayerButton.TextSize = 13
+TeleportToPlayerButton.TextSize = 11
 TeleportToPlayerButton.Visible = false
 TeleportToPlayerButton.BorderSizePixel = 0
 
 local TeleportCorner = Instance.new("UICorner")
-TeleportCorner.CornerRadius = UDim.new(0, 8)
+TeleportCorner.CornerRadius = UDim.new(0, 6)
 TeleportCorner.Parent = TeleportToPlayerButton
 
 SpectateButton.MouseButton1Click:Connect(function()
@@ -585,7 +597,7 @@ TeleportToPlayerButton.MouseButton1Click:Connect(function()
     if not spectatingPlayer or not spectatingPlayer.Character then return end
     
     local targetPos = spectatingPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if targetPos then
+    if targetPos and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         LocalPlayer.Character.HumanoidRootPart.CFrame = targetPos.CFrame
         print("Teleported to player:", spectatingPlayer.Name)
     end
@@ -595,7 +607,7 @@ UsernameBox.Parent = SpectateTab
 SpectateButton.Parent = SpectateTab
 TeleportToPlayerButton.Parent = SpectateTab
 
--- Buy Tab (Kosong)
+-- Buy Tab
 local BuyTab = Instance.new("Frame")
 BuyTab.Size = UDim2.new(1, 0, 1, 0)
 BuyTab.BackgroundTransparency = 1
@@ -609,7 +621,7 @@ BuyText.BackgroundTransparency = 1
 BuyText.TextColor3 = Color3.fromRGB(255, 255, 255)
 BuyText.Text = "BUY SECTION\nComing Soon..."
 BuyText.Font = Enum.Font.GothamBold
-BuyText.TextSize = 18
+BuyText.TextSize = 16
 BuyText.TextWrapped = true
 BuyText.Parent = BuyTab
 
@@ -628,134 +640,8 @@ for i, tabName in ipairs(Tabs) do
     button.MouseButton1Click:Connect(function()
         CurrentTab = tabName
         
-        -- Hide all tabs
         InformationTab.Visible = false
         AimTab.Visible = false
         TeleportTab.Visible = false
         SpectateTab.Visible = false
-        BuyTab.Visible = false
-        
-        -- Show current tab
-        if tabName == "Information" then
-            InformationTab.Visible = true
-        elseif tabName == "Aim" then
-            AimTab.Visible = true
-        elseif tabName == "Teleport" then
-            TeleportTab.Visible = true
-        elseif tabName == "Spectate" then
-            SpectateTab.Visible = true
-        elseif tabName == "Buy" then
-            BuyTab.Visible = true
-        end
-        
-        -- Update tab button colors
-        for name, btn in pairs(tabButtons) do
-            if name == tabName then
-                btn.BackgroundColor3 = Color3.fromRGB(0, 100, 150)
-            else
-                btn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-            end
-        end
-    end)
-end
-
--- Set initial tab
-tabButtons["Information"].BackgroundColor3 = Color3.fromRGB(0, 100, 150)
-InformationTab.Visible = true
-
--- Drag functionality
-local function startDrag(input, frame)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isDragging = true
-        dragStart = input.Position
-        if frame == MainFrame then
-            mainStartPos = MainFrame.Position
-        else
-            iconStartPos = MiniIcon.Position
-        end
-    end
-end
-
-local function updateDrag(input)
-    if not isDragging then return end
-    
-    local delta = input.Position - dragStart
-    if MainFrame.Visible then
-        MainFrame.Position = UDim2.new(
-            mainStartPos.X.Scale, 
-            mainStartPos.X.Offset + delta.X,
-            mainStartPos.Y.Scale, 
-            mainStartPos.Y.Offset + delta.Y
-        )
-    else
-        MiniIcon.Position = UDim2.new(
-            iconStartPos.X.Scale, 
-            iconStartPos.X.Offset + delta.X,
-            iconStartPos.Y.Scale, 
-            iconStartPos.Y.Offset + delta.Y
-        )
-    end
-end
-
-local function endDrag()
-    isDragging = false
-end
-
--- Connect drag events
-Header.InputBegan:Connect(function(input) startDrag(input, MainFrame) end)
-MiniIcon.InputBegan:Connect(function(input) startDrag(input, MiniIcon) end)
-UserInputService.InputChanged:Connect(updateDrag)
-UserInputService.InputEnded:Connect(endDrag)
-
--- Close button functionality
-CloseButton.MouseButton1Click:Connect(function()
-    isMenuOpen = false
-    MainFrame.Visible = false
-    MiniIcon.Visible = true
-    
-    local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(MainFrame, tweenInfo, {
-        Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(MainFrame.Position.X.Scale, MainFrame.Position.X.Offset + 175, 
-                           MainFrame.Position.Y.Scale, MainFrame.Position.Y.Offset + 250)
-    })
-    tween:Play()
-    
-    tween.Completed:Connect(function()
-        MainFrame.Size = UDim2.new(0, 350, 0, 500)
-    end)
-end)
-
--- Mini icon functionality
-MiniIcon.MouseButton1Click:Connect(function()
-    isMenuOpen = true
-    MiniIcon.Visible = false
-    
-    local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    
-    MainFrame.Size = UDim2.new(0, 0, 0, 0)
-    MainFrame.Position = UDim2.new(MiniIcon.Position.X.Scale, MiniIcon.Position.X.Offset + 25,
-                                 MiniIcon.Position.Y.Scale, MiniIcon.Position.Y.Offset + 25)
-    MainFrame.Visible = true
-    
-    local tween = TweenService:Create(MainFrame, tweenInfo, {
-        Size = UDim2.new(0, 350, 0, 500),
-        Position = UDim2.new(0.5, -175, 0.5, -250)
-    })
-    tween:Play()
-end)
-
--- Aim assist loop
-RunService.RenderStepped:Connect(function()
-    if aimEnabled then
-        local target = findNearestEnemy()
-        if target then
-            aimAtTarget(target)
-        end
-    end
-end)
-
--- Insert GUI
-ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
-
-print("BN XITERZ Loaded Successfully!")
+        Buy
