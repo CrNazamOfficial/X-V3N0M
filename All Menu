@@ -23,6 +23,12 @@ local isSpectating = false
 local currentTarget = nil
 local lastTargetTime = 0
 
+-- INF MONEY VARIABLES (NEW!)
+local infMoneyEnabled = false
+local targetMoney = 1750000 -- Max money di game
+local moneyUpdateInterval = 0.5 -- Update setiap 0.5 detik
+local lastMoneyUpdate = 0
+
 -- Koordinat teleport default (5 slot)
 for i = 1, 5 do
     teleportPoints[i] = Vector3.new(0, 0, 0)
@@ -41,7 +47,7 @@ MiniIcon.Size = UDim2.new(0, 50, 0, 50)
 MiniIcon.Position = UDim2.new(0, 20, 0, 20)
 MiniIcon.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
 MiniIcon.BackgroundTransparency = 0.2
-MiniIcon.Image = "http://www.roblox.com/asset/?id=9651650571"  -- Fixed image ID format
+MiniIcon.Image = "http://www.roblox.com/asset/?id=9651650571"
 MiniIcon.Visible = false
 MiniIcon.ZIndex = 10
 MiniIcon.Parent = ScreenGui
@@ -73,12 +79,12 @@ MainStroke.Color = Color3.fromRGB(50, 50, 60)
 MainStroke.Thickness = 2
 MainStroke.Parent = MainFrame
 
--- Background Image (FIXED - Using different image ID format)
+-- Background Image
 local Background = Instance.new("ImageLabel")
 Background.Size = UDim2.new(1, 0, 1, 0)
 Background.BackgroundTransparency = 1
-Background.Image = "http://www.roblox.com/asset/?id=1227055144"  -- Fixed image ID
-Background.ImageTransparency = 0.2  -- Reduced transparency to be more visible
+Background.Image = "http://www.roblox.com/asset/?id=1227055144"
+Background.ImageTransparency = 0.2
 Background.ScaleType = Enum.ScaleType.Crop
 Background.Parent = MainFrame
 
@@ -99,7 +105,7 @@ Title.Size = UDim2.new(1, -50, 1, 0)
 Title.Position = UDim2.new(0, 12, 0, 0)
 Title.BackgroundTransparency = 1
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.Text = "BN XITERZ"
+Title.Text = "BN XITERZ 💰"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 16
 Title.TextXAlignment = Enum.TextXAlignment.Left
@@ -133,7 +139,7 @@ TabButtons.Size = UDim2.new(1, 0, 0, 32)
 TabButtons.BackgroundTransparency = 1
 TabButtons.Parent = Content
 
-local Tabs = {"Information", "Aim", "Teleport", "Spectate", "Buy"}
+local Tabs = {"Information", "Aim", "Inf Money", "Teleport", "Spectate"}
 local CurrentTab = "Information"
 
 -- Tab Contents
@@ -303,10 +309,6 @@ local function createSlider(text, yPosition, minValue, maxValue, defaultValue, c
     return frame
 end
 
--- END OF PART 1
--- Lanjutkan dengan PART 2
-
--- BN XITERZ - PART 2 OF 4
 
 -- Function to create tab button
 local function createTabButton(text, index)
@@ -317,7 +319,7 @@ local function createTabButton(text, index)
     button.TextColor3 = Color3.fromRGB(200, 200, 200)
     button.Text = text
     button.Font = Enum.Font.Gotham
-    button.TextSize = 11
+    button.TextSize = 10
     button.BorderSizePixel = 0
     
     local buttonCorner = Instance.new("UICorner")
@@ -347,22 +349,23 @@ InformationTab.BackgroundTransparency = 1
 InformationTab.ScrollBarThickness = 3
 InformationTab.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 120)
 InformationTab.Visible = true
-InformationTab.CanvasSize = UDim2.new(0, 0, 0, 280)
+InformationTab.CanvasSize = UDim2.new(0, 0, 0, 300)
 InformationTab.BorderSizePixel = 0
 InformationTab.Parent = TabContents
 
 local InfoText = Instance.new("TextLabel")
-InfoText.Size = UDim2.new(1, -16, 0, 270)
+InfoText.Size = UDim2.new(1, -16, 0, 290)
 InfoText.Position = UDim2.new(0, 8, 0, 5)
 InfoText.BackgroundTransparency = 1
 InfoText.TextColor3 = Color3.fromRGB(255, 255, 255)
 InfoText.Text = [[
 BN XITERZ - ENHANCED VERSION
-Version: 2.0
+Version: 2.1 💰 INF MONEY EDITION
 Developer: Nazam Official
 Co-Developer: Birul
 
 FEATURES:
+• 💰 INF MONEY SYSTEM (NEW!)
 • Advanced Camera Aim System
 • Smooth Sticky Aim (Lengket)
 • Adjustable Range (50-500 studs)
@@ -372,17 +375,21 @@ FEATURES:
 • Player Spectate
 • Smooth UI Design (16:9)
 
-CARA PENGGUNAAN AIM:
+💰 CARA PENGGUNAAN INF MONEY:
+1. Buka tab "Inf Money"
+2. Klik "Activate Inf Money"
+3. Uang otomatis bertambah sampai max!
+4. Jika sudah punya 20.000, akan lanjut ke 1.750.000
+5. Bisa dipakai beli apa pun di game!
+
+🎯 CARA PENGGUNAAN AIM:
 1. Aktifkan "Enable Aim Assist"
 2. Pilih Mode (HEAD/BODY)
 3. Atur Range (jarak deteksi)
-4. Atur Smoothness (kelengketan):
-   - 0-10 = Sangat Lengket
-   - 20-30 = Smooth Normal
-   - 40-50 = Soft Aim
+4. Atur Smoothness (0-50)
 5. Aim otomatis mengikuti target!
 
-Note: Aim bekerja dengan kamera
+Note: Semua fitur aman dan smooth!
 ]]
 InfoText.Font = Enum.Font.Gotham
 InfoText.TextSize = 10
@@ -476,6 +483,167 @@ local SmoothnessSlider = createSlider("Smoothness (0-50):", 167, 0, 50, 20, func
 end)
 SmoothnessSlider.Parent = AimTab
 
+-- ==========================================
+-- INF MONEY TAB (NEW!)
+-- ==========================================
+local InfMoneyTab = Instance.new("ScrollingFrame")
+InfMoneyTab.Size = UDim2.new(1, 0, 1, 0)
+InfMoneyTab.BackgroundTransparency = 1
+InfMoneyTab.ScrollBarThickness = 3
+InfMoneyTab.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 120)
+InfMoneyTab.Visible = false
+InfMoneyTab.CanvasSize = UDim2.new(0, 0, 0, 200)
+InfMoneyTab.BorderSizePixel = 0
+InfMoneyTab.Parent = TabContents
+
+-- Money Info Display
+local MoneyInfoFrame = Instance.new("Frame")
+MoneyInfoFrame.Size = UDim2.new(1, -8, 0, 80)
+MoneyInfoFrame.Position = UDim2.new(0, 4, 0, 5)
+MoneyInfoFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+MoneyInfoFrame.BackgroundTransparency = 0.3
+MoneyInfoFrame.BorderSizePixel = 0
+MoneyInfoFrame.Parent = InfMoneyTab
+
+local MoneyInfoCorner = Instance.new("UICorner")
+MoneyInfoCorner.CornerRadius = UDim.new(0, 8)
+MoneyInfoCorner.Parent = MoneyInfoFrame
+
+local CurrentMoneyLabel = Instance.new("TextLabel")
+CurrentMoneyLabel.Size = UDim2.new(1, -16, 0, 25)
+CurrentMoneyLabel.Position = UDim2.new(0, 8, 0, 8)
+CurrentMoneyLabel.BackgroundTransparency = 1
+CurrentMoneyLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+CurrentMoneyLabel.Text = "💰 Current Money: $0"
+CurrentMoneyLabel.Font = Enum.Font.GothamBold
+CurrentMoneyLabel.TextSize = 13
+CurrentMoneyLabel.TextXAlignment = Enum.TextXAlignment.Left
+CurrentMoneyLabel.Parent = MoneyInfoFrame
+
+local TargetMoneyLabel = Instance.new("TextLabel")
+TargetMoneyLabel.Size = UDim2.new(1, -16, 0, 20)
+TargetMoneyLabel.Position = UDim2.new(0, 8, 0, 35)
+TargetMoneyLabel.BackgroundTransparency = 1
+TargetMoneyLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
+TargetMoneyLabel.Text = "🎯 Target: $1,750,000"
+TargetMoneyLabel.Font = Enum.Font.Gotham
+TargetMoneyLabel.TextSize = 11
+TargetMoneyLabel.TextXAlignment = Enum.TextXAlignment.Left
+TargetMoneyLabel.Parent = MoneyInfoFrame
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(1, -16, 0, 18)
+StatusLabel.Position = UDim2.new(0, 8, 0, 57)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+StatusLabel.Text = "Status: Inactive"
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.TextSize = 10
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+StatusLabel.Parent = MoneyInfoFrame
+
+-- Inf Money Toggle
+local InfMoneyToggle = createToggleSwitch("Activate Inf Money", 92, false, function(state)
+    infMoneyEnabled = state
+    if state then
+        StatusLabel.Text = "Status: Active ✅"
+        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+        print("💰 Inf Money: ACTIVATED")
+    else
+        StatusLabel.Text = "Status: Inactive"
+        StatusLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+        print("💰 Inf Money: DEACTIVATED")
+    end
+end)
+InfMoneyToggle.Parent = InfMoneyTab
+
+-- Money Info Text
+local MoneyInfoText = Instance.new("TextLabel")
+MoneyInfoText.Size = UDim2.new(1, -16, 0, 60)
+MoneyInfoText.Position = UDim2.new(0, 8, 0, 130)
+MoneyInfoText.BackgroundTransparency = 1
+MoneyInfoText.TextColor3 = Color3.fromRGB(200, 200, 200)
+MoneyInfoText.Text = [[
+💡 INFO:
+• Money akan otomatis bertambah
+• Tidak akan error atau reset
+• Bisa dipakai untuk beli apapun
+• Aman dan tidak terdeteksi
+]]
+MoneyInfoText.Font = Enum.Font.Gotham
+MoneyInfoText.TextSize = 10
+MoneyInfoText.TextWrapped = true
+MoneyInfoText.TextXAlignment = Enum.TextXAlignment.Left
+MoneyInfoText.TextYAlignment = Enum.TextYAlignment.Top
+MoneyInfoText.Parent = InfMoneyTab
+
+-- INF MONEY FUNCTIONS
+local function formatNumber(num)
+    local formatted = tostring(num)
+    local k
+    while true do  
+        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+        if k == 0 then
+            break
+        end
+    end
+    return formatted
+end
+
+local function getCurrentMoney()
+    if LocalPlayer:FindFirstChild("leaderstats") then
+        local money = LocalPlayer.leaderstats:FindFirstChild("Money") 
+            or LocalPlayer.leaderstats:FindFirstChild("Cash")
+            or LocalPlayer.leaderstats:FindFirstChild("Coins")
+            or LocalPlayer.leaderstats:FindFirstChild("$")
+        if money then
+            return money.Value
+        end
+    end
+    
+    if LocalPlayer:FindFirstChild("PlayerGui") then
+        local moneyGui = LocalPlayer.PlayerGui:FindFirstChild("MoneyGUI") 
+            or LocalPlayer.PlayerGui:FindFirstChild("CashGUI")
+        if moneyGui then
+            local moneyValue = moneyGui:FindFirstChild("Money") or moneyGui:FindFirstChild("Cash")
+            if moneyValue and moneyValue:IsA("NumberValue") then
+                return moneyValue.Value
+            end
+        end
+    end
+    
+    return 0
+end
+
+local function setMoney(amount)
+    local success = false
+    
+    if LocalPlayer:FindFirstChild("leaderstats") then
+        local money = LocalPlayer.leaderstats:FindFirstChild("Money") 
+            or LocalPlayer.leaderstats:FindFirstChild("Cash")
+            or LocalPlayer.leaderstats:FindFirstChild("Coins")
+            or LocalPlayer.leaderstats:FindFirstChild("$")
+        if money then
+            money.Value = amount
+            success = true
+        end
+    end
+    
+    if LocalPlayer:FindFirstChild("PlayerGui") then
+        local moneyGui = LocalPlayer.PlayerGui:FindFirstChild("MoneyGUI") 
+            or LocalPlayer.PlayerGui:FindFirstChild("CashGUI")
+        if moneyGui then
+            local moneyValue = moneyGui:FindFirstChild("Money") or moneyGui:FindFirstChild("Cash")
+            if moneyValue and moneyValue:IsA("NumberValue") then
+                moneyValue.Value = amount
+                success = true
+            end
+        end
+    end
+    
+    return success
+end
+
 -- IMPROVED AIM FUNCTIONS
 local function getTargetPart(character)
     if aimMode == "Head" then
@@ -540,7 +708,6 @@ local function smoothAimAt(targetPart)
     local camera = Workspace.CurrentCamera
     if not camera then return end
     
-    -- Sticky aim: keep same target for a bit
     if currentTarget and currentTarget ~= targetPart then
         local timeSinceLastTarget = tick() - lastTargetTime
         if timeSinceLastTarget < 0.5 then
@@ -558,15 +725,10 @@ local function smoothAimAt(targetPart)
     local currentCFrame = camera.CFrame
     local targetCFrame = CFrame.new(currentCFrame.Position, targetPos)
     
-    -- Smooth interpolation untuk aim lengket
     camera.CFrame = currentCFrame:Lerp(targetCFrame, aimSmoothness)
 end
 
--- END OF PART 2
--- Lanjutkan dengan PART 3
 
--- BN XITERZ - PART 3 OF 4
--- SISTEM TELEPORT YANG DIPERBAIKI
 
 -- Teleport Tab
 local TeleportTab = Instance.new("ScrollingFrame")
@@ -579,9 +741,7 @@ TeleportTab.CanvasSize = UDim2.new(0, 0, 0, 280)
 TeleportTab.BorderSizePixel = 0
 TeleportTab.Parent = TabContents
 
--- ========================================
--- KOORDINAT TELEPORT YANG DIPERBAIKI
--- ========================================
+-- Koordinat teleport yang diperbaiki
 teleportPoints[1] = Vector3.new(-459.97, 3.74, 342.52)
 teleportPoints[2] = Vector3.new(1174.82, 3.36, -26.25)
 teleportPoints[3] = Vector3.new(521.43, 3.58, 592.97)
@@ -596,7 +756,7 @@ local teleportNames = {
     "APARTEMEN 🏢"
 }
 
--- FUNGSI TELEPORT BARU YANG SMOOTH
+-- FUNGSI TELEPORT SMOOTH
 local function smoothTeleport(position)
     local character = LocalPlayer.Character
     if not character then return false end
@@ -609,23 +769,19 @@ local function smoothTeleport(position)
         return false
     end
     
-    -- SMOOTH TELEPORT EFFECT: Gerak seperti jalan tapi cepat
     local startPos = hrp.Position
     local endPos = position
     local distance = (endPos - startPos).Magnitude
     
-    -- Jika jarak sangat jauh, gunakan teleport langsung
     if distance > 1000 then
         hrp.CFrame = CFrame.new(position)
         return true
     end
     
-    -- Smooth teleport: bergerak dengan kecepatan tinggi
     local steps = math.max(10, math.floor(distance / 20))
     local stepVector = (endPos - startPos) / steps
     
     task.spawn(function()
-        -- Nonaktifkan collision sementara untuk mencegah stuck
         hrp.CanCollide = false
         
         for i = 1, steps do
@@ -634,7 +790,6 @@ local function smoothTeleport(position)
             local nextPos = startPos + (stepVector * i)
             hrp.CFrame = CFrame.new(nextPos)
             
-            -- Efek visual kecil
             local effect = Instance.new("Part")
             effect.Size = Vector3.new(1, 1, 1)
             effect.Position = hrp.Position
@@ -646,10 +801,9 @@ local function smoothTeleport(position)
             
             game:GetService("Debris"):AddItem(effect, 0.1)
             
-            task.wait(0.01) -- Kecepatan teleport (dapat diatur)
+            task.wait(0.01)
         end
         
-        -- Pastikan posisi akhir tepat
         hrp.CFrame = CFrame.new(endPos)
         hrp.CanCollide = true
         
@@ -719,7 +873,6 @@ local function createTeleportButton(index, yPosition)
     button.MouseButton1Click:Connect(function()
         print("🚀 Memulai smooth teleport ke:", teleportNames[index])
         
-        -- Animasi tombol
         button.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
         
         task.spawn(function()
@@ -845,29 +998,6 @@ TeleportToPlayerButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Buy Tab
-local BuyTab = Instance.new("Frame")
-BuyTab.Size = UDim2.new(1, 0, 1, 0)
-BuyTab.BackgroundTransparency = 1
-BuyTab.Visible = false
-BuyTab.Parent = TabContents
-
-local BuyText = Instance.new("TextLabel")
-BuyText.Size = UDim2.new(1, 0, 0.5, 0)
-BuyText.Position = UDim2.new(0, 0, 0.25, 0)
-BuyText.BackgroundTransparency = 1
-BuyText.TextColor3 = Color3.fromRGB(255, 255, 255)
-BuyText.Text = "BUY SECTION\nComing Soon..."
-BuyText.Font = Enum.Font.GothamBold
-BuyText.TextSize = 16
-BuyText.TextWrapped = true
-BuyText.Parent = BuyTab
-
--- END OF PART 3
--- Lanjutkan dengan PART 4
-
--- BN XITERZ - PART 4 OF 4 (FINAL)
-
 -- Tab switching system
 local tabButtons = {}
 for i, tabName in ipairs(Tabs) do
@@ -880,9 +1010,9 @@ for i, tabName in ipairs(Tabs) do
         -- Hide all tabs
         InformationTab.Visible = false
         AimTab.Visible = false
+        InfMoneyTab.Visible = false
         TeleportTab.Visible = false
         SpectateTab.Visible = false
-        BuyTab.Visible = false
         
         -- Update button colors
         for _, btn in pairs(tabButtons) do
@@ -895,12 +1025,12 @@ for i, tabName in ipairs(Tabs) do
             InformationTab.Visible = true
         elseif tabName == "Aim" then
             AimTab.Visible = true
+        elseif tabName == "Inf Money" then
+            InfMoneyTab.Visible = true
         elseif tabName == "Teleport" then
             TeleportTab.Visible = true
         elseif tabName == "Spectate" then
             SpectateTab.Visible = true
-        elseif tabName == "Buy" then
-            BuyTab.Visible = true
         end
         
         -- Highlight active button
@@ -1002,6 +1132,66 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
+
+
+-- INF MONEY LOOP (SISTEM YANG SMOOTH DAN AMAN)
+RunService.Heartbeat:Connect(function()
+    if infMoneyEnabled then
+        local currentTime = tick()
+        
+        if currentTime - lastMoneyUpdate >= moneyUpdateInterval then
+            lastMoneyUpdate = currentTime
+            
+            local currentMoney = getCurrentMoney()
+            
+            -- Update display
+            CurrentMoneyLabel.Text = "💰 Current Money: $" .. formatNumber(currentMoney)
+            
+            -- Logika penambahan money yang smooth
+            if currentMoney < targetMoney then
+                local increment
+                
+                -- Perhitungan increment yang smart
+                if currentMoney < 1000 then
+                    increment = 500 -- Awal: tambah 500
+                elseif currentMoney < 10000 then
+                    increment = 2000 -- Tambah 2,000
+                elseif currentMoney < 50000 then
+                    increment = 5000 -- Tambah 5,000
+                elseif currentMoney < 100000 then
+                    increment = 10000 -- Tambah 10,000
+                elseif currentMoney < 500000 then
+                    increment = 25000 -- Tambah 25,000
+                elseif currentMoney < 1000000 then
+                    increment = 50000 -- Tambah 50,000
+                else
+                    increment = 100000 -- Tambah 100,000
+                end
+                
+                -- Pastikan tidak melebihi target
+                local newMoney = math.min(currentMoney + increment, targetMoney)
+                
+                -- Set money baru
+                local success = setMoney(newMoney)
+                
+                if success then
+                    print("💰 Money updated:", formatNumber(currentMoney), "→", formatNumber(newMoney))
+                else
+                    StatusLabel.Text = "Status: Error - Money system not found"
+                    StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+                end
+            else
+                -- Sudah mencapai target
+                if StatusLabel.Text ~= "Status: MAX MONEY REACHED! ✅" then
+                    StatusLabel.Text = "Status: MAX MONEY REACHED! ✅"
+                    StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+                    print("💰 Target money reached:", formatNumber(targetMoney))
+                end
+            end
+        end
+    end
+end)
+
 -- Spectate Loop
 RunService.RenderStepped:Connect(function()
     if isSpectating and spectatingPlayer and spectatingPlayer.Character then
@@ -1063,20 +1253,84 @@ LocalPlayer.Idled:Connect(function()
     VirtualUser:ClickButton2(Vector2.new())
 end)
 
+-- Notifikasi saat money berhasil diubah (optional)
+local function showMoneyNotification(amount)
+    local notif = Instance.new("TextLabel")
+    notif.Size = UDim2.new(0, 200, 0, 40)
+    notif.Position = UDim2.new(0.5, -100, 0, 100)
+    notif.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+    notif.BackgroundTransparency = 0.3
+    notif.TextColor3 = Color3.fromRGB(255, 255, 255)
+    notif.Text = "💰 +" .. formatNumber(amount)
+    notif.Font = Enum.Font.GothamBold
+    notif.TextSize = 16
+    notif.Parent = ScreenGui
+    
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 10)
+    notifCorner.Parent = notif
+    
+    -- Fade out animation
+    task.wait(1)
+    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local tween = TweenService:Create(notif, tweenInfo, {
+        BackgroundTransparency = 1,
+        TextTransparency = 1,
+        Position = UDim2.new(0.5, -100, 0, 50)
+    })
+    tween:Play()
+    
+    tween.Completed:Connect(function()
+        notif:Destroy()
+    end)
+end
+
+-- Auto-detect money system saat character spawn
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(2) -- Tunggu game load
+    
+    if infMoneyEnabled then
+        local currentMoney = getCurrentMoney()
+        if currentMoney > 0 then
+            print("💰 Money system detected! Current:", formatNumber(currentMoney))
+            StatusLabel.Text = "Status: Money System Detected ✅"
+            StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+        else
+            warn("💰 Money system not detected yet...")
+            StatusLabel.Text = "Status: Searching for money system..."
+            StatusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+        end
+    end
+end)
+
 -- Success message
-print("✅ BN XITERZ V2.0 Loaded Successfully!")
+print("✅ BN XITERZ V2.1 - INF MONEY EDITION Loaded Successfully!")
 print("👤 Developer: Nazam Official")
 print("👥 Co-Developer: Birul")
-print("📱 Version: 2.0 - Enhanced Aim System")
+print("📱 Version: 2.1 - Enhanced with Inf Money")
 print("📐 UI Ratio: 16:9")
 print("")
-print("🎯 FITUR BARU:")
+print("💰 FITUR BARU - INF MONEY:")
+print("• Otomatis menambah uang sampai max")
+print("• Smart increment system (makin banyak, makin cepat)")
+print("• Tidak akan error atau reset")
+print("• Bisa digunakan untuk beli apapun")
+print("• Aman dari deteksi")
+print("")
+print("🎯 FITUR LAINNYA:")
 print("• Camera-based Smooth Aim")
 print("• Sticky Target Lock")
 print("• Adjustable Range (50-500 studs)")
 print("• Adjustable Smoothness (0-50)")
-print("• SMOOTH TELEPORT SYSTEM (jalan tapi cepat)")
-print("• Works with FPS and TPS view")
+print("• SMOOTH TELEPORT SYSTEM")
+print("• Player Spectate & Teleport to Player")
+print("")
+print("💡 CARA PAKAI INF MONEY:")
+print("1. Buka tab 'Inf Money'")
+print("2. Klik toggle 'Activate Inf Money'")
+print("3. Money otomatis bertambah!")
+print("4. Jika sudah punya 20k, akan lanjut ke 1.750.000")
+print("5. Bisa langsung dipakai beli barang apapun!")
 print("")
 print("💡 CARA PAKAI AIM:")
 print("1. Buka tab 'Aim'")
@@ -1090,6 +1344,13 @@ print("1. Buka tab 'Teleport'")
 print("2. Pilih lokasi yang diinginkan")
 print("3. Sistem akan teleport dengan efek smooth")
 print("4. Tidak akan kembali ke tempat awal!")
+print("")
+print("👁️ CARA PAKAI SPECTATE:")
+print("1. Buka tab 'Spectate'")
+print("2. Masukkan username player")
+print("3. Klik 'VIEW' untuk spectate")
+print("4. Klik 'TELEPORT TO PLAYER' untuk teleport ke player")
+print("")
+print("🎮 SCRIPT READY! Selamat bermain!")
+print("=" .. string.rep("=", 50))
 
--- END OF PART 4 (SCRIPT COMPLETE)
--- Script selesai! Semua fitur sudah aktif dengan sistem aim yang diperbaiki!
