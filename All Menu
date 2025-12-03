@@ -1,4 +1,5 @@
 
+
 local NazamOfficial = "Nazam Official"
 
 -- Services
@@ -23,11 +24,13 @@ local isSpectating = false
 local currentTarget = nil
 local lastTargetTime = 0
 
--- INF MONEY VARIABLES (NEW!)
+-- INF MONEY VARIABLES (IMPROVED)
 local infMoneyEnabled = false
-local targetMoney = 1750000 -- Max money di game
-local moneyUpdateInterval = 0.5 -- Update setiap 0.5 detik
+local targetMoney = 1750000
+local moneyUpdateInterval = 1
 local lastMoneyUpdate = 0
+local moneyRemote = nil
+local moneyValue = nil
 
 -- Koordinat teleport default (5 slot)
 for i = 1, 5 do
@@ -309,7 +312,6 @@ local function createSlider(text, yPosition, minValue, maxValue, defaultValue, c
     return frame
 end
 
-
 -- Function to create tab button
 local function createTabButton(text, index)
     local button = Instance.new("TextButton")
@@ -342,6 +344,8 @@ local function createTabButton(text, index)
     return button
 end
 
+-- BAGIAN 2 dari 4 - Lanjutan dari Bagian 1
+
 -- Information Tab
 local InformationTab = Instance.new("ScrollingFrame")
 InformationTab.Size = UDim2.new(1, 0, 1, 0)
@@ -360,12 +364,12 @@ InfoText.BackgroundTransparency = 1
 InfoText.TextColor3 = Color3.fromRGB(255, 255, 255)
 InfoText.Text = [[
 BN XITERZ - ENHANCED VERSION
-Version: 2.1 💰 INF MONEY EDITION
+Version: 2.1 💰 SHOUT BRONX EDITION
 Developer: Nazam Official
 Co-Developer: Birul
 
 FEATURES:
-• 💰 INF MONEY SYSTEM (NEW!)
+• 💰 INF MONEY SYSTEM (IMPROVED!)
 • Advanced Camera Aim System
 • Smooth Sticky Aim (Lengket)
 • Adjustable Range (50-500 studs)
@@ -378,18 +382,17 @@ FEATURES:
 💰 CARA PENGGUNAAN INF MONEY:
 1. Buka tab "Inf Money"
 2. Klik "Activate Inf Money"
-3. Uang otomatis bertambah sampai max!
-4. Jika sudah punya 20.000, akan lanjut ke 1.750.000
-5. Bisa dipakai beli apa pun di game!
+3. Tunggu 10 detik untuk auto-detect
+4. Check console (F9) untuk debug info
+5. Money otomatis bertambah sampai max!
 
 🎯 CARA PENGGUNAAN AIM:
 1. Aktifkan "Enable Aim Assist"
 2. Pilih Mode (HEAD/BODY)
-3. Atur Range (jarak deteksi)
-4. Atur Smoothness (0-50)
-5. Aim otomatis mengikuti target!
+3. Atur Range dan Smoothness
+4. Aim otomatis mengikuti target!
 
-Note: Semua fitur aman dan smooth!
+Note: System otomatis detect money di game!
 ]]
 InfoText.Font = Enum.Font.Gotham
 InfoText.TextSize = 10
@@ -484,7 +487,7 @@ end)
 SmoothnessSlider.Parent = AimTab
 
 -- ==========================================
--- INF MONEY TAB (NEW!)
+-- INF MONEY TAB (IMPROVED FOR SHOUT BRONX)
 -- ==========================================
 local InfMoneyTab = Instance.new("ScrollingFrame")
 InfMoneyTab.Size = UDim2.new(1, 0, 1, 0)
@@ -546,9 +549,10 @@ StatusLabel.Parent = MoneyInfoFrame
 local InfMoneyToggle = createToggleSwitch("Activate Inf Money", 92, false, function(state)
     infMoneyEnabled = state
     if state then
-        StatusLabel.Text = "Status: Active ✅"
-        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+        StatusLabel.Text = "Status: Searching for money system..."
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
         print("💰 Inf Money: ACTIVATED")
+        findMoneySystem()
     else
         StatusLabel.Text = "Status: Inactive"
         StatusLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
@@ -564,11 +568,11 @@ MoneyInfoText.Position = UDim2.new(0, 8, 0, 130)
 MoneyInfoText.BackgroundTransparency = 1
 MoneyInfoText.TextColor3 = Color3.fromRGB(200, 200, 200)
 MoneyInfoText.Text = [[
-💡 INFO:
-• Money akan otomatis bertambah
-• Tidak akan error atau reset
-• Bisa dipakai untuk beli apapun
-• Aman dan tidak terdeteksi
+💡 INFO SHOUT BRONX:
+• Auto-detect money system
+• 6 methods untuk set money
+• Check console (F9) untuk debug
+• Tunggu 10 detik setelah aktivasi
 ]]
 MoneyInfoText.Font = Enum.Font.Gotham
 MoneyInfoText.TextSize = 10
@@ -577,7 +581,11 @@ MoneyInfoText.TextXAlignment = Enum.TextXAlignment.Left
 MoneyInfoText.TextYAlignment = Enum.TextYAlignment.Top
 MoneyInfoText.Parent = InfMoneyTab
 
--- INF MONEY FUNCTIONS
+-- ==========================================
+-- INF MONEY FUNCTIONS (IMPROVED FOR SHOUT BRONX)
+-- ==========================================
+
+-- Format number dengan koma
 local function formatNumber(num)
     local formatted = tostring(num)
     local k
@@ -590,11 +598,73 @@ local function formatNumber(num)
     return formatted
 end
 
+-- FUNGSI MENCARI MONEY SYSTEM (6 METHODS)
+local function findMoneySystem()
+    print("💰 [SHOUT BRONX] Searching for money system...")
+    
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    
+    -- Method 1: Cari RemoteEvent/RemoteFunction
+    for _, obj in pairs(ReplicatedStorage:GetDescendants()) do
+        if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
+            local name = string.lower(obj.Name)
+            if name:find("money") or name:find("cash") or name:find("currency") or name:find("coin") then
+                moneyRemote = obj
+                print("💰 Method 1: Found Money Remote:", obj.Name, "| Path:", obj:GetFullName())
+            end
+        end
+    end
+    
+    -- Method 2: Cek leaderstats
+    if LocalPlayer:FindFirstChild("leaderstats") then
+        for _, stat in pairs(LocalPlayer.leaderstats:GetChildren()) do
+            local name = string.lower(stat.Name)
+            if name:find("money") or name:find("cash") or name:find("coin") or stat.Name == "$" then
+                moneyValue = stat
+                print("💰 Method 2: Found Money Value in leaderstats:", stat.Name)
+                return true
+            end
+        end
+    end
+    
+    -- Method 3: Cek PlayerGui
+    if LocalPlayer:FindFirstChild("PlayerGui") then
+        for _, gui in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+            if gui:IsA("IntValue") or gui:IsA("NumberValue") then
+                local name = string.lower(gui.Name)
+                if name:find("money") or name:find("cash") then
+                    moneyValue = gui
+                    print("💰 Method 3: Found Money in PlayerGui:", gui.Name)
+                    return true
+                end
+            end
+        end
+    end
+    
+    -- Method 4: Cek Character
+    if LocalPlayer.Character then
+        for _, obj in pairs(LocalPlayer.Character:GetDescendants()) do
+            if obj:IsA("IntValue") or obj:IsA("NumberValue") then
+                local name = string.lower(obj.Name)
+                if name:find("money") or name:find("cash") then
+                    moneyValue = obj
+                    print("💰 Method 4: Found Money in Character:", obj.Name)
+                    return true
+                end
+            end
+        end
+    end
+    
+    return moneyValue ~= nil
+end
+
+-- FUNGSI GET CURRENT MONEY
 local function getCurrentMoney()
     if LocalPlayer:FindFirstChild("leaderstats") then
         local money = LocalPlayer.leaderstats:FindFirstChild("Money") 
             or LocalPlayer.leaderstats:FindFirstChild("Cash")
             or LocalPlayer.leaderstats:FindFirstChild("Coins")
+            or LocalPlayer.leaderstats:FindFirstChild("Currency")
             or LocalPlayer.leaderstats:FindFirstChild("$")
         if money then
             return money.Value
@@ -602,47 +672,119 @@ local function getCurrentMoney()
     end
     
     if LocalPlayer:FindFirstChild("PlayerGui") then
-        local moneyGui = LocalPlayer.PlayerGui:FindFirstChild("MoneyGUI") 
-            or LocalPlayer.PlayerGui:FindFirstChild("CashGUI")
-        if moneyGui then
-            local moneyValue = moneyGui:FindFirstChild("Money") or moneyGui:FindFirstChild("Cash")
-            if moneyValue and moneyValue:IsA("NumberValue") then
-                return moneyValue.Value
+        for _, gui in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+            if gui:IsA("IntValue") or gui:IsA("NumberValue") then
+                local name = string.lower(gui.Name)
+                if name:find("money") or name:find("cash") then
+                    return gui.Value
+                end
             end
         end
+    end
+    
+    if LocalPlayer.Character then
+        for _, obj in pairs(LocalPlayer.Character:GetDescendants()) do
+            if obj:IsA("IntValue") or obj:IsA("NumberValue") then
+                local name = string.lower(obj.Name)
+                if name:find("money") or name:find("cash") then
+                    return obj.Value
+                end
+            end
+        end
+    end
+    
+    if moneyValue then
+        return moneyValue.Value
     end
     
     return 0
 end
 
+-- FUNGSI SET MONEY (6 METHODS)
 local function setMoney(amount)
     local success = false
     
+    -- Method 1: Direct leaderstats
     if LocalPlayer:FindFirstChild("leaderstats") then
         local money = LocalPlayer.leaderstats:FindFirstChild("Money") 
             or LocalPlayer.leaderstats:FindFirstChild("Cash")
             or LocalPlayer.leaderstats:FindFirstChild("Coins")
+            or LocalPlayer.leaderstats:FindFirstChild("Currency")
             or LocalPlayer.leaderstats:FindFirstChild("$")
         if money then
             money.Value = amount
             success = true
+            print("💰 Method 1 Success: Set via leaderstats")
         end
     end
     
+    -- Method 2: RemoteEvent
+    if moneyRemote and moneyRemote:IsA("RemoteEvent") then
+        pcall(function()
+            moneyRemote:FireServer("SetMoney", amount)
+            moneyRemote:FireServer("AddMoney", amount)
+            moneyRemote:FireServer(amount)
+            success = true
+            print("💰 Method 2 Success: Fired RemoteEvent")
+        end)
+    end
+    
+    -- Method 3: RemoteFunction
+    if moneyRemote and moneyRemote:IsA("RemoteFunction") then
+        pcall(function()
+            moneyRemote:InvokeServer("SetMoney", amount)
+            moneyRemote:InvokeServer("AddMoney", amount)
+            moneyRemote:InvokeServer(amount)
+            success = true
+            print("💰 Method 3 Success: Invoked RemoteFunction")
+        end)
+    end
+    
+    -- Method 4: Direct moneyValue
+    if moneyValue then
+        pcall(function()
+            moneyValue.Value = amount
+            success = true
+            print("💰 Method 4 Success: Direct set moneyValue")
+        end)
+    end
+    
+    -- Method 5: PlayerGui values
     if LocalPlayer:FindFirstChild("PlayerGui") then
-        local moneyGui = LocalPlayer.PlayerGui:FindFirstChild("MoneyGUI") 
-            or LocalPlayer.PlayerGui:FindFirstChild("CashGUI")
-        if moneyGui then
-            local moneyValue = moneyGui:FindFirstChild("Money") or moneyGui:FindFirstChild("Cash")
-            if moneyValue and moneyValue:IsA("NumberValue") then
-                moneyValue.Value = amount
-                success = true
+        for _, gui in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+            if gui:IsA("IntValue") or gui:IsA("NumberValue") then
+                local name = string.lower(gui.Name)
+                if name:find("money") or name:find("cash") then
+                    pcall(function()
+                        gui.Value = amount
+                        success = true
+                        print("💰 Method 5 Success: Set via PlayerGui")
+                    end)
+                end
+            end
+        end
+    end
+    
+    -- Method 6: Character values
+    if LocalPlayer.Character then
+        for _, obj in pairs(LocalPlayer.Character:GetDescendants()) do
+            if obj:IsA("IntValue") or obj:IsA("NumberValue") then
+                local name = string.lower(obj.Name)
+                if name:find("money") or name:find("cash") then
+                    pcall(function()
+                        obj.Value = amount
+                        success = true
+                        print("💰 Method 6 Success: Set via Character")
+                    end)
+                end
             end
         end
     end
     
     return success
 end
+
+-- BAGIAN 3 dari 4 - Lanjutan dari Bagian 2
 
 -- IMPROVED AIM FUNCTIONS
 local function getTargetPart(character)
@@ -728,8 +870,6 @@ local function smoothAimAt(targetPart)
     camera.CFrame = currentCFrame:Lerp(targetCFrame, aimSmoothness)
 end
 
-
-
 -- Teleport Tab
 local TeleportTab = Instance.new("ScrollingFrame")
 TeleportTab.Size = UDim2.new(1, 0, 1, 0)
@@ -741,7 +881,7 @@ TeleportTab.CanvasSize = UDim2.new(0, 0, 0, 280)
 TeleportTab.BorderSizePixel = 0
 TeleportTab.Parent = TabContents
 
--- Koordinat teleport yang diperbaiki
+-- Koordinat teleport
 teleportPoints[1] = Vector3.new(-459.97, 3.74, 342.52)
 teleportPoints[2] = Vector3.new(1174.82, 3.36, -26.25)
 teleportPoints[3] = Vector3.new(521.43, 3.58, 592.97)
@@ -1133,8 +1273,9 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 
-
--- INF MONEY LOOP (SISTEM YANG SMOOTH DAN AMAN)
+-- ==========================================
+-- INF MONEY LOOP (IMPROVED FOR SHOUT BRONX)
+-- ==========================================
 RunService.Heartbeat:Connect(function()
     if infMoneyEnabled then
         local currentTime = tick()
@@ -1142,52 +1283,67 @@ RunService.Heartbeat:Connect(function()
         if currentTime - lastMoneyUpdate >= moneyUpdateInterval then
             lastMoneyUpdate = currentTime
             
-            local currentMoney = getCurrentMoney()
-            
-            -- Update display
-            CurrentMoneyLabel.Text = "💰 Current Money: $" .. formatNumber(currentMoney)
-            
-            -- Logika penambahan money yang smooth
-            if currentMoney < targetMoney then
-                local increment
+            pcall(function()
+                local currentMoney = getCurrentMoney()
                 
-                -- Perhitungan increment yang smart
-                if currentMoney < 1000 then
-                    increment = 500 -- Awal: tambah 500
-                elseif currentMoney < 10000 then
-                    increment = 2000 -- Tambah 2,000
-                elseif currentMoney < 50000 then
-                    increment = 5000 -- Tambah 5,000
-                elseif currentMoney < 100000 then
-                    increment = 10000 -- Tambah 10,000
-                elseif currentMoney < 500000 then
-                    increment = 25000 -- Tambah 25,000
-                elseif currentMoney < 1000000 then
-                    increment = 50000 -- Tambah 50,000
+                -- Update display
+                if CurrentMoneyLabel then
+                    CurrentMoneyLabel.Text = "💰 Current Money: $" .. formatNumber(currentMoney)
+                end
+                
+                -- Jika belum menemukan money system, cari lagi
+                if not moneyValue and currentMoney == 0 then
+                    findMoneySystem()
+                end
+                
+                -- Logika penambahan money
+                if currentMoney < targetMoney then
+                    local increment
+                    
+                    -- Smart increment berdasarkan current money
+                    if currentMoney < 1000 then
+                        increment = 500
+                    elseif currentMoney < 10000 then
+                        increment = 2000
+                    elseif currentMoney < 50000 then
+                        increment = 5000
+                    elseif currentMoney < 100000 then
+                        increment = 10000
+                    elseif currentMoney < 500000 then
+                        increment = 25000
+                    elseif currentMoney < 1000000 then
+                        increment = 50000
+                    else
+                        increment = 100000
+                    end
+                    
+                    local newMoney = math.min(currentMoney + increment, targetMoney)
+                    
+                    -- Try to set money
+                    local success = setMoney(newMoney)
+                    
+                    if success then
+                        print("💰 Money updated:", formatNumber(currentMoney), "→", formatNumber(newMoney))
+                        if StatusLabel then
+                            local percentage = math.floor((currentMoney/targetMoney)*100)
+                            StatusLabel.Text = "Status: Adding Money... (" .. percentage .. "%)"
+                            StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+                        end
+                    else
+                        if StatusLabel then
+                            StatusLabel.Text = "Status: Trying alternative methods..."
+                            StatusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+                        end
+                    end
                 else
-                    increment = 100000 -- Tambah 100,000
+                    -- Sudah mencapai target
+                    if StatusLabel and StatusLabel.Text ~= "Status: MAX MONEY REACHED! ✅" then
+                        StatusLabel.Text = "Status: MAX MONEY REACHED! ✅"
+                        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+                        print("💰 Target money reached:", formatNumber(targetMoney))
+                    end
                 end
-                
-                -- Pastikan tidak melebihi target
-                local newMoney = math.min(currentMoney + increment, targetMoney)
-                
-                -- Set money baru
-                local success = setMoney(newMoney)
-                
-                if success then
-                    print("💰 Money updated:", formatNumber(currentMoney), "→", formatNumber(newMoney))
-                else
-                    StatusLabel.Text = "Status: Error - Money system not found"
-                    StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-                end
-            else
-                -- Sudah mencapai target
-                if StatusLabel.Text ~= "Status: MAX MONEY REACHED! ✅" then
-                    StatusLabel.Text = "Status: MAX MONEY REACHED! ✅"
-                    StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
-                    print("💰 Target money reached:", formatNumber(targetMoney))
-                end
-            end
+            end)
         end
     end
 end)
@@ -1244,6 +1400,45 @@ LocalPlayer.CharacterAdded:Connect(function(character)
         Workspace.CurrentCamera.CameraSubject = humanoid
     end
     currentTarget = nil
+    
+    -- Auto-detect money system saat spawn
+    task.wait(3)
+    
+    if infMoneyEnabled then
+        print("💰 [SHOUT BRONX] Searching for money system after respawn...")
+        
+        local found = findMoneySystem()
+        
+        if found then
+            local currentMoney = getCurrentMoney()
+            print("💰 Money system detected! Current:", formatNumber(currentMoney))
+            if StatusLabel then
+                StatusLabel.Text = "Status: Money System Detected ✅"
+                StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+            end
+        else
+            warn("💰 Money system not detected. Retrying...")
+            if StatusLabel then
+                StatusLabel.Text = "Status: Searching for money system..."
+                StatusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+            end
+            
+            -- Retry setiap 5 detik
+            task.spawn(function()
+                for i = 1, 10 do
+                    task.wait(5)
+                    if findMoneySystem() then
+                        print("💰 Money system found after", i*5, "seconds!")
+                        if StatusLabel then
+                            StatusLabel.Text = "Status: Money System Found! ✅"
+                            StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+                        end
+                        break
+                    end
+                end
+            end)
+        end
+    end
 end)
 
 -- Anti-AFK
@@ -1253,69 +1448,47 @@ LocalPlayer.Idled:Connect(function()
     VirtualUser:ClickButton2(Vector2.new())
 end)
 
--- Notifikasi saat money berhasil diubah (optional)
-local function showMoneyNotification(amount)
-    local notif = Instance.new("TextLabel")
-    notif.Size = UDim2.new(0, 200, 0, 40)
-    notif.Position = UDim2.new(0.5, -100, 0, 100)
-    notif.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-    notif.BackgroundTransparency = 0.3
-    notif.TextColor3 = Color3.fromRGB(255, 255, 255)
-    notif.Text = "💰 +" .. formatNumber(amount)
-    notif.Font = Enum.Font.GothamBold
-    notif.TextSize = 16
-    notif.Parent = ScreenGui
+-- Debug function untuk print semua RemoteEvents
+local function debugPrintRemotes()
+    print("=== 💰 DEBUG: SHOUT BRONX REMOTES ===")
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
     
-    local notifCorner = Instance.new("UICorner")
-    notifCorner.CornerRadius = UDim.new(0, 10)
-    notifCorner.Parent = notif
-    
-    -- Fade out animation
-    task.wait(1)
-    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(notif, tweenInfo, {
-        BackgroundTransparency = 1,
-        TextTransparency = 1,
-        Position = UDim2.new(0.5, -100, 0, 50)
-    })
-    tween:Play()
-    
-    tween.Completed:Connect(function()
-        notif:Destroy()
-    end)
-end
-
--- Auto-detect money system saat character spawn
-LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(2) -- Tunggu game load
-    
-    if infMoneyEnabled then
-        local currentMoney = getCurrentMoney()
-        if currentMoney > 0 then
-            print("💰 Money system detected! Current:", formatNumber(currentMoney))
-            StatusLabel.Text = "Status: Money System Detected ✅"
-            StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
-        else
-            warn("💰 Money system not detected yet...")
-            StatusLabel.Text = "Status: Searching for money system..."
-            StatusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+    local foundCount = 0
+    for _, obj in pairs(ReplicatedStorage:GetDescendants()) do
+        if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
+            print("📡 Remote found:", obj.Name, "| Type:", obj.ClassName, "| Path:", obj:GetFullName())
+            foundCount = foundCount + 1
         end
     end
+    
+    print("📊 Total Remotes found:", foundCount)
+    print("=== END DEBUG ===")
+end
+
+-- Auto search money system saat pertama kali load
+task.spawn(function()
+    task.wait(5)
+    print("💰 [SHOUT BRONX] Initial money system search...")
+    findMoneySystem()
+    
+    -- Debug print after 10 seconds
+    task.wait(5)
+    debugPrintRemotes()
 end)
 
--- Success message
-print("✅ BN XITERZ V2.1 - INF MONEY EDITION Loaded Successfully!")
+-- Success message dengan instruksi lengkap
+print("✅ BN XITERZ V2.1 - SHOUT BRONX EDITION Loaded Successfully!")
 print("👤 Developer: Nazam Official")
 print("👥 Co-Developer: Birul")
-print("📱 Version: 2.1 - Enhanced with Inf Money")
+print("📱 Version: 2.1 - Improved Money System for SHOUT BRONX")
 print("📐 UI Ratio: 16:9")
 print("")
-print("💰 FITUR BARU - INF MONEY:")
-print("• Otomatis menambah uang sampai max")
-print("• Smart increment system (makin banyak, makin cepat)")
-print("• Tidak akan error atau reset")
-print("• Bisa digunakan untuk beli apapun")
-print("• Aman dari deteksi")
+print("💰 FITUR INF MONEY - SHOUT BRONX:")
+print("• 6 Methods untuk detect & set money")
+print("• Auto-detect money system")
+print("• Smart increment (makin banyak, makin cepat)")
+print("• Retry mechanism jika gagal")
+print("• Debug mode (check console F9)")
 print("")
 print("🎯 FITUR LAINNYA:")
 print("• Camera-based Smooth Aim")
@@ -1323,14 +1496,20 @@ print("• Sticky Target Lock")
 print("• Adjustable Range (50-500 studs)")
 print("• Adjustable Smoothness (0-50)")
 print("• SMOOTH TELEPORT SYSTEM")
-print("• Player Spectate & Teleport to Player")
+print("• Player Spectate & Teleport")
 print("")
 print("💡 CARA PAKAI INF MONEY:")
 print("1. Buka tab 'Inf Money'")
 print("2. Klik toggle 'Activate Inf Money'")
-print("3. Money otomatis bertambah!")
-print("4. Jika sudah punya 20k, akan lanjut ke 1.750.000")
-print("5. Bisa langsung dipakai beli barang apapun!")
+print("3. Tunggu 10 detik untuk auto-detect")
+print("4. Tekan F9 untuk buka console & lihat debug info")
+print("5. Money akan otomatis bertambah!")
+print("")
+print("🔍 TROUBLESHOOTING:")
+print("• Jika money tidak nambah, check console (F9)")
+print("• Lihat list RemoteEvents yang terdetect")
+print("• Kasih tau developer nama RemoteEvent yang ada")
+print("• System akan otomatis retry setiap 5 detik")
 print("")
 print("💡 CARA PAKAI AIM:")
 print("1. Buka tab 'Aim'")
@@ -1343,14 +1522,19 @@ print("🚀 CARA PAKAI TELEPORT:")
 print("1. Buka tab 'Teleport'")
 print("2. Pilih lokasi yang diinginkan")
 print("3. Sistem akan teleport dengan efek smooth")
-print("4. Tidak akan kembali ke tempat awal!")
 print("")
 print("👁️ CARA PAKAI SPECTATE:")
 print("1. Buka tab 'Spectate'")
 print("2. Masukkan username player")
 print("3. Klik 'VIEW' untuk spectate")
-print("4. Klik 'TELEPORT TO PLAYER' untuk teleport ke player")
+print("4. Klik 'TELEPORT TO PLAYER' untuk TP ke player")
 print("")
-print("🎮 SCRIPT READY! Selamat bermain!")
-print("=" .. string.rep("=", 50))
+print("🎮 SCRIPT READY! Selamat bermain SHOUT BRONX!")
+print("=" .. string.rep("=", 60))
+print("")
+print("⚠️ PENTING: Jika money tidak work:")
+print("1. Tunggu sampai script detect money system (10 detik)")
+print("2. Buka console (F9) dan screenshot output debug")
+print("3. Kasih tau developer untuk fix lebih lanjut")
+print("")
 
